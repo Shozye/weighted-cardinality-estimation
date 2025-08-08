@@ -31,26 +31,24 @@ void FastExpSketch::add(const std::string& x, double weight)
 { 
     std::uint64_t hash_answer[2];
     double S = 0;
-    bool updateMax = false;
+    bool updateMax = false; 
 
-
-    this->rng_seed = murmur64(x, 1, hash_answer);
-    permWork = permInit;
-
-    int k = 0;
+    this->rng_seed = murmur64(x, 1, hash_answer); 
+    permWork = permInit; 
+    int k;
     for (k = 0; k < this->m_; ++k){
-        std::uint64_t hashed = murmur64(x, seeds_[k], hash_answer);
-        double U = to_unit_interval(hashed);   
-        double E = -std::log(U) / weight;
+        std::uint64_t hashed = murmur64(x, seeds_[k], hash_answer); 
+        double U = to_unit_interval(hashed); 
+        double E = -std::log(U) / weight; 
 
-        S += E/(double)(this->m_-k);
-        if ( S >= this->max ) break;
+        S += E/(double)(this->m_-k); 
+        if ( S >= this->max ) break; 
 
         uint32_t r = rand(k, m_);
         auto swap = permWork[k];
         permWork[k] = permWork[r];
         permWork[r] = swap;
-        auto j = permWork[k];
+        auto j = permWork[k] - 1;
 
         if (this->M_[j] == this->max ) updateMax = true;
         if (this->M_[j] > S) this->M_[j] = S;
