@@ -1,0 +1,32 @@
+[build-system]
+requires = ["scikit-build-core>=0.9", "pybind11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "weighted-cardinality-estimation"
+version = "0.0.1"
+description = "Fast weighted cardinality sketches in C++ with Python bindings."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Mateusz Pelechaty", email = "sshozye@gmail.com"}]
+requires-python = ">=3.9"
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: C++",
+  "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-benchmark",
+  "asv",
+  "cibuildwheel",
+  "ruff",
+  "mypy",
+  "numpy"
+]
+
+[tool.scikit-build]
+cmake.version = ">=3.18"

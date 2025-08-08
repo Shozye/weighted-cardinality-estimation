@@ -1,0 +1,25 @@
+#pragma once
+#include <vector>
+#include <string>
+#include <cstdint>
+
+class FastExpSketch {
+public:
+    FastExpSketch(std::size_t m, const std::vector<std::uint32_t>& seeds);
+    void add(const std::string& x, double weight = 1.0);
+    [[nodiscard]] double estimate() const;
+    [[nodiscard]] double jaccard_struct(const FastExpSketch& other) const;
+
+private:
+    int rand(int min, int max);
+    uint64_t rng_seed;
+    
+
+    std::size_t m_;
+    std::vector<std::uint32_t> seeds_;
+    std::vector<double> M_;
+    double max;
+    std::vector<uint32_t> permInit;
+    std::vector<uint32_t> permWork;
+    
+};
