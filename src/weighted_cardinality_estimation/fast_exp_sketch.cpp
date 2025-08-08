@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include "hash_util.hpp"
 #include<cstring>
+#include<iostream>
 
 FastExpSketch::FastExpSketch(std::size_t m, const std::vector<std::uint32_t>& seeds)
     : m_(m), seeds_(seeds),
@@ -21,22 +22,24 @@ FastExpSketch::FastExpSketch(std::size_t m, const std::vector<std::uint32_t>& se
 }
 
 int FastExpSketch::rand(int min, int max){
-    rng_seed = rng_seed * 1103515245 + 12345;
-    auto temp = (unsigned)(rng_seed/65536) % 32768;
+    this->rng_seed = this->rng_seed * 1103515245 + 12345;
+    auto temp = (unsigned)(this->rng_seed/65536) % 32768;
     return (temp % (max-min)) + min;
 }
 
 void FastExpSketch::add(const std::string& x, double weight)
 { 
+    std::uint64_t hash_answer[2];
     double S = 0;
     bool updateMax = false;
 
-    rng_seed = murmur64(x, 1);
+
+    this->rng_seed = murmur64(x, 1, hash_answer);
     permWork = permInit;
 
     int k = 0;
     for (k = 0; k < this->m_; ++k){
-        std::uint64_t hashed = murmur64(x, seeds_[k]);
+        std::uint64_t hashed = murmur64(x, seeds_[k], hash_answer);
         double U = to_unit_interval(hashed);   
         double E = -std::log(U) / weight;
 

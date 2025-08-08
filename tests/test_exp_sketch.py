@@ -1,18 +1,25 @@
 from weighted_cardinality_estimation import ExpSketch
 import random
+from tests.utils import assert_error
 
 def test_basic_estimate_bias_20_percent():
-    m = 400
+    ERR = 0.2
+    M = 400
+    AMOUNT_ELEMENTS = 1000
+    ELEMENT_WEIGHT = 10
+    AM_TESTS = 10
     
+    total_weight = 0
     estimates = []
-    for trial in range(10):
-        seeds = [random.randint(1,10000000) for _ in range(m)]
-        s = ExpSketch(m, seeds)
-        for i in range(1000):
+    for _ in range(AM_TESTS):
+        seeds = [random.randint(1,10000000) for _ in range(M)]
+        s = ExpSketch(M, seeds)
+        for i in range(AMOUNT_ELEMENTS):
             elem = f"e{i}"
-            s.add(elem, weight=10)
+            total_weight += ELEMENT_WEIGHT
+            s.add(elem, weight=ELEMENT_WEIGHT)
         estimates.append(s.estimate())
     
-    average = sum(estimates)/len(estimates)
-    assert 9500 < average < 10500
+    average_estimate = sum(estimates)/len(estimates)
+    assert_error(total_weight/AM_TESTS, average_estimate, ERR)
 

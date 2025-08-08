@@ -5,14 +5,17 @@
 
 
 
-inline std::uint64_t murmur64(const std::string& key, std::uint32_t seed)
+inline std::uint64_t murmur64(
+    const std::string& key, 
+    std::uint32_t seed, 
+    std::uint64_t* hash_answer
+)
 {
-    std::uint64_t hash128[2];                       // 16 B buffer
     MurmurHash3_x64_128(key.data(),
                         static_cast<int>(key.size()),
                         seed,
-                        hash128);
-    return hash128[0];                              // pierwsze 64 bity
+                        hash_answer);
+    return hash_answer[0];                              // pierwsze 64 bity
 }
 
 inline double to_unit_interval(std::uint64_t h)

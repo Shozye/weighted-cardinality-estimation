@@ -14,8 +14,9 @@ ExpSketch::ExpSketch(std::size_t m, const std::vector<std::uint32_t>& seeds)
 
 void ExpSketch::add(const std::string& x, double weight)
 { 
+    std::uint64_t hash_answer[2];
     for (std::size_t i = 0; i < m_; ++i) {
-        std::uint64_t h = murmur64(x, seeds_[i]);
+        std::uint64_t h = murmur64(x, seeds_[i], hash_answer);
         double u = to_unit_interval(h);   
         double g = -std::log(u) / weight;
         if (g < M_[i]) M_[i] = g;
