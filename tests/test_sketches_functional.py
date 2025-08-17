@@ -30,21 +30,21 @@ def functional_test(
 def test_exp_sketch_functional():
     functional_test(
         sketch_cls=ExpSketch,
-        err=0.5,
-        m=100,
-        amount_elements=100,
-        elements_weight=2,
-        am_tests=10
+        err=0.05,
+        m=400,
+        amount_elements=1000,
+        elements_weight=10,
+        am_tests=100
     )
 
 def test_fast_exp_sketch_functional():
     functional_test(
         sketch_cls=FastExpSketch,
-        err=0.5,
-        m=100,
-        amount_elements=100,
-        elements_weight=2,
-        am_tests=10
+        err=0.05,
+        m=400,
+        amount_elements=1000,
+        elements_weight=10,
+        am_tests=100
     )
 
 
