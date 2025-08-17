@@ -23,6 +23,16 @@ void ExpSketch::add(const std::string& x, double weight)
     }
 } 
 
+void ExpSketch::add_many(const std::vector<std::string>& elems,
+                                  const std::vector<double>& weights) {
+    if (elems.size() != weights.size()){
+        throw std::invalid_argument("add_many: elems and weights size mismatch");
+    }
+    for (std::size_t i = 0; i < elems.size(); ++i) {
+        this->add(elems[i], weights[i]);
+    }
+}
+
 double ExpSketch::estimate() const
 {
     double sum = 0.0;

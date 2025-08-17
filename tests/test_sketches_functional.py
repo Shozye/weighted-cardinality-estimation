@@ -51,10 +51,10 @@ def test_fast_exp_sketch_functional():
 def test_q_exp_sketch_functional():
     functional_test(
         sketch_cls=lambda m, seeds: FastQSketch(m, seeds, 8),
-        err=0.99,
-        m=10,
-        amount_elements=10,
+        err=0.1,
+        m=400,
+        amount_elements=1000,
         elements_weight=10,
-        am_tests=10
+        am_tests=100
     )
 
