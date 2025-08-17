@@ -12,14 +12,11 @@ public:
 
 private:
     int rand(int min, int max);
-    uint64_t rng_seed;
-    
-
     std::size_t m_;
     std::vector<std::uint32_t> seeds_;
     std::vector<double> M_;
-    double max;
     std::vector<uint32_t> permInit;
     std::vector<uint32_t> permWork;
-    
+    uint64_t rng_seed;
+    double max;    
 };

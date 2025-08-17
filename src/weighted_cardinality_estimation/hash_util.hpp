@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <limits>
 #include <string>
 #include "MurmurHash3.h"
 

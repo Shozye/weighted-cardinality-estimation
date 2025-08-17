@@ -1,7 +1,7 @@
 
 import random
 from tests.utils import assert_error
-from weighted_cardinality_estimation import FastExpSketch, ExpSketch
+from weighted_cardinality_estimation import FastExpSketch, ExpSketch, FastQSketch
 
 def functional_test(
         sketch_cls,
@@ -24,6 +24,7 @@ def functional_test(
         estimates.append(s.estimate())
     
     average_estimate = sum(estimates)/len(estimates)
+    print(average_estimate)
     assert_error(total_weight/am_tests, average_estimate, err)
 
 
@@ -47,4 +48,13 @@ def test_fast_exp_sketch_functional():
         am_tests=100
     )
 
+def test_q_exp_sketch_functional():
+    functional_test(
+        sketch_cls=lambda m, seeds: FastQSketch(m, seeds, 8),
+        err=0.99,
+        m=10,
+        amount_elements=10,
+        elements_weight=10,
+        am_tests=10
+    )
 

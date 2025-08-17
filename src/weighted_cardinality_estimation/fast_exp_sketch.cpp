@@ -1,10 +1,11 @@
 #include "fast_exp_sketch.hpp"
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
 #include "hash_util.hpp"
-#include<cstring>
-#include<iostream>
+#include <cstring>
+#include <iostream>
 
 FastExpSketch::FastExpSketch(std::size_t m, const std::vector<std::uint32_t>& seeds)
     : m_(m), seeds_(seeds),
@@ -16,7 +17,7 @@ FastExpSketch::FastExpSketch(std::size_t m, const std::vector<std::uint32_t>& se
 {
     if (seeds_.size() != m_)
         throw std::invalid_argument("Seeds vector must have length m");
-    for(int i = 0; i < m_; i++){
+    for(size_t i = 0; i < m_; i++){
         permInit[i] = i+1;
     }
 }
@@ -35,8 +36,7 @@ void FastExpSketch::add(const std::string& x, double weight)
 
     this->rng_seed = murmur64(x, 1, hash_answer); 
     permWork = permInit; 
-    int k;
-    for (k = 0; k < this->m_; ++k){
+    for (size_t k = 0; k < this->m_; ++k){
         std::uint64_t hashed = murmur64(x, seeds_[k], hash_answer); 
         double U = to_unit_interval(hashed); 
         double E = -std::log(U) / weight; 
@@ -56,10 +56,8 @@ void FastExpSketch::add(const std::string& x, double weight)
 
     if(updateMax){
         this->max = this->M_[0];
-        for(int k = 0; k < this->m_; ++k){
-            if (this->M_[k] > this->max){
-                this->max = this->M_[k];
-            }
+        for(size_t k = 0; k < this->m_; ++k){
+            this->max = std::max(this->M_[k], this->max);
         }
     }
 } 

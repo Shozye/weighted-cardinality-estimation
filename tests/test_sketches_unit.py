@@ -1,5 +1,5 @@
 import random
-from weighted_cardinality_estimation import FastExpSketch, ExpSketch
+from weighted_cardinality_estimation import FastExpSketch, ExpSketch, FastQSketch
 
 
 
@@ -14,14 +14,19 @@ def unitary_test(sketch_cls):
     assert estimate > 0
 
 
-def test_exp_sketch_functional():
+def test_exp_sketch_unitary():
     unitary_test(
         sketch_cls=ExpSketch,
     )
 
-def test_fast_exp_sketch_functional():
+def test_fast_exp_sketch_unitary():
     unitary_test(
         sketch_cls=FastExpSketch,
+    )
+
+def test_q_sketch_unitary():
+    unitary_test(
+        sketch_cls=lambda m, seeds: FastQSketch(m, seeds, 8),
     )
 
 

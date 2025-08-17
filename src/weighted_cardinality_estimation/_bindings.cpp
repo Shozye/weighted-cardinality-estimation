@@ -2,6 +2,8 @@
 #include <pybind11/stl.h>
 #include "exp_sketch.hpp"
 #include "fast_exp_sketch.hpp"
+#include "fast_q_sketch.hpp"
+
 
 namespace py = pybind11;
 
@@ -18,4 +20,10 @@ PYBIND11_MODULE(_core, m) {
         .def("add", &FastExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
         .def("estimate", &FastExpSketch::estimate)
         .def("jaccard_struct", &FastExpSketch::jaccard_struct);
+
+    py::class_<FastQSketch>(m, "FastQSketch")
+        .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t>(),
+            py::arg("m"), py::arg("seeds"), py::arg("amount_seeds"))
+        .def("add", &FastQSketch::add, py::arg("x"), py::arg("weight") = 1.0)
+        .def("estimate", &FastQSketch::estimate);
 }
