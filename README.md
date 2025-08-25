@@ -11,5 +11,6 @@
 # To install in repo use
 
 ```bash
-python -m pip install -e . --no-deps --no-build-isolation
+python -m pip install -e . --no-deps --no-build-isolation -vvv
+pytest
 ```

@@ -5,8 +5,8 @@
 
 class FastExpSketch {
 public:
-    FastExpSketch(std::size_t m, const std::vector<std::uint32_t>& seeds);
-    void add(const std::string& x, double weight = 1.0);
+    FastExpSketch(std::size_t size, const std::vector<std::uint32_t>& seeds);
+    void add(const std::string& elem, double weight = 1.0);
     void add_many(const std::vector<std::string>& elems, const std::vector<double>& weights);
     [[nodiscard]] double estimate() const;
     [[nodiscard]] double jaccard_struct(const FastExpSketch& other) const;

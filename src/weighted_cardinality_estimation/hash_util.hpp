@@ -19,8 +19,8 @@ inline std::uint64_t murmur64(
     return hash_answer[0];                              // pierwsze 64 bity
 }
 
-inline double to_unit_interval(std::uint64_t h)
+inline double to_unit_interval(std::uint64_t num)
 {
-    return static_cast<double>(h + 1ULL) /
+    return static_cast<double>(num + 1ULL) /
            static_cast<double>(std::numeric_limits<std::uint64_t>::max());
 }

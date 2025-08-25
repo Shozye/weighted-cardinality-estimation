@@ -42,7 +42,7 @@ void FastExpSketch::add(const std::string& x, double weight)
         double E = -std::log(U) / weight; 
 
         S += E/(double)(this->m_-k); 
-        if ( S >= this->max ) break; 
+        if ( S >= this->max ) { break; }
 
         uint32_t r = rand(k, m_);
         auto swap = permWork[k];
@@ -50,8 +50,8 @@ void FastExpSketch::add(const std::string& x, double weight)
         permWork[r] = swap;
         auto j = permWork[k] - 1;
 
-        if (this->M_[j] == this->max ) updateMax = true;
-        if (this->M_[j] > S) this->M_[j] = S;
+        if (this->M_[j] == this->max ) { updateMax = true; }
+        this->M_[j] = std::min(this->M_[j], S);
     }
 
     if(updateMax){
