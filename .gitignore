@@ -19,3 +19,5 @@ cmake-build-*/
 .pytest_cache/*
 .mypy_cache/*
 src/weighted_cardinality_estimation/.vscode/*
+
+weighted-cardinality-estimation

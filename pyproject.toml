@@ -18,6 +18,9 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
+bench = [
+    "numpy",
+]
 dev = [
   "pytest",
   "pytest-benchmark",

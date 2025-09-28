@@ -1,3 +1,5 @@
+# bench_sketches.py
+# This file is used for benchmarking sketches for time and compare them.
 import itertools as it
 import random
 from typing import Callable, Literal
