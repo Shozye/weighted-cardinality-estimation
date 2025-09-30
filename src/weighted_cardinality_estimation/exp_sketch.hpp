@@ -11,6 +11,11 @@ public:
     [[nodiscard]] double estimate() const;
     [[nodiscard]] double jaccard_struct(const ExpSketch& other) const;
 
+    ExpSketch(std::size_t m, const std::vector<std::uint32_t>& seeds, const std::vector<double>& registers);
+
+    std::size_t get_m() const;
+    const std::vector<std::uint32_t>& get_seeds() const;
+    const std::vector<double>& get_registers() const;
 private:
     std::size_t m_;
     std::vector<std::uint32_t> seeds_;

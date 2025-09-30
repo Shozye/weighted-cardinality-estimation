@@ -1,11 +1,19 @@
+import copy
 import random
+
+import pytest
 from weighted_cardinality_estimation import FastExpSketch, ExpSketch, FastQSketch
 
 
+SKETCH_CONSTRUCTORS = [
+    pytest.param(ExpSketch, id="ExpSketch"),
+    pytest.param(FastExpSketch, id="FastExpSketch"),
+    pytest.param(lambda m, seeds: FastQSketch(m, seeds, amount_bits=8), id="FastQSketch"),
+]
 
-def unitary_test(sketch_cls):
+@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+def test_unitary(sketch_cls):
     M=5
-    
     seeds = [random.randint(1,10000000) for _ in range(M)]
     sketch = sketch_cls(M, seeds)
     sketch.add("I am just a simple element.", weight=1)
@@ -14,19 +22,61 @@ def unitary_test(sketch_cls):
     assert estimate > 0
 
 
-def test_exp_sketch_unitary():
-    unitary_test(
-        sketch_cls=ExpSketch,
-    )
+@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+def test_copy_produces_same_estimate(sketch_cls):
+    # here i just want to make some basic contract that it holds to ANY standard lol
+    m = 5
+    seeds = [1, 2, 3, 4, 5]
+    original_sketch = sketch_cls(m, seeds)
+    original_sketch.add("A single test element", weight=1.0)
+    original_estimate = original_sketch.estimate()
+    
+    copied_sketch = copy.copy(original_sketch)
+    copied_estimate = copied_sketch.estimate()
 
-def test_fast_exp_sketch_unitary():
-    unitary_test(
-        sketch_cls=FastExpSketch,
-    )
+    assert original_estimate == copied_estimate
+    assert original_estimate > 0
+    assert original_sketch is not copied_sketch
 
-def test_q_sketch_unitary():
-    unitary_test(
-        sketch_cls=lambda m, seeds: FastQSketch(m, seeds, 8),
-    )
+@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+def test_copy_has_identical_internal_state(sketch_cls):
+    m = 5
+    seeds = [1, 2, 3, 4, 5]
+    original_sketch = sketch_cls(m, seeds)
+    original_sketch.add("some element", weight=2.5)
 
+    copied_sketch = copy.copy(original_sketch)
+
+    # this test is essentialy, from testing point of view, pointless, but is good for dev.
+    original_state = original_sketch.__getstate__()
+    copied_state = copied_sketch.__getstate__()
+
+    assert original_state == copied_state
+
+@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+def test_copy_different_memory_objects(sketch_cls):
+    m = 5
+    seeds = [1, 2, 3, 4, 5]
+    original_sketch = sketch_cls(m, seeds)
+    original_sketch.add("some element", weight=2.5)
+
+    copied_sketch = copy.copy(original_sketch)
+    # here i want to check if internal stuff is different so it is important to save it
+    original_estimate = original_sketch.estimate() 
+    copied_sketch.add("new element", weight=1)
+    assert original_estimate == original_sketch.estimate()
+
+@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+def test_copy_independently_the_same_structures(sketch_cls):
+    m = 5
+    seeds = [1, 2, 3, 4, 5]
+    original_sketch = sketch_cls(m, seeds)
+    original_sketch.add("some element", weight=2.5)
+
+    copied_sketch = copy.copy(original_sketch)
+    # here I want to see if all internal stuff is the same so adding new element will cause same effect.
+    copied_sketch.add("new element", weight=1)
+    original_sketch.add("new element", weight=1)
+
+    assert original_sketch.estimate() == copied_sketch.estimate()
 

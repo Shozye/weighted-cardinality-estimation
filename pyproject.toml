@@ -20,15 +20,18 @@ classifiers = [
 [project.optional-dependencies]
 bench = [
     "numpy",
+    "pytest-benchmark",
+    "asv"
+]
+test = [
+  "pytest"
 ]
 dev = [
-  "pytest",
-  "pytest-benchmark",
-  "asv",
   "cibuildwheel",
   "ruff",
   "mypy",
-  "numpy"
+  "numpy",
+  "scikit_build_core"
 ]
 
 [tool.scikit-build]

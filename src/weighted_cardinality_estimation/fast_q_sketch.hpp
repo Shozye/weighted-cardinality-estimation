@@ -11,6 +11,13 @@ public:
                          const std::vector<double>& weights);
     [[nodiscard]] double estimate();
 
+    FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits, const std::vector<int>& registers);
+
+    std::size_t get_sketch_size() const;
+    const std::vector<std::uint32_t>& get_seeds() const;
+    std::uint8_t get_amount_bits() const;
+    const std::vector<int>& get_registers() const;
+
 private:
     uint32_t rand(uint32_t min, uint32_t max);
 
@@ -23,6 +30,7 @@ private:
 
     std::size_t sketch_size_; // amount of registers used in sketch. Sketch uses linear memory to m and increases accuracy based on m
     std::vector<std::uint32_t> seeds_; // seeds used to hash 
+    std::uint8_t amount_bits_;
     std::int32_t r_max; // maximum possible value in sketch due to amount of bits per register
     std::int32_t r_min; // minimum possible value in sketch due to amount of bits per register
 

@@ -10,6 +10,7 @@
 FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, uint8_t amount_bits)
     : sketch_size_(sketch_size), 
       seeds_(seeds),
+      amount_bits_(amount_bits),
       r_max(mypow(2, amount_bits-1) - 1),
       r_min(-mypow(2, amount_bits-1) + 1),
       M_(sketch_size, r_min), 
@@ -25,6 +26,36 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
     }
     update_treshold();
 }
+
+FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits, const std::vector<int>& registers)
+    : sketch_size_(sketch_size),
+      seeds_(seeds),
+      amount_bits_(amount_bits),
+      r_max(mypow(2, amount_bits-1) - 1),
+      r_min(-mypow(2, amount_bits-1) + 1),
+      M_(registers),
+      permInit(sketch_size),
+      permWork(sketch_size),
+      rng_seed(0) // add nadpisuje stan rng_seed
+{
+    if (seeds_.size() != sketch_size) {
+        throw std::invalid_argument("Invalid state: seeds vector size mismatch");
+    }
+    if (M_.size() != sketch_size) {
+        throw std::invalid_argument("Invalid state: registers vector size mismatch");
+    }
+
+    for(size_t i = 0; i < sketch_size; i++){
+        permInit[i] = i+1;
+    }
+    update_treshold();
+}
+
+
+std::size_t FastQSketch::get_sketch_size() const { return sketch_size_; }
+const std::vector<std::uint32_t>& FastQSketch::get_seeds() const { return seeds_; }
+std::uint8_t FastQSketch::get_amount_bits() const { return amount_bits_; }
+const std::vector<int>& FastQSketch::get_registers() const { return M_; }
 
 uint32_t FastQSketch::rand(uint32_t min, uint32_t max){
     this->rng_seed = this->rng_seed * 1103515245 + 12345;

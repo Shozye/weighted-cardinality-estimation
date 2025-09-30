@@ -21,3 +21,5 @@ cmake-build-*/
 src/weighted_cardinality_estimation/.vscode/*
 
 weighted-cardinality-estimation
+.cache
+.build

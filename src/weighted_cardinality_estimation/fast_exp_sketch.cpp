@@ -87,3 +87,33 @@ double FastExpSketch::jaccard_struct(const FastExpSketch& other) const
         if (M_[i] == other.M_[i]) ++equal;
     return static_cast<double>(equal) / static_cast<double>(m_);
 }
+
+FastExpSketch::FastExpSketch(
+    std::size_t m,
+    const std::vector<std::uint32_t>& seeds,
+    const std::vector<double>& registers)
+:   m_(m),
+    seeds_(seeds),
+    M_(registers),
+    permInit(m),     
+    permWork(m),    
+    rng_seed(0) 
+{
+    for(size_t i = 0; i < m_; i++){
+        permInit[i] = i+1;
+    }
+
+    if (m_ > 0) {
+        max = M_[0];
+        for(size_t k = 1; k < m_; ++k){
+            if (M_[k] > max) {
+                max = M_[k];
+            }
+        }
+    } else {
+        max = std::numeric_limits<double>::infinity();
+    }
+}
+std::size_t FastExpSketch::get_m() const { return m_; }
+const std::vector<std::uint32_t>& FastExpSketch::get_seeds() const { return seeds_; }
+const std::vector<double>& FastExpSketch::get_registers() const { return M_; }

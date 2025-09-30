@@ -48,3 +48,21 @@ double ExpSketch::jaccard_struct(const ExpSketch& other) const
         if (M_[i] == other.M_[i]) ++equal;
     return static_cast<double>(equal) / static_cast<double>(m_);
 }
+
+ExpSketch::ExpSketch(std::size_t m, const std::vector<std::uint32_t>& seeds, const std::vector<double>& registers)
+    : m_(m), seeds_(seeds), M_(registers)
+{
+}
+
+
+std::size_t ExpSketch::get_m() const {
+    return m_;
+}
+
+const std::vector<std::uint32_t>& ExpSketch::get_seeds() const {
+    return seeds_;
+}
+
+const std::vector<double>& ExpSketch::get_registers() const {
+    return M_;
+}

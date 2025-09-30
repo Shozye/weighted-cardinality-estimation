@@ -1,60 +1,42 @@
 
 import random
+
+import pytest
 from tests.utils import assert_error
 from weighted_cardinality_estimation import FastExpSketch, ExpSketch, FastQSketch
 
-def functional_test(
-        sketch_cls,
-        err: float,
-        m: int,
-        amount_elements: int,
-        elements_weight: float,
-        am_tests: int
-    ):
+M_SIZE = 400
+AMOUNT_ELEMENTS = 1000
+ELEMENTS_WEIGHT = 10.0
+AMOUNT_TEST_RUNS = 100
 
-    total_weight = 0.0
+
+SKETCH_PARAMS = [
+    pytest.param(ExpSketch, 0.05, id="ExpSketch"),
+    pytest.param(FastExpSketch, 0.05, id="FastExpSketch"),
+    # Dla FastQSketch używamy lambdy, aby przekazać dodatkowy argument `amount_bits`.
+    pytest.param(lambda m, seeds: FastQSketch(m, seeds, 8), 0.1, id="FastQSketch"),
+]
+
+@pytest.mark.parametrize("sketch_cls, allowed_error", SKETCH_PARAMS)
+def test_sketch_functional_accuracy(
+        sketch_cls,
+        allowed_error: float,
+    ):
+    # here I want to assert some level of error on the structures to make sure they are any good
+
+    total_weight = AMOUNT_ELEMENTS * ELEMENTS_WEIGHT
     estimates = []
-    for _ in range(am_tests):
-        seeds = [random.randint(1,10000000) for _ in range(m)]
-        s = sketch_cls(m, seeds)
-        for i in range(amount_elements):
-            elem = f"e{i}"
-            total_weight += elements_weight
-            s.add(elem, weight=elements_weight)
+    for _ in range(AMOUNT_TEST_RUNS):
+        seeds = [random.randint(1,10000000) for _ in range(M_SIZE)]
+        s = sketch_cls(M_SIZE, seeds)
+        elements = [f"e{i}" for i in range(AMOUNT_ELEMENTS)]
+        weights = [ELEMENTS_WEIGHT] * AMOUNT_ELEMENTS
+        s.add_many(elements, weights)
         estimates.append(s.estimate())
     
     average_estimate = sum(estimates)/len(estimates)
     print(average_estimate)
-    assert_error(total_weight/am_tests, average_estimate, err)
+    assert_error(total_weight, average_estimate, allowed_error)
 
-
-def test_exp_sketch_functional():
-    functional_test(
-        sketch_cls=ExpSketch,
-        err=0.05,
-        m=400,
-        amount_elements=1000,
-        elements_weight=10,
-        am_tests=100
-    )
-
-def test_fast_exp_sketch_functional():
-    functional_test(
-        sketch_cls=FastExpSketch,
-        err=0.05,
-        m=400,
-        amount_elements=1000,
-        elements_weight=10,
-        am_tests=100
-    )
-
-def test_q_exp_sketch_functional():
-    functional_test(
-        sketch_cls=lambda m, seeds: FastQSketch(m, seeds, 8),
-        err=0.1,
-        m=400,
-        amount_elements=1000,
-        elements_weight=10,
-        am_tests=100
-    )
 
