@@ -2,13 +2,13 @@
 
 # i run it in my venv
 build:
-	python -m pip install -e . -vvv
+	python -m pip install -e . -Cbuild-dir=.build -vvv
 # -vvv is to throw errors --WExtra --WError during C++ compilation
 # --no-deps and --no-build-isolation are to make build faster
 
 build-clean:
 	rm -rf _build
-	python -m pip install -e . --no-build-isolation -Ccmake.build-dir=.build -vvv
+	python -m pip install -e . --no-build-isolation -Cbuild-dir=.build -vvv
 
 build_fast:
 	python -m pip install -e . --no-build-isolation -Cbuild-dir=.build -vvv

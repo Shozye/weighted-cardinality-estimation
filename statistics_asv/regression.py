@@ -11,8 +11,8 @@ from weighted_cardinality_estimation import ExpSketch, FastExpSketch, FastQSketc
 SketchType = Union[ExpSketch, FastExpSketch, FastQSketch]
 IMPLS: dict[str, Callable[..., SketchType]] = {
     "ExpSketch": lambda m, seeds: ExpSketch(m, seeds),
-    # "FastExpSketch": lambda m, seeds: FastExpSketch(m, seeds),
-    # "FastQSketch": lambda m, seeds: FastQSketch(m, seeds, amount_bits=8)
+    "FastExpSketch": lambda m, seeds: FastExpSketch(m, seeds),
+    "FastQSketch": lambda m, seeds: FastQSketch(m, seeds, amount_bits=8)
 }
 
 M_SIZE = 100
@@ -52,7 +52,8 @@ class RegressionSuite:
         self.filled_instance.add_many(self.elems, self.weights)
 
     def mem_instance(self, cached_data, impl_name):
-        return self.fresh_instance
+        print(self.fresh_instance.__getstate__())
+        return self.fresh_instance.__getstate__
     
     def time_add_many(self, cached_data, impl_name):
         self.fresh_instance.add_many(self.elems, self.weights)

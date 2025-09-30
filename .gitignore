@@ -25,3 +25,4 @@ weighted-cardinality-estimation
 .build
 
 asv_results
+logs
