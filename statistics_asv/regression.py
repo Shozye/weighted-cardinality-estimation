@@ -82,9 +82,13 @@ class RegressionSuite:
 
     def track_relative_error(self, cached_data, impl_name):
         estimates = self._get_estimates()
-        mean_estimate = np.mean(estimates)
-        error = abs(mean_estimate - self.true_cardinality) / self.true_cardinality
-        return error * 100
+        errors = [
+            abs(estimate - self.true_cardinality) / self.true_cardinality 
+            for estimate in estimates
+        ]
+
+        mean_error = np.mean(errors)
+        return mean_error * 100
     track_relative_error.unit = '%' # type: ignore
 
     def track_variance(self, cached_data, impl_name):
