@@ -26,3 +26,4 @@ weighted-cardinality-estimation
 
 asv_results
 logs
+scratch.py
