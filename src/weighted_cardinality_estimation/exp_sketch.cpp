@@ -23,6 +23,18 @@ void ExpSketch::add(const std::string& x, double weight)
     }
 } 
 
+size_t ExpSketch::memory_usage_total() const {
+    size_t total_size = 0;
+    total_size += sizeof(m_);
+    total_size += seeds_.capacity() * sizeof(uint32_t);
+    total_size += M_.capacity() * sizeof(double);
+    return total_size;
+}
+
+size_t ExpSketch::memory_usage_write() const {
+    return M_.capacity() * sizeof(double);
+}
+
 void ExpSketch::add_many(const std::vector<std::string>& elems,
                                   const std::vector<double>& weights) {
     if (elems.size() != weights.size()){

@@ -17,6 +17,9 @@ public:
     const std::vector<std::uint32_t>& get_seeds() const;
     const std::vector<double>& get_registers() const;
 
+    [[nodiscard]] size_t memory_usage_total() const;
+    [[nodiscard]] size_t memory_usage_write() const;
+
 private:
     int rand(int min, int max);
     std::size_t m_;

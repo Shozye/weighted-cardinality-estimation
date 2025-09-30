@@ -16,6 +16,8 @@ public:
     std::size_t get_m() const;
     const std::vector<std::uint32_t>& get_seeds() const;
     const std::vector<double>& get_registers() const;
+    [[nodiscard]] size_t memory_usage_total() const;
+    [[nodiscard]] size_t memory_usage_write() const;
 private:
     std::size_t m_;
     std::vector<std::uint32_t> seeds_;

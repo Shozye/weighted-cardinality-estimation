@@ -62,6 +62,27 @@ void FastExpSketch::add(const std::string& x, double weight)
     }
 } 
 
+size_t FastExpSketch::memory_usage_total() const {
+    size_t total_size = 0;
+    total_size += sizeof(m_);
+    total_size += sizeof(rng_seed);
+    total_size += sizeof(max);
+    total_size += seeds_.capacity() * sizeof(uint32_t);
+    total_size += M_.capacity() * sizeof(double);
+    total_size += permInit.capacity() * sizeof(uint32_t);
+    total_size += permWork.capacity() * sizeof(uint32_t);
+    return total_size;
+}
+
+size_t FastExpSketch::memory_usage_write() const {
+    size_t write_size = 0;
+    write_size += sizeof(rng_seed);
+    write_size += sizeof(max);
+    write_size += M_.capacity() * sizeof(double);
+    write_size += permWork.capacity() * sizeof(uint32_t);
+    return write_size;
+}
+
 void FastExpSketch::add_many(const std::vector<std::string>& elems,
                                   const std::vector<double>& weights) {
     if (elems.size() != weights.size()){

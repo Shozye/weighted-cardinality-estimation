@@ -15,6 +15,8 @@ PYBIND11_MODULE(_core, m) {
         .def("estimate", &ExpSketch::estimate)
         .def("add_many", &ExpSketch::add_many, py::arg("elems"), py::arg("weights"))
         .def("jaccard_struct", &ExpSketch::jaccard_struct)
+        .def("memory_usage_total", &ExpSketch::memory_usage_total)
+        .def("memory_usage_write", &ExpSketch::memory_usage_write)
         .def(py::pickle(
             [](const ExpSketch &p) {return py::make_tuple(p.get_m(), p.get_seeds(), p.get_registers());},
             [](py::tuple t) {
@@ -35,8 +37,9 @@ PYBIND11_MODULE(_core, m) {
         .def("estimate", &FastExpSketch::estimate)
         .def("add_many", &FastExpSketch::add_many, py::arg("elems"), py::arg("weights"))
         .def("jaccard_struct", &FastExpSketch::jaccard_struct)
+        .def("memory_usage_total", &FastExpSketch::memory_usage_total)
+        .def("memory_usage_write", &FastExpSketch::memory_usage_write)
         .def(py::pickle(
-    // __getstate__: Zwróć tylko 3 fundamentalne pola
     [](const FastExpSketch &p) {
         return py::make_tuple(
             p.get_m(),
@@ -44,7 +47,6 @@ PYBIND11_MODULE(_core, m) {
             p.get_registers()
         );
     },
-    // __setstate__: Wywołaj nowy, inteligentny konstruktor
     [](py::tuple t) {
         if (t.size() != 3) {
             throw std::runtime_error("Invalid state for FastExpSketch pickle!");
@@ -63,8 +65,9 @@ PYBIND11_MODULE(_core, m) {
         .def("add", &FastQSketch::add, py::arg("x"), py::arg("weight") = 1.0)
         .def("add_many", &FastQSketch::add_many, py::arg("elems"), py::arg("weights"))
         .def("estimate", &FastQSketch::estimate)
+        .def("memory_usage_total", &FastQSketch::memory_usage_total)
+        .def("memory_usage_write", &FastQSketch::memory_usage_write)
         .def(py::pickle(
-        // __getstate__: Zwróć tylko 3 fundamentalne pola
         [](const FastQSketch &p) {
             return py::make_tuple(
                 p.get_sketch_size(),
@@ -73,7 +76,6 @@ PYBIND11_MODULE(_core, m) {
                 p.get_registers()
             );
         },
-        // __setstate__: Wywołaj nowy, inteligentny konstruktor
         [](py::tuple t) {
             if (t.size() != 4) {
                 throw std::runtime_error("Invalid state for FastQSketch pickle!");

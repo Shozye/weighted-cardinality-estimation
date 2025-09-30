@@ -57,6 +57,12 @@ class RegressionSuite:
         serialized_object = pickle.dumps(self.filled_instance)
         return len(serialized_object)
     track_serialization_size.unit = 'bytes' # type: ignore
+
+    def track_total_memory(self, cached_data, impl_name):
+        return self.filled_instance.memory_usage_total()
+    
+    def track_write_memory(self, cached_data, impl_name):
+        return self.filled_instance.memory_usage_write()
     
     def time_add_many(self, cached_data, impl_name):
         self.fresh_instance.add_many(self.elems, self.weights)

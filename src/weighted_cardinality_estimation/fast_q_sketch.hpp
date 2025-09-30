@@ -18,6 +18,8 @@ public:
     std::uint8_t get_amount_bits() const;
     const std::vector<int>& get_registers() const;
 
+    [[nodiscard]] size_t memory_usage_total() const;
+    [[nodiscard]] size_t memory_usage_write() const;
 private:
     uint32_t rand(uint32_t min, uint32_t max);
 

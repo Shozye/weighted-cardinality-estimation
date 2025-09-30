@@ -52,6 +52,33 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
 }
 
 
+size_t FastQSketch::memory_usage_total() const {
+    size_t total_size = 0;
+    total_size += sizeof(sketch_size_);
+    total_size += sizeof(amount_bits_);
+    total_size += sizeof(r_max);
+    total_size += sizeof(r_min);
+    total_size += sizeof(rng_seed);
+    total_size += sizeof(min_sketch_value);
+    total_size += sizeof(min_value_to_change_sketch);
+    total_size += seeds_.capacity() * sizeof(uint32_t);
+    total_size += M_.capacity() * sizeof(int);
+    total_size += permInit.capacity() * sizeof(uint32_t);
+    total_size += permWork.capacity() * sizeof(uint32_t);
+    return total_size;
+}
+
+size_t FastQSketch::memory_usage_write() const {
+    size_t write_size = 0;
+    write_size += sizeof(rng_seed);
+    write_size += sizeof(min_sketch_value);
+    write_size += sizeof(min_value_to_change_sketch);
+    write_size += M_.capacity() * sizeof(int);
+    write_size += permWork.capacity() * sizeof(uint32_t);
+    return write_size;
+}
+
+
 std::size_t FastQSketch::get_sketch_size() const { return sketch_size_; }
 const std::vector<std::uint32_t>& FastQSketch::get_seeds() const { return seeds_; }
 std::uint8_t FastQSketch::get_amount_bits() const { return amount_bits_; }

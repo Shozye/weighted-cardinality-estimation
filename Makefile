@@ -6,7 +6,7 @@ build:
 # -vvv is to throw errors --WExtra --WError during C++ compilation
 # --no-deps and --no-build-isolation are to make build faster
 
-build-clean:
+build_clean:
 	rm -rf _build
 	python -m pip install -e . --no-build-isolation -Cbuild-dir=.build -vvv
 

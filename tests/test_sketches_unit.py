@@ -80,3 +80,14 @@ def test_copy_independently_the_same_structures(sketch_cls):
 
     assert original_sketch.estimate() == copied_sketch.estimate()
 
+@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+def test_memory_usage_sanity_check(sketch_cls):
+    m = 5
+    seeds = [1, 2, 3, 4, 5]
+    original_sketch = sketch_cls(m, seeds)
+    original_sketch.add("some element", weight=2.5)
+
+    total_memory = original_sketch.memory_usage_total()
+    write_memory = original_sketch.memory_usage_write()
+    assert total_memory > write_memory
+    assert write_memory > 0
