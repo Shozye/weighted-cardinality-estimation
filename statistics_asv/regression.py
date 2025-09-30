@@ -17,7 +17,7 @@ IMPLS: dict[str, Callable[..., SketchType]] = {
     "FastQSketch": lambda m, seeds: FastQSketch(m, seeds, amount_bits=8)
 }
 
-M_SIZE = 100
+M_SIZE = 1000
 NUM_ELEMENTS = 1000
 STATISTICAL_RUNS = 50
 
@@ -60,9 +60,11 @@ class RegressionSuite:
 
     def track_total_memory(self, cached_data, impl_name):
         return self.filled_instance.memory_usage_total()
+    track_total_memory.unit = 'bytes' # type: ignore
     
     def track_write_memory(self, cached_data, impl_name):
         return self.filled_instance.memory_usage_write()
+    track_write_memory.unit = 'bytes' # type: ignore
     
     def time_add_many(self, cached_data, impl_name):
         self.fresh_instance.add_many(self.elems, self.weights)
