@@ -1,31 +1,31 @@
 #include "exp_sketch.hpp"
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
 #include "hash_util.hpp"
 
-ExpSketch::ExpSketch(std::size_t m, const std::vector<std::uint32_t>& seeds)
-    : m_(m), seeds_(seeds),
-      M_(m, std::numeric_limits<double>::infinity())
+ExpSketch::ExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds)
+    : size(sketch_size), seeds_(seeds),
+      M_(sketch_size, std::numeric_limits<double>::infinity())
 {
-    if (seeds_.size() != m_)
-        throw std::invalid_argument("Seeds vector must have length m");
+    if (seeds_.size() != size) { throw std::invalid_argument("Seeds vector must have length m"); }
 }
 
-void ExpSketch::add(const std::string& x, double weight)
+void ExpSketch::add(const std::string& elem, double weight)
 { 
     std::uint64_t hash_answer[2];
-    for (std::size_t i = 0; i < m_; ++i) {
-        std::uint64_t h = murmur64(x, seeds_[i], hash_answer);
+    for (std::size_t i = 0; i < size; ++i) {
+        std::uint64_t h = murmur64(elem, seeds_[i], hash_answer);
         double u = to_unit_interval(h);   
         double g = -std::log(u) / weight;
-        if (g < M_[i]) M_[i] = g;
+        M_[i] = std::min(g, M_[i]);
     }
 } 
 
 size_t ExpSketch::memory_usage_total() const {
     size_t total_size = 0;
-    total_size += sizeof(m_);
+    total_size += sizeof(size);
     total_size += seeds_.capacity() * sizeof(uint32_t);
     total_size += M_.capacity() * sizeof(double);
     return total_size;
@@ -52,28 +52,28 @@ void ExpSketch::add_many(const std::vector<std::string>& elems,
 
 double ExpSketch::estimate() const
 {
-    double sum = 0.0;
-    for (double v : M_) sum += v;
-    return (m_ - 1.0) / sum;
+    double total = 0.0;
+    for (double value : M_) { total += value; }
+    return ((double)this->size - 1.0) / total;
 }
 
 double ExpSketch::jaccard_struct(const ExpSketch& other) const
 {
-    if (other.m_ != m_) return 0.0;
+    if (other.size != size) { return 0.0; }
     std::size_t equal = 0;
-    for (std::size_t i = 0; i < m_; ++i)
-        if (M_[i] == other.M_[i]) ++equal;
-    return static_cast<double>(equal) / static_cast<double>(m_);
+    for (std::size_t i = 0; i < size; ++i) {
+        if (M_[i] == other.M_[i]) { ++equal; }
+    }
+    return static_cast<double>(equal) / static_cast<double>(size);
 }
 
-ExpSketch::ExpSketch(std::size_t m, const std::vector<std::uint32_t>& seeds, const std::vector<double>& registers)
-    : m_(m), seeds_(seeds), M_(registers)
+ExpSketch::ExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, const std::vector<double>& registers)
+    : size(sketch_size), seeds_(seeds), M_(registers)
 {
 }
 
-
-std::size_t ExpSketch::get_m() const {
-    return m_;
+std::size_t ExpSketch::get_sketch_size() const {
+    return size;
 }
 
 const std::vector<std::uint32_t>& ExpSketch::get_seeds() const {

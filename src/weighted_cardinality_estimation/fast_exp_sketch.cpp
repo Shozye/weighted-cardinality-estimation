@@ -5,19 +5,17 @@
 #include <stdexcept>
 #include "hash_util.hpp"
 #include <cstring>
-#include <iostream>
 
-FastExpSketch::FastExpSketch(std::size_t m, const std::vector<std::uint32_t>& seeds)
-    : m_(m), seeds_(seeds),
-      M_(m, std::numeric_limits<double>::infinity()),
-      permInit(m),
-      permWork(m),
+FastExpSketch::FastExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds)
+    : size(sketch_size), seeds_(seeds),
+      M_(sketch_size, std::numeric_limits<double>::infinity()),
+      permInit(sketch_size),
+      permWork(sketch_size),
       rng_seed(0),
       max(std::numeric_limits<double>::infinity())
 {
-    if (seeds_.size() != m_)
-        throw std::invalid_argument("Seeds vector must have length m");
-    for(size_t i = 0; i < m_; i++){
+    if (seeds_.size() != this->size) { throw std::invalid_argument("Seeds vector must have length m"); }
+    for(size_t i = 0; i < this->size; i++){
         permInit[i] = i+1;
     }
 }
@@ -28,23 +26,23 @@ int FastExpSketch::rand(int min, int max){
     return (temp % (max-min)) + min;
 }
 
-void FastExpSketch::add(const std::string& x, double weight)
+void FastExpSketch::add(const std::string& elem, double weight)
 { 
     std::uint64_t hash_answer[2];
     double S = 0;
     bool updateMax = false; 
 
-    this->rng_seed = murmur64(x, 1, hash_answer); 
+    this->rng_seed = murmur64(elem, 1, hash_answer); 
     permWork = permInit; 
-    for (size_t k = 0; k < this->m_; ++k){
-        std::uint64_t hashed = murmur64(x, seeds_[k], hash_answer); 
+    for (size_t k = 0; k < this->size; ++k){
+        std::uint64_t hashed = murmur64(elem, seeds_[k], hash_answer); 
         double U = to_unit_interval(hashed); 
         double E = -std::log(U) / weight; 
 
-        S += E/(double)(this->m_-k); 
+        S += E/(double)(this->size-k); 
         if ( S >= this->max ) { break; }
 
-        uint32_t r = rand(k, m_);
+        uint32_t r = rand(k, this->size);
         auto swap = permWork[k];
         permWork[k] = permWork[r];
         permWork[r] = swap;
@@ -56,7 +54,7 @@ void FastExpSketch::add(const std::string& x, double weight)
 
     if(updateMax){
         this->max = this->M_[0];
-        for(size_t k = 0; k < this->m_; ++k){
+        for(size_t k = 0; k < this->size; ++k){
             this->max = std::max(this->M_[k], this->max);
         }
     }
@@ -64,7 +62,7 @@ void FastExpSketch::add(const std::string& x, double weight)
 
 size_t FastExpSketch::memory_usage_total() const {
     size_t total_size = 0;
-    total_size += sizeof(m_);
+    total_size += sizeof(this->size);
     total_size += sizeof(rng_seed);
     total_size += sizeof(max);
     total_size += seeds_.capacity() * sizeof(uint32_t);
@@ -101,46 +99,45 @@ void FastExpSketch::add_many(const std::vector<std::string>& elems,
 
 double FastExpSketch::estimate() const
 {
-    double sum = 0.0;
-    for (double v : M_) sum += v;
-    return (m_ - 1.0) / sum;
+    double total = 0.0;
+    for (double val : M_) { total += val;}
+    return ((double)this->size - 1.0) / total;
 }
 
 double FastExpSketch::jaccard_struct(const FastExpSketch& other) const
 {
-    if (other.m_ != m_) return 0.0;
+    if (other.size != this->size) { return 0.0; }
     std::size_t equal = 0;
-    for (std::size_t i = 0; i < m_; ++i)
-        if (M_[i] == other.M_[i]) ++equal;
-    return static_cast<double>(equal) / static_cast<double>(m_);
+    for (std::size_t i = 0; i < this->size; ++i) {
+        if (M_[i] == other.M_[i]) { ++equal; } 
+    }
+    return static_cast<double>(equal) / static_cast<double>(this->size);
 }
 
 FastExpSketch::FastExpSketch(
-    std::size_t m,
+    std::size_t sketch_size,
     const std::vector<std::uint32_t>& seeds,
     const std::vector<double>& registers)
-:   m_(m),
+:   size(sketch_size),
     seeds_(seeds),
     M_(registers),
-    permInit(m),     
-    permWork(m),    
+    permInit(sketch_size),     
+    permWork(sketch_size),    
     rng_seed(0) 
 {
-    for(size_t i = 0; i < m_; i++){
+    for(size_t i = 0; i < this->size; i++){
         permInit[i] = i+1;
     }
 
-    if (m_ > 0) {
+    if (this->size > 0) {
         max = M_[0];
-        for(size_t k = 1; k < m_; ++k){
-            if (M_[k] > max) {
-                max = M_[k];
-            }
+        for(size_t k = 1; k < this->size; ++k){
+            max = std::max(M_[k], max);
         }
     } else {
         max = std::numeric_limits<double>::infinity();
     }
 }
-std::size_t FastExpSketch::get_m() const { return m_; }
+std::size_t FastExpSketch::get_sketch_size() const { return this->size; }
 const std::vector<std::uint32_t>& FastExpSketch::get_seeds() const { return seeds_; }
 const std::vector<double>& FastExpSketch::get_registers() const { return M_; }

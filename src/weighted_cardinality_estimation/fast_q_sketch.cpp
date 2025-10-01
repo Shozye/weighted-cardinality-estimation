@@ -6,6 +6,8 @@
 #include<cstring>
 #include"utils.hpp"
 
+#define NEWTON_MAX_ITERATIONS 5
+
 FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, uint8_t amount_bits)
     : sketch_size_(sketch_size), 
       seeds_(seeds),
@@ -37,12 +39,8 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
       permWork(sketch_size),
       rng_seed(0) // add nadpisuje stan rng_seed
 {
-    if (seeds_.size() != sketch_size) {
-        throw std::invalid_argument("Invalid state: seeds vector size mismatch");
-    }
-    if (M_.size() != sketch_size) {
-        throw std::invalid_argument("Invalid state: registers vector size mismatch");
-    }
+    if (seeds_.size() != sketch_size) { throw std::invalid_argument("Invalid state: seeds vector size mismatch"); }
+    if (M_.size() != sketch_size) { throw std::invalid_argument("Invalid state: registers vector size mismatch"); }
 
     for(size_t i = 0; i < sketch_size; i++){
         permInit[i] = i+1;
@@ -182,15 +180,13 @@ double FastQSketch::dffunc(double w) {
 
 double FastQSketch::Newton(double c0) {
     double err = 1e-5;
-    double c1 = c0 - ffunc(c0) / dffunc(c0);
+    double c1 = c0 - (ffunc(c0) / dffunc(c0));
     int it = 0;
-    while (abs (c1 - c0) > err) {
+    while (std::abs (c1 - c0) > err) {
         c0 = c1;
-        c1 = c0 - (double)ffunc(c0) / dffunc(c0);
+        c1 = c0 - ffunc(c0) / dffunc(c0);
         it += 1;
-        if (it > 5){
-            break;
-        }
+        if (it > NEWTON_MAX_ITERATIONS){ break; }
     }
     return c1;
 }

@@ -19,7 +19,7 @@ PYBIND11_MODULE(_core, m) {
         .def("memory_usage_write", &ExpSketch::memory_usage_write)
         .def("memory_usage_estimate", &ExpSketch::memory_usage_estimate)
         .def(py::pickle(
-            [](const ExpSketch &p) {return py::make_tuple(p.get_m(), p.get_seeds(), p.get_registers());},
+            [](const ExpSketch &p) {return py::make_tuple(p.get_sketch_size(), p.get_seeds(), p.get_registers());},
             [](py::tuple t) {
                 if (t.size() != 3) {
                     throw std::runtime_error("Invalid state for ExpSketch pickle!");
@@ -44,7 +44,7 @@ PYBIND11_MODULE(_core, m) {
         .def(py::pickle(
     [](const FastExpSketch &p) {
         return py::make_tuple(
-            p.get_m(),
+            p.get_sketch_size(),
             p.get_seeds(),
             p.get_registers()
         );

@@ -11,9 +11,9 @@ public:
     [[nodiscard]] double estimate() const;
     [[nodiscard]] double jaccard_struct(const FastExpSketch& other) const;
 
-    FastExpSketch(std::size_t m,const std::vector<std::uint32_t>& seeds,const std::vector<double>& registers);
+    FastExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, const std::vector<double>& registers);
 
-    std::size_t get_m() const;
+    std::size_t get_sketch_size() const;
     const std::vector<std::uint32_t>& get_seeds() const;
     const std::vector<double>& get_registers() const;
 
@@ -23,7 +23,7 @@ public:
 
 private:
     int rand(int min, int max);
-    std::size_t m_;
+    std::size_t size;
     std::vector<std::uint32_t> seeds_;
     std::vector<double> M_;
     std::vector<uint32_t> permInit;
