@@ -21,6 +21,6 @@ inline std::uint64_t murmur64(
 
 inline double to_unit_interval(std::uint64_t num)
 {
-    return static_cast<double>(num + 1ULL) /
-           static_cast<double>(std::numeric_limits<std::uint64_t>::max());
+    static const double MAX_UINT64 = static_cast<double>(std::numeric_limits<std::uint64_t>::max());
+    return static_cast<double>(num + 1ULL) / MAX_UINT64;
 }
