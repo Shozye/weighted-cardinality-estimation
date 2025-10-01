@@ -21,8 +21,17 @@ def test_unitary(sketch_cls):
     estimate = sketch.estimate()
     assert estimate > 0
 
-# TODO: Add unit test to see if adding the same element twice will change estimate
+@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+def test_estimate_adding_duplicate_does_not_change_estimation(sketch_cls):
+    M=5
+    seeds = [random.randint(1,10000000) for _ in range(M)]
+    sketch = sketch_cls(M, seeds)
+    sketch.add("I am just a simple element.", weight=1)
 
+    estimate = sketch.estimate()
+    sketch.add("I am just a simple element.", weight=1)
+
+    assert estimate == sketch.estimate()
 
 @pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
 def test_copy_produces_same_estimate(sketch_cls):
