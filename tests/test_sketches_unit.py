@@ -99,5 +99,7 @@ def test_memory_usage_sanity_check(sketch_cls):
 
     total_memory = original_sketch.memory_usage_total()
     write_memory = original_sketch.memory_usage_write()
+    estimate_memory = original_sketch.memory_usage_estimate()
     assert total_memory > write_memory
-    assert write_memory > 0
+    assert write_memory >= estimate_memory
+    assert estimate_memory > 0
