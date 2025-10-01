@@ -21,6 +21,7 @@ pybind11_add_module(_core
     src/weighted_cardinality_estimation/exp_sketch.cpp
     src/weighted_cardinality_estimation/fast_exp_sketch.cpp
     src/weighted_cardinality_estimation/fast_q_sketch.cpp
+    src/weighted_cardinality_estimation/q_sketch_dyn.cpp
     src/weighted_cardinality_estimation/utils.cpp
     $<TARGET_OBJECTS:murmurhash3>
 )

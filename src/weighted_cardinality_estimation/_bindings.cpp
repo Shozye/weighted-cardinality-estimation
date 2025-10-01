@@ -3,6 +3,7 @@
 #include "exp_sketch.hpp"
 #include "fast_exp_sketch.hpp"
 #include "fast_q_sketch.hpp"
+#include "q_sketch_dyn.hpp"
 
 
 namespace py = pybind11;
@@ -91,4 +92,39 @@ PYBIND11_MODULE(_core, m) {
             );
         }
     ));;
+
+    py::class_<QSketchDyn>(m, "QSketchDyn")
+    .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t, std::uint32_t>(),
+            py::arg("m"), py::arg("seeds"), py::arg("amount_bits"), py::arg("g_seed") = 42)
+    .def("add", &QSketchDyn::add, py::arg("elem"), py::arg("weight") = 1.0)
+    .def("add_many", &QSketchDyn::add_many, py::arg("elems"), py::arg("weights"))
+    .def("estimate", &QSketchDyn::estimate)
+    .def("memory_usage_total", &QSketchDyn::memory_usage_total)
+    .def("memory_usage_write", &QSketchDyn::memory_usage_write)
+    .def("memory_usage_estimate", &QSketchDyn::memory_usage_estimate)
+    .def(py::pickle(
+        [](const QSketchDyn &p) {
+            return py::make_tuple(
+                p.get_m(),
+                p.get_amount_bits(),
+                p.get_g_seed(),
+                p.get_seeds(),
+                p.get_registers(),
+                p.get_t_histogram(),
+                p.get_cardinality()
+            );
+        },
+        [](const py::tuple &t) {
+            if (t.size() != 7) { throw std::runtime_error("Invalid state for QSketchDyn pickle!"); }
+            return QSketchDyn(
+                t[0].cast<std::size_t>(),
+                t[1].cast<std::uint8_t>(),
+                t[2].cast<std::uint32_t>(),
+                t[3].cast<std::vector<std::uint32_t>>(),
+                t[4].cast<std::vector<int>>(),
+                t[5].cast<std::vector<int>>(),
+                t[6].cast<double>()
+            );
+        }
+    ));
 }

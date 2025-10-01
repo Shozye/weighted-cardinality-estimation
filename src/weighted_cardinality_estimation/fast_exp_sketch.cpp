@@ -16,6 +16,7 @@ FastExpSketch::FastExpSketch(std::size_t sketch_size, const std::vector<std::uin
       max(std::numeric_limits<double>::infinity())
 {
     if (seeds_.size() != this->size) { throw std::invalid_argument("Seeds vector must have length m"); }
+    // TODO: change to iota
     for(size_t i = 0; i < this->size; i++){
         permInit[i] = i+1;
     }

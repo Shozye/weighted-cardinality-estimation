@@ -1,13 +1,14 @@
 import copy
 import random
 import pytest
-from weighted_cardinality_estimation import FastExpSketch, ExpSketch, FastQSketch
+from weighted_cardinality_estimation import FastExpSketch, ExpSketch, FastQSketch, QSketchDyn
 
 
 SKETCH_CONSTRUCTORS = [
     pytest.param(ExpSketch, id="ExpSketch"),
     pytest.param(FastExpSketch, id="FastExpSketch"),
     pytest.param(lambda m, seeds: FastQSketch(m, seeds, amount_bits=8), id="FastQSketch"),
+    pytest.param(lambda m, seeds: QSketchDyn(m, seeds, amount_bits=8, g_seed=42), id="QSketchDyn"),
 ]
 
 @pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
