@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <numeric>
 #include <stdexcept>
 #include "hash_util.hpp"
 #include <cstring>
@@ -16,10 +17,7 @@ FastExpSketch::FastExpSketch(std::size_t sketch_size, const std::vector<std::uin
       max(std::numeric_limits<double>::infinity())
 {
     if (seeds_.size() != this->size) { throw std::invalid_argument("Seeds vector must have length m"); }
-    // TODO: change to iota
-    for(size_t i = 0; i < this->size; i++){
-        permInit[i] = i+1;
-    }
+    std::iota(permInit.begin(), permInit.end(), 1);
 }
 
 uint32_t FastExpSketch::rand(uint32_t min, uint32_t max){
@@ -123,15 +121,10 @@ FastExpSketch::FastExpSketch(
     permWork(sketch_size),    
     rng_seed(0) 
 {
-    for(size_t i = 0; i < this->size; i++){
-        permInit[i] = i+1;
-    }
+    std::iota(permInit.begin(), permInit.end(), 1);
 
     if (this->size > 0) {
-        max = M_[0];
-        for(size_t k = 1; k < this->size; ++k){
-            max = std::max(M_[k], max);
-        }
+        max = *std::max_element(M_.begin(), M_.end());
     } else {
         max = std::numeric_limits<double>::infinity();
     }

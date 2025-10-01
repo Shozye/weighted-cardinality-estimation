@@ -1,6 +1,7 @@
 #include "fast_q_sketch.hpp"
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 #include <stdexcept>
 #include "hash_util.hpp"
 #include<cstring>
@@ -21,9 +22,7 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
     if (seeds_.size() != sketch_size) {
         throw std::invalid_argument("Seeds vector must have length m");
     }
-    for(size_t i = 0; i < sketch_size; i++){
-        permInit[i] = i+1;
-    }
+    std::iota(permInit.begin(), permInit.end(), 1);
     update_treshold();
 }
 
@@ -41,9 +40,7 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
     if (seeds_.size() != sketch_size) { throw std::invalid_argument("Invalid state: seeds vector size mismatch"); }
     if (M_.size() != sketch_size) { throw std::invalid_argument("Invalid state: registers vector size mismatch"); }
 
-    for(size_t i = 0; i < sketch_size; i++){
-        permInit[i] = i+1;
-    }
+    std::iota(permInit.begin(), permInit.end(), 1);
     update_treshold();
 }
 
