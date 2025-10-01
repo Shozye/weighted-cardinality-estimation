@@ -28,3 +28,4 @@ asv_results
 logs
 env
 scratch.py
+asv_html
