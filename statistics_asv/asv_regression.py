@@ -1,4 +1,4 @@
-from .common import IMPLS, get_seeds
+from .common import IMPLS
 
 SKETCH_SIZE = 1000
 

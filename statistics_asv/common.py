@@ -1,6 +1,5 @@
 import random
 from typing import Callable, Union
-import numpy as np
 
 from weighted_cardinality_estimation import ExpSketch, FastExpSketch, FastQSketch
 
