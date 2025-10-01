@@ -22,8 +22,8 @@ public:
     [[nodiscard]] size_t memory_usage_estimate() const;
 
 private:
-    int rand(int min, int max);
-    std::size_t size;
+    uint32_t rand(uint32_t min, uint32_t max);
+    std::size_t size; 
     std::vector<std::uint32_t> seeds_;
     std::vector<double> M_;
     std::vector<uint32_t> permInit;

@@ -2,13 +2,15 @@ cmake_minimum_required(VERSION 3.18)
 project(weighted_cardinality_estimation LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-warnings-as-errors=*")
+set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-warnings-as-errors=*")
 
 find_package(pybind11 CONFIG REQUIRED)
 
 add_library(murmurhash3 OBJECT
     lib/murmurhash3/MurmurHash3.cpp
 )
+
+set_target_properties(murmurhash3 PROPERTIES CXX_CLANG_TIDY "")
 
 target_include_directories(murmurhash3 PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/murmurhash3

@@ -20,7 +20,7 @@ PYBIND11_MODULE(_core, m) {
         .def("memory_usage_estimate", &ExpSketch::memory_usage_estimate)
         .def(py::pickle(
             [](const ExpSketch &p) {return py::make_tuple(p.get_sketch_size(), p.get_seeds(), p.get_registers());},
-            [](py::tuple t) {
+            [](const py::tuple& t) {
                 if (t.size() != 3) {
                     throw std::runtime_error("Invalid state for ExpSketch pickle!");
                 }
@@ -49,7 +49,7 @@ PYBIND11_MODULE(_core, m) {
             p.get_registers()
         );
     },
-    [](py::tuple t) {
+    [](const py::tuple& t) {
         if (t.size() != 3) {
             throw std::runtime_error("Invalid state for FastExpSketch pickle!");
         }
@@ -79,7 +79,7 @@ PYBIND11_MODULE(_core, m) {
                 p.get_registers()
             );
         },
-        [](py::tuple t) {
+        [](const py::tuple& t) {
             if (t.size() != 4) {
                 throw std::runtime_error("Invalid state for FastQSketch pickle!");
             }

@@ -7,11 +7,11 @@ build:
 # --no-deps and --no-build-isolation are to make build faster
 
 build_clean:
-	rm -rf _build
-	python -m pip install -e . --no-deps --no-build-isolation -Cbuild-dir=.build -vvv
+	rm -rf .build
+	python -m pip install . --no-deps --no-build-isolation -Cbuild-dir=.build -vvv
 
 build_fast:
-	python -m pip install -e . --no-deps --no-build-isolation -Cbuild-dir=.build -vvv
+	python -m pip install . --no-deps --no-build-isolation -Cbuild-dir=.build -vvv
 
 test:
 	pytest tests/

@@ -9,7 +9,7 @@
 #define NEWTON_MAX_ITERATIONS 5
 
 FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, uint8_t amount_bits)
-    : sketch_size_(sketch_size), 
+    : size(sketch_size), 
       seeds_(seeds),
       amount_bits_(amount_bits),
       r_max(mypow(2, amount_bits-1) - 1),
@@ -29,7 +29,7 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
 }
 
 FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits, const std::vector<int>& registers)
-    : sketch_size_(sketch_size),
+    : size(sketch_size),
       seeds_(seeds),
       amount_bits_(amount_bits),
       r_max(mypow(2, amount_bits-1) - 1),
@@ -51,7 +51,7 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
 
 size_t FastQSketch::memory_usage_total() const {
     size_t total_size = 0;
-    total_size += sizeof(sketch_size_);
+    total_size += sizeof(size);
     total_size += sizeof(amount_bits_);
     total_size += sizeof(r_max);
     total_size += sizeof(r_min);
@@ -80,7 +80,7 @@ size_t FastQSketch::memory_usage_estimate() const {
     return estimate_size;
 }
 
-std::size_t FastQSketch::get_sketch_size() const { return sketch_size_; }
+std::size_t FastQSketch::get_sketch_size() const { return size; }
 const std::vector<std::uint32_t>& FastQSketch::get_seeds() const { return seeds_; }
 std::uint8_t FastQSketch::get_amount_bits() const { return amount_bits_; }
 const std::vector<int>& FastQSketch::get_registers() const { return M_; }
@@ -103,15 +103,15 @@ void FastQSketch::add(const std::string& elem, double weight){
 
     this->rng_seed = murmur64(elem, 1, hash_answer); 
     permWork = permInit; 
-    for (size_t k = 0; k < this->sketch_size_; ++k){
+    for (size_t k = 0; k < this->size; ++k){
         std::uint64_t hashed = murmur64(elem, seeds_[k], hash_answer); 
         double unit_interval_hash = to_unit_interval(hashed); 
         double exponential_variable = -std::log(unit_interval_hash) / weight; 
-        S += exponential_variable/(double)(this->sketch_size_-k); 
+        S += exponential_variable/(double)(this->size-k); 
 
         if ( S >= this->min_value_to_change_sketch ) { break; } 
 
-        uint32_t r = rand(k, sketch_size_);
+        uint32_t r = rand(k, this->size);
         auto swap = permWork[k];
         permWork[k] = permWork[r];
         permWork[r] = swap;
@@ -148,18 +148,18 @@ double FastQSketch::initialValue(){
     double c0 = 0.0;
     double tmp_sum = 0.0;
  
-    for(size_t i=0; i<this->sketch_size_; i++) { 
+    for(size_t i=0; i<this->size; i++) { 
         tmp_sum += pow(2, -M_[i]); 
     }
 
-    c0 = (double)(this->sketch_size_-1) / tmp_sum;
+    c0 = (double)(this->size-1) / tmp_sum;
     return c0;
 }
 
 double FastQSketch::ffunc(double w) {
     double res = 0;
     double e = 2.718282;
-    for (size_t i = 0; i < sketch_size_; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         double x = pow(2.0, -M_[i] - 1);
         double ex = pow(e, w * x);
         res += x * (2.0 - ex) / (ex - 1.0);
@@ -170,7 +170,7 @@ double FastQSketch::ffunc(double w) {
 double FastQSketch::dffunc(double w) {
     double res = 0;
     double e = 2.718282;
-    for (size_t i = 0; i < sketch_size_; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         double x = pow(2.0, -M_[i] - 1);
         double ex = pow(e, w * x);
         res += -x * x * ex * pow(ex - 1, -2);

@@ -25,13 +25,13 @@ private:
     uint32_t rand(uint32_t min, uint32_t max);
 
     double initialValue();
-    double ffunc(double);
-    double dffunc(double);
-    double Newton(double);
+    double ffunc(double w);
+    double dffunc(double w);
+    double Newton(double c0);
 
     void update_treshold();
 
-    std::size_t sketch_size_; // amount of registers used in sketch. Sketch uses linear memory to m and increases accuracy based on m
+    std::size_t size; // amount of registers used in sketch. Sketch uses linear memory to m and increases accuracy based on m
     std::vector<std::uint32_t> seeds_; // seeds used to hash 
     std::uint8_t amount_bits_;
     std::int32_t r_max; // maximum possible value in sketch due to amount of bits per register

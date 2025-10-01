@@ -1,6 +1,7 @@
 #include "fast_exp_sketch.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <limits>
 #include <stdexcept>
 #include "hash_util.hpp"
@@ -20,7 +21,7 @@ FastExpSketch::FastExpSketch(std::size_t sketch_size, const std::vector<std::uin
     }
 }
 
-int FastExpSketch::rand(int min, int max){
+uint32_t FastExpSketch::rand(uint32_t min, uint32_t max){
     this->rng_seed = this->rng_seed * 1103515245 + 12345;
     auto temp = (unsigned)(this->rng_seed/65536) % 32768;
     return (temp % (max-min)) + min;
