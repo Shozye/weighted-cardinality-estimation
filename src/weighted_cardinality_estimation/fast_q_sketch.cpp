@@ -147,7 +147,7 @@ double FastQSketch::initialValue(){
     double tmp_sum = 0.0;
  
     for(size_t i=0; i<this->size; i++) { 
-        tmp_sum += pow(2, -M_[i]); 
+        tmp_sum += std::ldexp(1.0, -M_[i]);
     }
 
     c0 = (double)(this->size-1) / tmp_sum;
@@ -158,7 +158,7 @@ double FastQSketch::ffunc(double w) {
     double res = 0;
     double e = 2.718282;
     for (size_t i = 0; i < size; ++i) {
-        double x = pow(2.0, -M_[i] - 1);
+        double x = std::ldexp(1.0, -M_[i] - 1);
         double ex = pow(e, w * x);
         res += x * (2.0 - ex) / (ex - 1.0);
     }
@@ -169,7 +169,7 @@ double FastQSketch::dffunc(double w) {
     double res = 0;
     double e = 2.718282;
     for (size_t i = 0; i < size; ++i) {
-        double x = pow(2.0, -M_[i] - 1);
+        double x = std::ldexp(1.0, -M_[i] - 1);
         double ex = pow(e, w * x);
         res += -x * x * ex * pow(ex - 1, -2);
     }
@@ -180,7 +180,7 @@ double FastQSketch::Newton(double c0) {
     double err = 1e-5;
     double c1 = c0 - (ffunc(c0) / dffunc(c0));
     int it = 0;
-    while (std::abs (c1 - c0) > err) {
+    while (std::abs(c1 - c0) > err) {
         c0 = c1;
         c1 = c0 - ffunc(c0) / dffunc(c0);
         it += 1;
