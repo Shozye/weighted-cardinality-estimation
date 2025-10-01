@@ -83,6 +83,12 @@ size_t FastExpSketch::memory_usage_write() const {
     return write_size;
 }
 
+size_t FastExpSketch::memory_usage_estimate() const {
+    size_t estimate_size = M_.capacity() * sizeof(double);
+    return estimate_size;
+}
+
+
 void FastExpSketch::add_many(const std::vector<std::string>& elems,
                                   const std::vector<double>& weights) {
     if (elems.size() != weights.size()){

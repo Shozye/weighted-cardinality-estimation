@@ -33,3 +33,8 @@ class MemorySuite:
     track_write_memory.benchmark_name = f"memory.track_memory_write_sketch_size_{SKETCH_SIZE}" # type: ignore
     track_write_memory.pretty_name = f"Write-able memory used for sketch of size {SKETCH_SIZE}"  # type: ignore
 
+    def track_estimate_memory(self, impl_name):
+        return self.instance.memory_usage_write()
+    track_estimate_memory.unit = 'bytes' # type: ignore
+    track_estimate_memory.benchmark_name = f"memory.track_memory_estimate_sketch_size_{SKETCH_SIZE}" # type: ignore
+    track_estimate_memory.pretty_name = f"memory used for estimation in sketch of size {SKETCH_SIZE}"  # type: ignore

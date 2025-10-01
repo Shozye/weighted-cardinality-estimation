@@ -20,6 +20,7 @@ public:
 
     [[nodiscard]] size_t memory_usage_total() const;
     [[nodiscard]] size_t memory_usage_write() const;
+    [[nodiscard]] size_t memory_usage_estimate() const;
 private:
     uint32_t rand(uint32_t min, uint32_t max);
 

@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include "hash_util.hpp"
 #include<cstring>
-#include<iostream>
 #include"utils.hpp"
 
 FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, uint8_t amount_bits)
@@ -78,6 +77,10 @@ size_t FastQSketch::memory_usage_write() const {
     return write_size;
 }
 
+size_t FastQSketch::memory_usage_estimate() const {
+    size_t estimate_size = M_.capacity() * sizeof(double);
+    return estimate_size;
+}
 
 std::size_t FastQSketch::get_sketch_size() const { return sketch_size_; }
 const std::vector<std::uint32_t>& FastQSketch::get_seeds() const { return seeds_; }
@@ -178,13 +181,10 @@ double FastQSketch::dffunc(double w) {
 }
 
 double FastQSketch::Newton(double c0) {
-    // print_vector(this->M_);
     double err = 1e-5;
     double c1 = c0 - ffunc(c0) / dffunc(c0);
     int it = 0;
     while (abs (c1 - c0) > err) {
-        // std::cout << "i am doing iteration for estimation " << it << "and c0=" << c0 << ", c1=" << c1 << std::endl;
-
         c0 = c1;
         c1 = c0 - (double)ffunc(c0) / dffunc(c0);
         it += 1;

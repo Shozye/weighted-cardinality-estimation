@@ -17,6 +17,7 @@ PYBIND11_MODULE(_core, m) {
         .def("jaccard_struct", &ExpSketch::jaccard_struct)
         .def("memory_usage_total", &ExpSketch::memory_usage_total)
         .def("memory_usage_write", &ExpSketch::memory_usage_write)
+        .def("memory_usage_estimate", &ExpSketch::memory_usage_estimate)
         .def(py::pickle(
             [](const ExpSketch &p) {return py::make_tuple(p.get_m(), p.get_seeds(), p.get_registers());},
             [](py::tuple t) {
@@ -39,6 +40,7 @@ PYBIND11_MODULE(_core, m) {
         .def("jaccard_struct", &FastExpSketch::jaccard_struct)
         .def("memory_usage_total", &FastExpSketch::memory_usage_total)
         .def("memory_usage_write", &FastExpSketch::memory_usage_write)
+        .def("memory_usage_estimate", &FastExpSketch::memory_usage_estimate)
         .def(py::pickle(
     [](const FastExpSketch &p) {
         return py::make_tuple(
@@ -67,6 +69,7 @@ PYBIND11_MODULE(_core, m) {
         .def("estimate", &FastQSketch::estimate)
         .def("memory_usage_total", &FastQSketch::memory_usage_total)
         .def("memory_usage_write", &FastQSketch::memory_usage_write)
+        .def("memory_usage_estimate", &FastQSketch::memory_usage_estimate)
         .def(py::pickle(
         [](const FastQSketch &p) {
             return py::make_tuple(
