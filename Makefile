@@ -8,10 +8,10 @@ build:
 
 build_clean:
 	rm -rf _build
-	python -m pip install -e . --no-build-isolation -Cbuild-dir=.build -vvv
+	python -m pip install -e . --no-deps --no-build-isolation -Cbuild-dir=.build -vvv
 
 build_fast:
-	python -m pip install -e . --no-build-isolation -Cbuild-dir=.build -vvv
+	python -m pip install -e . --no-deps --no-build-isolation -Cbuild-dir=.build -vvv
 
 test:
 	pytest tests/

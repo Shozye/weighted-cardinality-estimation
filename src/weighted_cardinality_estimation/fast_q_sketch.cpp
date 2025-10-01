@@ -178,7 +178,6 @@ double FastQSketch::dffunc(double w) {
 }
 
 double FastQSketch::Newton(double c0) {
-    std::cout << "ESTIMATE TIME:" << std::endl;
     // print_vector(this->M_);
     double err = 1e-5;
     double c1 = c0 - ffunc(c0) / dffunc(c0);

@@ -7,5 +7,7 @@
     "benchmark_dir": "statistics_asv",
     "results_dir": "asv_results",
     "html_dir": "asv_html",
-    "environment_type": "virtualenv"
+    "environment_type": "virtualenv",
+    "install_command": "python -m pip install .[bench]",
+    "timeout": 180
 }

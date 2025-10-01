@@ -21,6 +21,8 @@ def test_unitary(sketch_cls):
     estimate = sketch.estimate()
     assert estimate > 0
 
+# TODO: Add unit test to see if adding the same element twice will change estimate
+
 
 @pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
 def test_copy_produces_same_estimate(sketch_cls):

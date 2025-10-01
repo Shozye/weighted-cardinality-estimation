@@ -26,4 +26,5 @@ weighted-cardinality-estimation
 
 asv_results
 logs
+env
 scratch.py
