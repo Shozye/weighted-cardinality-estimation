@@ -97,24 +97,22 @@ void FastQSketch::update_treshold(){
 }
 
 void FastQSketch::add(const std::string& elem, double weight){ 
-    uint64_t hash_answer[2];
     double S = 0;
     bool touched_min = false; 
 
     this->rng_seed = murmur64(elem, 1, hash_answer); 
     permWork = permInit; 
+    auto inv_weight = 1.0 / weight;
     for (size_t k = 0; k < this->size; ++k){
         std::uint64_t hashed = murmur64(elem, seeds_[k], hash_answer); 
         double unit_interval_hash = to_unit_interval(hashed); 
-        double exponential_variable = -std::log(unit_interval_hash) / weight; 
+        double exponential_variable = -std::log(unit_interval_hash) * inv_weight; 
         S += exponential_variable/(double)(this->size-k); 
 
         if ( S >= this->min_value_to_change_sketch ) { break; } 
 
         uint32_t r = rand(k, this->size);
-        auto swap = permWork[k];
-        permWork[k] = permWork[r];
-        permWork[r] = swap;
+        std::swap(permWork[k], permWork[r]);
         auto j = permWork[k] - 1;
 
         int q = static_cast<int>(std::floor(-std::log2(S)));

@@ -29,24 +29,23 @@ uint32_t FastExpSketch::rand(uint32_t min, uint32_t max){
 
 void FastExpSketch::add(const std::string& elem, double weight)
 { 
-    std::uint64_t hash_answer[2];
     double S = 0;
     bool updateMax = false; 
 
     this->rng_seed = murmur64(elem, 1, hash_answer); 
     permWork = permInit; 
+
+    auto inv_weight = 1.0 / weight;
     for (size_t k = 0; k < this->size; ++k){
         std::uint64_t hashed = murmur64(elem, seeds_[k], hash_answer); 
         double U = to_unit_interval(hashed); 
-        double E = -std::log(U) / weight; 
+        double E = -std::log(U) * inv_weight; 
 
         S += E/(double)(this->size-k); 
         if ( S >= this->max ) { break; }
 
         uint32_t r = rand(k, this->size);
-        auto swap = permWork[k];
-        permWork[k] = permWork[r];
-        permWork[r] = swap;
+        std::swap(permWork[k], permWork[r]);
         auto j = permWork[k] - 1;
 
         if (this->M_[j] == this->max ) { updateMax = true; }
@@ -54,10 +53,7 @@ void FastExpSketch::add(const std::string& elem, double weight)
     }
 
     if(updateMax){
-        this->max = this->M_[0];
-        for(size_t k = 0; k < this->size; ++k){
-            this->max = std::max(this->M_[k], this->max);
-        }
+        this->max = *std::max_element(this->M_.begin(), this->M_.end());
     }
 } 
 

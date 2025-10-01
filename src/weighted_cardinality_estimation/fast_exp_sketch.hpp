@@ -30,4 +30,5 @@ private:
     std::vector<uint32_t> permWork;
     uint64_t rng_seed;
     double max;    
+    std::uint64_t hash_answer[2];
 };
