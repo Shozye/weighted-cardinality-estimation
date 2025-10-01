@@ -156,10 +156,9 @@ double FastQSketch::initialValue(){
 
 double FastQSketch::ffunc(double w) {
     double res = 0;
-    double e = 2.718282;
     for (size_t i = 0; i < size; ++i) {
         double x = std::ldexp(1.0, -M_[i] - 1);
-        double ex = pow(e, w * x);
+        double ex = std::exp(w * x);
         res += x * (2.0 - ex) / (ex - 1.0);
     }
     return res;
@@ -167,10 +166,9 @@ double FastQSketch::ffunc(double w) {
 
 double FastQSketch::dffunc(double w) {
     double res = 0;
-    double e = 2.718282;
     for (size_t i = 0; i < size; ++i) {
         double x = std::ldexp(1.0, -M_[i] - 1);
-        double ex = pow(e, w * x);
+        double ex = std::exp(w * x);
         res += -x * x * ex * pow(ex - 1, -2);
     }
     return res;
