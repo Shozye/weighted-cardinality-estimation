@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include "hash_util.hpp"
 #include<cstring>
-#include"utils.hpp"
 
 #define NEWTON_MAX_ITERATIONS 5
 
@@ -12,8 +11,8 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
     : size(sketch_size), 
       seeds_(seeds),
       amount_bits_(amount_bits),
-      r_max(mypow(2, amount_bits-1) - 1),
-      r_min(-mypow(2, amount_bits-1) + 1),
+      r_max((1 << (amount_bits - 1)) - 1),
+      r_min(-(1 << (amount_bits - 1)) + 1),
       M_(sketch_size, r_min), 
       permInit(sketch_size),
       permWork(sketch_size),
@@ -32,8 +31,8 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
     : size(sketch_size),
       seeds_(seeds),
       amount_bits_(amount_bits),
-      r_max(mypow(2, amount_bits-1) - 1),
-      r_min(-mypow(2, amount_bits-1) + 1),
+      r_max((1 << (amount_bits - 1)) - 1),
+      r_min(-(1 << (amount_bits - 1)) + 1),
       M_(registers),
       permInit(sketch_size),
       permWork(sketch_size),

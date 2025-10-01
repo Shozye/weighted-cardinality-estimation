@@ -34,7 +34,6 @@ def test_sketch_functional_accuracy(
         estimates.append(s.estimate())
     
     average_estimate = sum(estimates)/len(estimates)
-    print(average_estimate)
     assert_error(total_weight, average_estimate, allowed_error)
 
 
