@@ -48,10 +48,10 @@ QSketchDyn::QSketchDyn(
 }
 
 void QSketchDyn::add(const std::string& elem, double weight) {
-    const uint64_t g_hash = murmur64(elem, g_seed_, this->hash_answer);
+    const uint64_t g_hash = murmur64(elem, g_seed_, hash_answer);
     const size_t j = g_hash % m_;
 
-    const uint64_t u_hash = murmur64(elem, seeds_[j], this->hash_answer);
+    const uint64_t u_hash = murmur64(elem, seeds_[j], hash_answer);
     const double u = to_unit_interval(u_hash);
     if (u == 0.0) { return; }
     const double r = -std::log(u) / weight;
@@ -85,11 +85,8 @@ void QSketchDyn::add(const std::string& elem, double weight) {
         }
     }
 
-    q_r_ = 1.0 - (q_val_sum / (double)m_);
-
-    if (q_r_ > 1e-9) { // fix na mala liczbe
-        cardinality_ += weight / q_r_;
-    }
+    this->q_r_ = 1.0 - (q_val_sum / (double)m_);
+    cardinality_ += weight / this->q_r_;
 }
 
 void QSketchDyn::add_many(const std::vector<std::string>& elems, const std::vector<double>& weights) {
