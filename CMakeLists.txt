@@ -4,6 +4,7 @@ project(weighted_cardinality_estimation LANGUAGES CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-warnings-as-errors=*")
 
+set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 CONFIG REQUIRED)
 
 add_library(murmurhash3 OBJECT
