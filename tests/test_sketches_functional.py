@@ -1,7 +1,7 @@
 import random
 import pytest
 from tests.utils import assert_error
-from weighted_cardinality_estimation import FastExpSketch, ExpSketch, FastQSketch, QSketchDyn
+from weighted_cardinality_estimation import BaseQSketch, FastExpSketch, ExpSketch, FastQSketch, QSketchDyn
 
 M_SIZE = 400
 AMOUNT_ELEMENTS = 1000
@@ -12,6 +12,7 @@ AMOUNT_TEST_RUNS = 100
 SKETCH_PARAMS = [
     pytest.param(ExpSketch, 0.05, id="ExpSketch"),
     pytest.param(FastExpSketch, 0.05, id="FastExpSketch"),
+    pytest.param(lambda m, seeds: BaseQSketch(m, seeds, 8), 0.1, id="BaseQSketch"),
     pytest.param(lambda m, seeds: FastQSketch(m, seeds, 8), 0.1, id="FastQSketch"),
     pytest.param(lambda m, seeds: QSketchDyn(m, seeds, amount_bits=8, g_seed=42), 0.1, id="QSketchDyn"),
 ]

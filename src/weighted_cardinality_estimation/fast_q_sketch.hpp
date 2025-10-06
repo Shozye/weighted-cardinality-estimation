@@ -11,7 +11,12 @@ public:
                          const std::vector<double>& weights);
     [[nodiscard]] double estimate();
 
-    FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits, const std::vector<int>& registers);
+    FastQSketch(
+        std::size_t sketch_size, 
+        const std::vector<std::uint32_t>& seeds, 
+        std::uint8_t amount_bits, 
+        const std::vector<int>& registers)
+        ;
 
     std::size_t get_sketch_size() const;
     const std::vector<std::uint32_t>& get_seeds() const;

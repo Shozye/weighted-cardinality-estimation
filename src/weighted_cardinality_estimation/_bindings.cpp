@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include "base_q_sketch.hpp"
 #include "exp_sketch.hpp"
 #include "fast_exp_sketch.hpp"
 #include "fast_q_sketch.hpp"
@@ -127,4 +128,35 @@ PYBIND11_MODULE(_core, m) {
             );
         }
     ));
+
+    py::class_<BaseQSketch>(m, "BaseQSketch")
+        .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t>(),
+            py::arg("m"), py::arg("seeds"), py::arg("amount_bits"))
+        .def("add", &BaseQSketch::add, py::arg("x"), py::arg("weight") = 1.0)
+        .def("add_many", &BaseQSketch::add_many, py::arg("elems"), py::arg("weights"))
+        .def("estimate", &BaseQSketch::estimate)
+        .def("memory_usage_total", &BaseQSketch::memory_usage_total)
+        .def("memory_usage_write", &BaseQSketch::memory_usage_write)
+        .def("memory_usage_estimate", &BaseQSketch::memory_usage_estimate)
+        .def(py::pickle(
+        [](const BaseQSketch &p) {
+            return py::make_tuple(
+                p.get_sketch_size(),
+                p.get_seeds(),
+                p.get_amount_bits(),
+                p.get_registers()
+            );
+        },
+        [](const py::tuple& t) {
+            if (t.size() != 4) {
+                throw std::runtime_error("Invalid state for BaseQSketch pickle!");
+            }
+            return BaseQSketch(
+                t[0].cast<std::size_t>(),
+                t[1].cast<std::vector<std::uint32_t>>(),
+                t[2].cast<std::uint8_t>(),
+                t[3].cast<std::vector<int>>()
+            );
+        }
+    ));;
 }
