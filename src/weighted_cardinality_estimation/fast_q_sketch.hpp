@@ -1,4 +1,5 @@
 #pragma once
+#include "compact_vector.hpp"
 #include <vector>
 #include <string>
 #include <cstdint>
@@ -21,7 +22,7 @@ public:
     std::size_t get_sketch_size() const;
     const std::vector<std::uint32_t>& get_seeds() const;
     std::uint8_t get_amount_bits() const;
-    const std::vector<int>& get_registers() const;
+    std::vector<int> get_registers() const;
 
     [[nodiscard]] size_t memory_usage_total() const;
     [[nodiscard]] size_t memory_usage_write() const;
@@ -42,7 +43,7 @@ private:
     std::int32_t r_max; // maximum possible value in sketch due to amount of bits per register
     std::int32_t r_min; // minimum possible value in sketch due to amount of bits per register
 
-    std::vector<int> M_; // sketch structure with elements between < r_min ... r_max >
+    compact::vector<int> M_; // sketch structure with elements between < r_min ... r_max >
 
     std::vector<uint32_t> permInit; // static structure, only used to fast copy to permWork
     std::vector<uint32_t> permWork; // used at the beginning of every update
