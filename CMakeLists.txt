@@ -18,7 +18,7 @@ target_include_directories(murmurhash3 PUBLIC
 )
 
 add_library(compact_vector INTERFACE)
-target_include_directories(compact_vector INTERFACE
+target_include_directories(compact_vector SYSTEM INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/compact_vector
 )
 
