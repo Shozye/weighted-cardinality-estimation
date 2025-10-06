@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include "compact_vector.hpp"
 
 class QSketchDyn {
 public:
@@ -23,7 +24,7 @@ public:
     std::uint8_t get_amount_bits() const;
     std::uint32_t get_g_seed() const;
     const std::vector<std::uint32_t>& get_seeds() const;
-    const std::vector<int>& get_registers() const;
+    std::vector<int> get_registers() const;
     const std::vector<int>& get_t_histogram() const;
     double get_cardinality() const;
 
@@ -42,8 +43,8 @@ private:
 
     double cardinality_;
     double q_r_;
-    std::vector<int> R_;
-    std::vector<int> T_;
+    compact::vector<int> R_;
+    std::vector<int> T_; // here are values between 0 and m
 
     uint64_t hash_answer[2];
 };

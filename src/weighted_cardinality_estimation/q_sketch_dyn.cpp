@@ -14,7 +14,7 @@ QSketchDyn::QSketchDyn(std::size_t m, const std::vector<std::uint32_t>& seeds, s
       k_idx_(1 << amount_bits),
       cardinality_(0.0),
       q_r_(0.0),
-      R_(m, r_min),
+      R_(amount_bits, m),
       T_(1 << amount_bits, 0)
 {
     if (m == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
@@ -23,6 +23,10 @@ QSketchDyn::QSketchDyn(std::size_t m, const std::vector<std::uint32_t>& seeds, s
 
     if (!T_.empty()) {
         T_[0] = static_cast<int>(m);
+    }
+
+    for (std::size_t i = 0; i < m_; ++i) {
+        R_[i] = r_min;
     }
     
     std::iota(k_idx_.begin(), k_idx_.end(), 0);
@@ -41,10 +45,13 @@ QSketchDyn::QSketchDyn(
       k_idx_(1 << amount_bits),
       cardinality_(cardinality),
       q_r_(0.0),
-      R_(registers),
+      R_(amount_bits, m),
       T_(t_histogram)
 {
     std::iota(k_idx_.begin(), k_idx_.end(), 0);
+    for (std::size_t i = 0; i < m_; ++i) {
+        R_[i] = registers[i];
+    }
 }
 
 void QSketchDyn::add(const std::string& elem, double weight) {
@@ -106,7 +113,9 @@ std::size_t QSketchDyn::get_m() const { return m_; }
 std::uint8_t QSketchDyn::get_amount_bits() const { return amount_bits_; }
 std::uint32_t QSketchDyn::get_g_seed() const { return g_seed_; }
 const std::vector<std::uint32_t>& QSketchDyn::get_seeds() const { return seeds_; }
-const std::vector<int>& QSketchDyn::get_registers() const { return R_; }
+std::vector<int> QSketchDyn::get_registers() const {
+    return std::vector<int>(R_.begin(), R_.end());
+}
 const std::vector<int>& QSketchDyn::get_t_histogram() const { return T_; }
 double QSketchDyn::get_cardinality() const { return cardinality_; }
 
@@ -121,7 +130,7 @@ size_t QSketchDyn::memory_usage_total() const {
     total += sizeof(q_r_);
     total += seeds_.capacity() * sizeof(uint32_t);
     total += k_idx_.capacity() * sizeof(int);
-    total += R_.capacity() * sizeof(int);
+    total += R_.bytes();
     total += T_.capacity() * sizeof(int);
     return total;
 }
@@ -130,11 +139,11 @@ size_t QSketchDyn::memory_usage_write() const {
     size_t write_size = 0;
     write_size += sizeof(cardinality_);
     write_size += sizeof(q_r_);
-    write_size += R_.capacity() * sizeof(int);
+    write_size += R_.bytes();
     write_size += T_.capacity() * sizeof(int);
     return write_size;
 }
 
 size_t QSketchDyn::memory_usage_estimate() const {
-    return (R_.capacity() * sizeof(int)) + (T_.capacity() * sizeof(int));
+    return R_.bytes() + (T_.capacity() * sizeof(int));
 }
