@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include "compact_vector.hpp"
 
 class BaseQSketch {
 public:
@@ -19,7 +20,7 @@ public:
 
     std::size_t get_sketch_size() const;
     const std::vector<std::uint32_t>& get_seeds() const;
-    const std::vector<int>& get_registers() const;
+    std::vector<int> get_registers() const;
     std::uint8_t get_amount_bits() const;
 
     [[nodiscard]] size_t memory_usage_total() const;
@@ -31,7 +32,7 @@ private:
     std::uint8_t amount_bits_;
     std::int32_t r_max; // maximum possible value in sketch due to amount of bits per register
     std::int32_t r_min; // minimum possible value in sketch due to amount of bits per register
-    std::vector<int> M_; // sketch structure with elements between < r_min ... r_max >
+    compact::vector<int> M_; // sketch structure with elements between < r_min ... r_max >
     std::uint64_t hash_answer[2];
 
     double initialValue() const;

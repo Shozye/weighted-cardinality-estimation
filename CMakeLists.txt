@@ -16,7 +16,6 @@ target_include_directories(murmurhash3 PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/murmurhash3
 )
 
-# --- KROK 1 i 2: Zdefiniuj nową bibliotekę 'compact_vector' ---
 add_library(compact_vector INTERFACE)
 target_include_directories(compact_vector INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/compact_vector
@@ -36,9 +35,7 @@ pybind11_add_module(_core
 install(TARGETS _core
         LIBRARY DESTINATION weighted_cardinality_estimation)
 
-# --- KROK 3: Dodaj 'compact_vector' jako zależność do _core ---
 target_link_libraries(_core PRIVATE compact_vector)
-
 
 target_include_directories(_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/murmurhash3

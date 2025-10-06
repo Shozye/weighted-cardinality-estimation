@@ -3,6 +3,7 @@
 #include <cmath>
 #include <stdexcept>
 #include "hash_util.hpp"
+#include "compact_vector.hpp"
 
 #define NEWTON_MAX_ITERATIONS 5
 
@@ -12,9 +13,12 @@ BaseQSketch::BaseQSketch(std::size_t sketch_size, const std::vector<std::uint32_
       amount_bits_(amount_bits),
       r_max((1 << (amount_bits - 1)) - 1),
       r_min(-(1 << (amount_bits - 1)) + 1),
-      M_(sketch_size, r_min)
+      M_(amount_bits, sketch_size)
 {
     if (seeds_.size() != size) { throw std::invalid_argument("Seeds vector must have length m"); }
+    for (std::size_t i = 0; i < size; ++i) {
+        M_[i] = r_min;
+    }
 }
 
 void BaseQSketch::add(const std::string& elem, double weight)
@@ -26,7 +30,9 @@ void BaseQSketch::add(const std::string& elem, double weight)
         double g = -std::log(u) * inv_weight;
         int q = static_cast<int>(std::floor(-std::log2(g)));
         q = std::min(q, r_max);
-        M_[i] = std::max(q, M_[i]);
+        if (q > M_[i]){
+            M_[i] = q;
+        }
     }
 } 
 
@@ -34,7 +40,7 @@ size_t BaseQSketch::memory_usage_total() const {
     size_t total_size = 0;
     total_size += sizeof(size);
     total_size += seeds_.capacity() * sizeof(uint32_t);
-    total_size += M_.capacity() * sizeof(int);
+    total_size += M_.bytes();
     total_size += sizeof(r_min);
     total_size += sizeof(r_max);
     total_size += sizeof(amount_bits_);
@@ -42,12 +48,11 @@ size_t BaseQSketch::memory_usage_total() const {
 }
 
 size_t BaseQSketch::memory_usage_write() const {
-    return M_.capacity() * sizeof(int);
+    return M_.bytes();
 }
 
 size_t BaseQSketch::memory_usage_estimate() const {
-    size_t estimate_size = M_.capacity() * sizeof(int);
-    return estimate_size;
+    return M_.bytes();
 }
 
 void BaseQSketch::add_many(const std::vector<std::string>& elems,
@@ -72,8 +77,11 @@ BaseQSketch::BaseQSketch(
     amount_bits_(amount_bits),
     r_max((1 << (amount_bits - 1)) - 1),
     r_min(-(1 << (amount_bits - 1)) + 1),
-    M_(registers)
+    M_(amount_bits, sketch_size)
 {
+    for (std::size_t i = 0; i < size; ++i) {
+        M_[i] = registers[i];
+    }
 }
 
 std::size_t BaseQSketch::get_sketch_size() const {
@@ -84,8 +92,8 @@ const std::vector<std::uint32_t>& BaseQSketch::get_seeds() const {
     return seeds_;
 }
 
-const std::vector<int>& BaseQSketch::get_registers() const {
-    return M_;
+std::vector<int> BaseQSketch::get_registers() const {
+    return std::vector<int>(M_.begin(), M_.end());
 }
 
 std::uint8_t BaseQSketch::get_amount_bits() const {
