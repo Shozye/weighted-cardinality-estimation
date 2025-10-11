@@ -19,7 +19,7 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
       permWork(sketch_size),
       rng_seed(0)
 {
-    if (seeds_.size() != sketch_size) {
+    if (seeds.size() != sketch_size) {
         throw std::invalid_argument("Seeds vector must have length m");
     }
     std::iota(permInit.begin(), permInit.end(), 1);
@@ -40,7 +40,7 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
       permWork(sketch_size),
       rng_seed(0) // add nadpisuje stan rng_seed
 {
-    if (seeds_.size() != sketch_size) { throw std::invalid_argument("Invalid state: seeds vector size mismatch"); }
+    if (seeds.size() != sketch_size) { throw std::invalid_argument("Invalid state: seeds vector size mismatch"); }
     if (M_.size() != sketch_size) { throw std::invalid_argument("Invalid state: registers vector size mismatch"); }
     for (std::size_t i = 0; i < size; ++i) {
         M_[i] = registers[i];
@@ -59,7 +59,7 @@ size_t FastQSketch::memory_usage_total() const {
     total_size += sizeof(rng_seed);
     total_size += sizeof(min_sketch_value);
     total_size += sizeof(min_value_to_change_sketch);
-    total_size += seeds_.capacity() * sizeof(uint32_t);
+    total_size += seeds_.bytes();
     total_size += M_.bytes();
     total_size += permInit.capacity() * sizeof(uint32_t);
     total_size += permWork.capacity() * sizeof(uint32_t);
@@ -82,7 +82,7 @@ size_t FastQSketch::memory_usage_estimate() const {
 }
 
 std::size_t FastQSketch::get_sketch_size() const { return size; }
-const std::vector<std::uint32_t>& FastQSketch::get_seeds() const { return seeds_; }
+std::vector<std::uint32_t> FastQSketch::get_seeds() const { return seeds_.toVector(); }
 std::uint8_t FastQSketch::get_amount_bits() const { return amount_bits_; }
 std::vector<int> FastQSketch::get_registers() const {
     return std::vector<int>(M_.begin(), M_.end());
