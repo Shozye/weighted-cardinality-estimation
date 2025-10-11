@@ -1,3 +1,4 @@
+#pragma once
 #include <compact_vector.hpp>
 #include <cstdint>
 #include <vector>
