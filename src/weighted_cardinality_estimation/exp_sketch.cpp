@@ -9,7 +9,7 @@ ExpSketch::ExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& 
     : size(sketch_size), seeds_(seeds),
       M_(sketch_size, std::numeric_limits<double>::infinity())
 {
-    if (seeds_.size() != size) { throw std::invalid_argument("Seeds vector must have length m"); }
+    if (seeds.size() != size) { throw std::invalid_argument("Seeds vector must have length m"); }
 }
 
 void ExpSketch::add(const std::string& elem, double weight)
@@ -26,7 +26,7 @@ void ExpSketch::add(const std::string& elem, double weight)
 size_t ExpSketch::memory_usage_total() const {
     size_t total_size = 0;
     total_size += sizeof(size);
-    total_size += seeds_.capacity() * sizeof(uint32_t);
+    total_size += seeds_.bytes();
     total_size += M_.capacity() * sizeof(double);
     return total_size;
 }
@@ -76,8 +76,8 @@ std::size_t ExpSketch::get_sketch_size() const {
     return size;
 }
 
-const std::vector<std::uint32_t>& ExpSketch::get_seeds() const {
-    return seeds_;
+std::vector<std::uint32_t> ExpSketch::get_seeds() const {
+    return seeds_.toVector();
 }
 
 const std::vector<double>& ExpSketch::get_registers() const {

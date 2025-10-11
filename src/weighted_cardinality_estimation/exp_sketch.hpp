@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include "seeds.hpp"
 
 class ExpSketch {
 public:
@@ -14,14 +15,14 @@ public:
     ExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, const std::vector<double>& registers);
 
     std::size_t get_sketch_size() const;
-    const std::vector<std::uint32_t>& get_seeds() const;
+    std::vector<std::uint32_t> get_seeds() const;
     const std::vector<double>& get_registers() const;
     [[nodiscard]] size_t memory_usage_total() const;
     [[nodiscard]] size_t memory_usage_write() const;
     [[nodiscard]] size_t memory_usage_estimate() const;
 private:
     std::size_t size;
-    std::vector<std::uint32_t> seeds_;
+    Seeds seeds_;
     std::vector<double> M_;
     std::uint64_t hash_answer[2];
 };
