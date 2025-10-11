@@ -35,6 +35,12 @@ def test_estimate_adding_duplicate_does_not_change_estimation(sketch_cls):
     assert estimate == sketch.estimate()
 
 @pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+def test_no_seeds_is_the_same_as_range_seeds(sketch_cls):
+    M=5
+    seeds = [1,2,3,4,5]
+
+
+@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
 def test_copy_produces_same_estimate(sketch_cls):
     # here i just want to make some basic contract that it holds to ANY standard lol
     m = 5

@@ -12,12 +12,12 @@ Seeds::Seeds(const std::vector<std::uint32_t>& seeds)
 Seeds::Seeds()
 : seeds_(1, 0) 
 {
-    
+
 }
 
 std::uint32_t Seeds::get(uint32_t index) const {
     if(this->seeds_.empty()){
-        return index;
+        return index + 1; // i don't like 0 being seed.
     }          
     return this->seeds_.at(index);
 }
