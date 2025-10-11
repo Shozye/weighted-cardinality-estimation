@@ -1,8 +1,8 @@
 #include "fast_q_sketch.hpp"
 #include <algorithm>
 #include <cmath>
-#include <numeric>
 #include <stdexcept>
+#include "fast_exp_sketch.hpp"
 #include "hash_util.hpp"
 #include<cstring>
 
@@ -11,20 +11,17 @@
 FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, uint8_t amount_bits)
     : size(sketch_size), 
       seeds_(seeds),
+      fisher_yates(size),
       amount_bits_(amount_bits),
       r_max((1 << (amount_bits - 1)) - 1),
       r_min(-(1 << (amount_bits - 1)) + 1),
-      M_(amount_bits, sketch_size), 
-      permInit(sketch_size),
-      permWork(sketch_size),
-      rng_seed(0)
+      M_(amount_bits, sketch_size)
 {
     if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
     if ((!seeds.empty() && seeds.size() != size)) { 
         throw std::invalid_argument("Seeds must have length m or 0"); 
     }
-    std::iota(permInit.begin(), permInit.end(), 1);
     for (std::size_t i = 0; i < size; ++i) {
         M_[i] = r_min;
     }
@@ -34,13 +31,11 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
 FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits, const std::vector<int>& registers)
     : size(sketch_size),
       seeds_(seeds),
+      fisher_yates(size),
       amount_bits_(amount_bits),
       r_max((1 << (amount_bits - 1)) - 1),
       r_min(-(1 << (amount_bits - 1)) + 1),
-      M_(amount_bits, sketch_size),
-      permInit(sketch_size),
-      permWork(sketch_size),
-      rng_seed(0) // add nadpisuje stan rng_seed
+      M_(amount_bits, sketch_size)
 {
     if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
@@ -51,7 +46,6 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
     for (std::size_t i = 0; i < size; ++i) {
         M_[i] = registers[i];
     }
-    std::iota(permInit.begin(), permInit.end(), 1);
     update_treshold();
 }
 
@@ -62,23 +56,20 @@ size_t FastQSketch::memory_usage_total() const {
     total_size += sizeof(amount_bits_);
     total_size += sizeof(r_max);
     total_size += sizeof(r_min);
-    total_size += sizeof(rng_seed);
     total_size += sizeof(min_sketch_value);
     total_size += sizeof(min_value_to_change_sketch);
     total_size += seeds_.bytes();
     total_size += M_.bytes();
-    total_size += permInit.capacity() * sizeof(uint32_t);
-    total_size += permWork.capacity() * sizeof(uint32_t);
+    total_size += fisher_yates.bytes_total();
     return total_size;
 }
 
 size_t FastQSketch::memory_usage_write() const {
     size_t write_size = 0;
-    write_size += sizeof(rng_seed);
     write_size += sizeof(min_sketch_value);
     write_size += sizeof(min_value_to_change_sketch);
     write_size += M_.bytes();
-    write_size += permWork.capacity() * sizeof(uint32_t);
+    write_size += fisher_yates.bytes_write();
     return write_size;
 }
 
@@ -94,12 +85,6 @@ std::vector<int> FastQSketch::get_registers() const {
     return std::vector<int>(M_.begin(), M_.end());
 }
 
-uint32_t FastQSketch::rand(uint32_t min, uint32_t max){
-    this->rng_seed = this->rng_seed * 1103515245 + 12345;
-    auto temp = (unsigned)(this->rng_seed/65536) % 32768;
-    return (temp % (max-min)) + min;
-}
-
 void FastQSketch::update_treshold(){
     this->min_sketch_value = *std::min_element(this->M_.begin(), this->M_.end());
     this->min_value_to_change_sketch = std::pow(2, -this->min_sketch_value);
@@ -109,8 +94,7 @@ void FastQSketch::add(const std::string& elem, double weight){
     double S = 0;
     bool touched_min = false; 
 
-    this->rng_seed = murmur64(elem, 1, hash_answer); 
-    permWork = permInit; 
+    fisher_yates.initialize(murmur64(elem, 1, hash_answer));
     auto inv_weight = 1.0 / weight;
     for (size_t k = 0; k < this->size; ++k){
         std::uint64_t hashed = murmur64(elem, seeds_[k], hash_answer); 
@@ -120,9 +104,7 @@ void FastQSketch::add(const std::string& elem, double weight){
 
         if ( S >= this->min_value_to_change_sketch ) { break; } 
 
-        uint32_t r = rand(k, this->size);
-        std::swap(permWork[k], permWork[r]);
-        auto j = permWork[k] - 1;
+        auto j = fisher_yates.get_fisher_yates_element(k);
 
         int q = static_cast<int>(std::floor(-std::log2(S)));
         q = std::min(q, r_max);

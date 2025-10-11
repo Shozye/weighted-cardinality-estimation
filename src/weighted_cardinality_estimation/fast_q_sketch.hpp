@@ -1,5 +1,6 @@
 #pragma once
 #include "compact_vector.hpp"
+#include "fast_exp_sketch.hpp"
 #include "seeds.hpp"
 #include <vector>
 #include <string>
@@ -29,8 +30,6 @@ public:
     [[nodiscard]] size_t memory_usage_write() const;
     [[nodiscard]] size_t memory_usage_estimate() const;
 private:
-    uint32_t rand(uint32_t min, uint32_t max);
-
     double initialValue();
     double ffunc(double w);
     double dffunc(double w);
@@ -40,16 +39,12 @@ private:
 
     std::size_t size; // amount of registers used in sketch. Sketch uses linear memory to m and increases accuracy based on m
     Seeds seeds_;
+    FisherYates fisher_yates;
     std::uint8_t amount_bits_;
     std::int32_t r_max; // maximum possible value in sketch due to amount of bits per register
     std::int32_t r_min; // minimum possible value in sketch due to amount of bits per register
 
     compact::vector<int> M_; // sketch structure with elements between < r_min ... r_max >
-
-    std::vector<uint32_t> permInit; // static structure, only used to fast copy to permWork
-    std::vector<uint32_t> permWork; // used at the beginning of every update
-    
-    uint64_t rng_seed; 
     int min_sketch_value; 
     double min_value_to_change_sketch; // that's 2**{-min_sketch_value}
     uint64_t hash_answer[2];
