@@ -15,7 +15,7 @@ BaseQSketch::BaseQSketch(std::size_t sketch_size, const std::vector<std::uint32_
       r_min(-(1 << (amount_bits - 1)) + 1),
       M_(amount_bits, sketch_size)
 {
-    if (seeds_.size() != size) { throw std::invalid_argument("Seeds vector must have length m"); }
+    if (seeds.size() != size) { throw std::invalid_argument("Seeds vector must have length m"); }
     for (std::size_t i = 0; i < size; ++i) {
         M_[i] = r_min;
     }
@@ -39,7 +39,7 @@ void BaseQSketch::add(const std::string& elem, double weight)
 size_t BaseQSketch::memory_usage_total() const {
     size_t total_size = 0;
     total_size += sizeof(size);
-    total_size += seeds_.capacity() * sizeof(uint32_t);
+    total_size += seeds_.bytes();
     total_size += M_.bytes();
     total_size += sizeof(r_min);
     total_size += sizeof(r_max);
@@ -88,8 +88,8 @@ std::size_t BaseQSketch::get_sketch_size() const {
     return size;
 }
 
-const std::vector<std::uint32_t>& BaseQSketch::get_seeds() const {
-    return seeds_;
+std::vector<std::uint32_t> BaseQSketch::get_seeds() const {
+    return seeds_.toVector();
 }
 
 std::vector<int> BaseQSketch::get_registers() const {

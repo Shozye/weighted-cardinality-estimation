@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdint>
 #include "compact_vector.hpp"
+#include "seeds.hpp"
 
 class BaseQSketch {
 public:
@@ -19,7 +20,7 @@ public:
     );
 
     std::size_t get_sketch_size() const;
-    const std::vector<std::uint32_t>& get_seeds() const;
+    std::vector<std::uint32_t> get_seeds() const;
     std::vector<int> get_registers() const;
     std::uint8_t get_amount_bits() const;
 
@@ -28,7 +29,7 @@ public:
     [[nodiscard]] size_t memory_usage_estimate() const;
 private:
     std::size_t size;
-    std::vector<std::uint32_t> seeds_;
+    Seeds seeds_;
     std::uint8_t amount_bits_;
     std::int32_t r_max; // maximum possible value in sketch due to amount of bits per register
     std::int32_t r_min; // minimum possible value in sketch due to amount of bits per register
