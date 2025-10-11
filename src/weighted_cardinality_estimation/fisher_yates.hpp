@@ -1,0 +1,17 @@
+#include <cstdint>
+#include <vector>
+class FisherYates {
+public:
+    FisherYates(std::uint32_t sketch_size);
+
+    void initialize(std::uint64_t rng_seed); // this function will set new rng_seed and permWork = permInit
+    uint32_t get_fisher_yates_element(uint32_t index);
+
+    std::uint32_t bytes_write() const ;
+    std::uint32_t bytes_total() const ;
+private:
+    uint64_t rng_seed = 0; 
+    uint32_t rand(uint32_t min, uint32_t max);
+    std::vector<uint32_t> permInit; // static structure, only used to fast copy to permWork
+    std::vector<uint32_t> permWork; // used at the beginning of every update
+};

@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdint>
 #include "seeds.hpp"
+#include "fisher_yates.hpp"
 
 class FastExpSketch {
 public:
@@ -21,15 +22,11 @@ public:
     [[nodiscard]] size_t memory_usage_total() const;
     [[nodiscard]] size_t memory_usage_write() const;
     [[nodiscard]] size_t memory_usage_estimate() const;
-
 private:
-    uint32_t rand(uint32_t min, uint32_t max);
     std::size_t size; 
     Seeds seeds_;
     std::vector<double> M_;
-    std::vector<uint32_t> permInit;
-    std::vector<uint32_t> permWork;
-    uint64_t rng_seed;
+    FisherYates fisher_yates;
     double max;    
     std::uint64_t hash_answer[2];
 };

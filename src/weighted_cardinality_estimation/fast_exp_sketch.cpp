@@ -3,39 +3,32 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
-#include <numeric>
 #include <stdexcept>
 #include "hash_util.hpp"
 #include <cstring>
 
 FastExpSketch::FastExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds)
-    : size(sketch_size), seeds_(seeds),
+    : size(sketch_size), 
+      seeds_(seeds),
       M_(sketch_size, std::numeric_limits<double>::infinity()),
-      permInit(sketch_size),
-      permWork(sketch_size),
-      rng_seed(0),
+      fisher_yates(sketch_size),
       max(std::numeric_limits<double>::infinity())
 {
     if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
     if ((!seeds.empty() && seeds.size() != size)) { 
         throw std::invalid_argument("Seeds must have length m or 0"); 
     }
-    std::iota(permInit.begin(), permInit.end(), 1);
 }
 
-uint32_t FastExpSketch::rand(uint32_t min, uint32_t max){
-    this->rng_seed = this->rng_seed * 1103515245 + 12345;
-    auto temp = (unsigned)(this->rng_seed/65536) % 32768;
-    return (temp % (max-min)) + min;
-}
+
 
 void FastExpSketch::add(const std::string& elem, double weight)
 { 
     double S = 0;
     bool updateMax = false; 
 
-    this->rng_seed = murmur64(elem, 1, hash_answer); 
-    permWork = permInit; 
+    fisher_yates.initialize(murmur64(elem, 1, hash_answer)); 
+    
 
     auto inv_weight = 1.0 / weight;
     for (size_t k = 0; k < this->size; ++k){
@@ -46,9 +39,7 @@ void FastExpSketch::add(const std::string& elem, double weight)
         S += E/(double)(this->size-k); 
         if ( S >= this->max ) { break; }
 
-        uint32_t r = rand(k, this->size);
-        std::swap(permWork[k], permWork[r]);
-        auto j = permWork[k] - 1;
+        auto j = fisher_yates.get_fisher_yates_element(k);
 
         if (this->M_[j] == this->max ) { updateMax = true; }
         this->M_[j] = std::min(this->M_[j], S);
@@ -62,21 +53,18 @@ void FastExpSketch::add(const std::string& elem, double weight)
 size_t FastExpSketch::memory_usage_total() const {
     size_t total_size = 0;
     total_size += sizeof(this->size);
-    total_size += sizeof(rng_seed);
+    total_size += fisher_yates.bytes_total();
     total_size += sizeof(max);
     total_size += seeds_.bytes();
     total_size += M_.capacity() * sizeof(double);
-    total_size += permInit.capacity() * sizeof(uint32_t);
-    total_size += permWork.capacity() * sizeof(uint32_t);
     return total_size;
 }
 
 size_t FastExpSketch::memory_usage_write() const {
     size_t write_size = 0;
-    write_size += sizeof(rng_seed);
     write_size += sizeof(max);
+    write_size += fisher_yates.bytes_write();
     write_size += M_.capacity() * sizeof(double);
-    write_size += permWork.capacity() * sizeof(uint32_t);
     return write_size;
 }
 
@@ -120,17 +108,10 @@ FastExpSketch::FastExpSketch(
 :   size(sketch_size),
     seeds_(seeds),
     M_(registers),
-    permInit(sketch_size),     
-    permWork(sketch_size),    
-    rng_seed(0) 
+    fisher_yates(sketch_size)
 {
-    std::iota(permInit.begin(), permInit.end(), 1);
-
-    if (this->size > 0) {
-        max = *std::max_element(M_.begin(), M_.end());
-    } else {
-        max = std::numeric_limits<double>::infinity();
-    }
+    if (size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
+    max = *std::max_element(M_.begin(), M_.end());
 }
 std::size_t FastExpSketch::get_sketch_size() const { return this->size; }
 std::vector<std::uint32_t> FastExpSketch::get_seeds() const { return seeds_.toVector(); }

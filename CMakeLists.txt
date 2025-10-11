@@ -31,6 +31,7 @@ pybind11_add_module(_core
     src/weighted_cardinality_estimation/q_sketch_dyn.cpp
     src/weighted_cardinality_estimation/utils.cpp
     src/weighted_cardinality_estimation/seeds.cpp
+    src/weighted_cardinality_estimation/fisher_yates.cpp
     $<TARGET_OBJECTS:murmurhash3>
 )
 
