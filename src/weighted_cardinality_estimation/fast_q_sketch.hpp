@@ -1,10 +1,10 @@
 #pragma once
 #include "compact_vector.hpp"
-#include "fast_exp_sketch.hpp"
 #include "seeds.hpp"
 #include <vector>
 #include <string>
 #include <cstdint>
+#include "fisher_yates.hpp"
 
 class FastQSketch {
 public:

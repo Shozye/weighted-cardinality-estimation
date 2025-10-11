@@ -26,6 +26,7 @@ pybind11_add_module(_core
     src/weighted_cardinality_estimation/_bindings.cpp
     src/weighted_cardinality_estimation/exp_sketch.cpp
     src/weighted_cardinality_estimation/fast_exp_sketch.cpp
+    src/weighted_cardinality_estimation/fastgm_exp_sketch.cpp
     src/weighted_cardinality_estimation/base_q_sketch.cpp
     src/weighted_cardinality_estimation/fast_q_sketch.cpp
     src/weighted_cardinality_estimation/q_sketch_dyn.cpp

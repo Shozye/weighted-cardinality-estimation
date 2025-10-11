@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
-#include "fast_exp_sketch.hpp"
 #include "hash_util.hpp"
 #include<cstring>
 

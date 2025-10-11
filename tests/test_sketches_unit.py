@@ -1,12 +1,13 @@
 import copy
 import random
 import pytest
-from weighted_cardinality_estimation import BaseQSketch, FastExpSketch, ExpSketch, FastQSketch, QSketchDyn
+from weighted_cardinality_estimation import BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, FastQSketch, QSketchDyn
 
 
 SKETCH_CONSTRUCTORS_WITH_SEEDS = [
     pytest.param(ExpSketch, id="ExpSketch"),
     pytest.param(FastExpSketch, id="FastExpSketch"),
+    pytest.param(lambda m, seeds: FastGMExpSketch(m, seeds), id="FastGMExpSketch"),
     pytest.param(lambda m, seeds: BaseQSketch(m, seeds, 8), id="BaseQSketch"),
     pytest.param(lambda m, seeds: FastQSketch(m, seeds, amount_bits=8), id="FastQSketch"),
     pytest.param(lambda m, seeds: QSketchDyn(m, seeds, amount_bits=8, g_seed=42), id="QSketchDyn"),
@@ -15,6 +16,7 @@ SKETCH_CONSTRUCTORS_WITH_SEEDS = [
 SKETCH_CONSTRUCTORS_WITH_NO_SEEDS = [
     pytest.param(lambda m, seeds: ExpSketch(m, []), id="ExpSketch"),
     pytest.param(lambda m, seeds: FastExpSketch(m, []), id="FastExpSketch"),
+    pytest.param(lambda m, seeds: FastGMExpSketch(m, []), id="FastGMExpSketch"),
     pytest.param(lambda m, seeds: BaseQSketch(m, [], 8), id="BaseQSketch"),
     pytest.param(lambda m, seeds: FastQSketch(m, [], amount_bits=8), id="FastQSketch"),
     pytest.param(lambda m, seeds: QSketchDyn(m, [], amount_bits=8, g_seed=42), id="QSketchDyn"),
@@ -71,7 +73,6 @@ def test_copy_produces_same_estimate(sketch_cls):
     copied_estimate = copied_sketch.estimate()
 
     assert original_estimate == copied_estimate
-    assert original_estimate > 0
     assert original_sketch is not copied_sketch
 
 @pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)

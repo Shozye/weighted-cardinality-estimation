@@ -4,6 +4,7 @@
 #include "exp_sketch.hpp"
 #include "fast_exp_sketch.hpp"
 #include "fast_q_sketch.hpp"
+#include "fastgm_exp_sketch.hpp"
 #include "q_sketch_dyn.hpp"
 
 
@@ -61,7 +62,36 @@ PYBIND11_MODULE(_core, m) {
             t[2].cast<std::vector<double>>()
         );
     }
-));;
+    ));;
+
+    py::class_<FastGMExpSketch>(m, "FastGMExpSketch")
+        .def(py::init<std::size_t, const std::vector<std::uint32_t>&>())
+        .def("add", &FastGMExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
+        .def("estimate", &FastGMExpSketch::estimate)
+        .def("add_many", &FastGMExpSketch::add_many, py::arg("elems"), py::arg("weights"))
+        .def("jaccard_struct", &FastGMExpSketch::jaccard_struct)
+        .def("memory_usage_total", &FastGMExpSketch::memory_usage_total)
+        .def("memory_usage_write", &FastGMExpSketch::memory_usage_write)
+        .def("memory_usage_estimate", &FastGMExpSketch::memory_usage_estimate)
+        .def(py::pickle(
+    [](const FastGMExpSketch &p) {
+        return py::make_tuple(
+            p.get_sketch_size(),
+            p.get_seeds(),
+            p.get_registers()
+        );
+    },
+    [](const py::tuple& t) {
+        if (t.size() != 3) {
+            throw std::runtime_error("Invalid state for FastGMExpSketch pickle!");
+        }
+        return FastGMExpSketch(
+            t[0].cast<std::size_t>(),
+            t[1].cast<std::vector<std::uint32_t>>(),
+            t[2].cast<std::vector<double>>()
+        );
+    }
+    ));;
 
     py::class_<FastQSketch>(m, "FastQSketch")
         .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t>(),
@@ -158,5 +188,5 @@ PYBIND11_MODULE(_core, m) {
                 t[3].cast<std::vector<int>>()
             );
         }
-    ));;
+    ));
 }

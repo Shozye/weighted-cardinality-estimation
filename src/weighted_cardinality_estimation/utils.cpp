@@ -17,3 +17,15 @@ std::vector<uint32_t> range(uint32_t min, uint32_t max){
     std::iota(vec.begin(), vec.end(), min); 
     return vec;
 }
+
+std::uint32_t argmax(std::vector<double> vec){
+    double max = vec[0];
+    uint32_t argmax = 0;
+    for(uint32_t j = 1; j < vec.size(); j++){
+        if (vec[j] > max){
+            argmax = j;
+            max = vec[j];
+        }
+    }
+    return argmax;
+}
