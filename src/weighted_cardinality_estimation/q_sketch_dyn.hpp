@@ -7,13 +7,13 @@
 
 class QSketchDyn {
 public:
-    QSketchDyn(std::size_t m, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits, std::uint32_t g_seed);
+    QSketchDyn(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits, std::uint32_t g_seed);
     void add(const std::string& elem, double weight = 1.0);
     void add_many(const std::vector<std::string>& elems, const std::vector<double>& weights);
     [[nodiscard]] double estimate() const;
 
     QSketchDyn(
-        std::size_t m,
+        std::size_t sketch_size,
         std::uint8_t amount_bits,
         std::uint32_t g_seed,
         const std::vector<std::uint32_t>& seeds,
@@ -34,7 +34,7 @@ public:
     [[nodiscard]] size_t memory_usage_estimate() const;
 
 private:
-    std::size_t m_;
+    std::size_t size;
     std::uint8_t amount_bits_;
     std::int32_t r_min;
     std::int32_t r_max;

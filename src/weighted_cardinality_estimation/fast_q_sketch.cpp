@@ -19,8 +19,10 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
       permWork(sketch_size),
       rng_seed(0)
 {
-    if (seeds.size() != sketch_size) {
-        throw std::invalid_argument("Seeds vector must have length m");
+    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
+    if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
+    if ((!seeds.empty() && seeds.size() != size)) { 
+        throw std::invalid_argument("Seeds must have length m or 0"); 
     }
     std::iota(permInit.begin(), permInit.end(), 1);
     for (std::size_t i = 0; i < size; ++i) {
@@ -40,7 +42,11 @@ FastQSketch::FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_
       permWork(sketch_size),
       rng_seed(0) // add nadpisuje stan rng_seed
 {
-    if (seeds.size() != sketch_size) { throw std::invalid_argument("Invalid state: seeds vector size mismatch"); }
+    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
+    if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
+    if ((!seeds.empty() && seeds.size() != size)) { 
+        throw std::invalid_argument("Seeds must have length m or 0"); 
+    }
     if (M_.size() != sketch_size) { throw std::invalid_argument("Invalid state: registers vector size mismatch"); }
     for (std::size_t i = 0; i < size; ++i) {
         M_[i] = registers[i];

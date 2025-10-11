@@ -4,8 +4,8 @@
 #include <numeric> 
 #include "hash_util.hpp"
 
-QSketchDyn::QSketchDyn(std::size_t m, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits, std::uint32_t g_seed)
-    : m_(m),
+QSketchDyn::QSketchDyn(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits, std::uint32_t g_seed)
+    : size(sketch_size),
       amount_bits_(amount_bits),
       r_min(-(1 << (amount_bits - 1))),
       r_max((1 << (amount_bits - 1)) - 1),
@@ -14,18 +14,19 @@ QSketchDyn::QSketchDyn(std::size_t m, const std::vector<std::uint32_t>& seeds, s
       k_idx_(1 << amount_bits),
       cardinality_(0.0),
       q_r_(0.0),
-      R_(amount_bits, m),
+      R_(amount_bits, sketch_size),
       T_(1 << amount_bits, 0)
 {
-    if (m == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
+    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
-    if (seeds.size() != m) { throw std::invalid_argument("Seeds vector must have length m"); }
-
+    if ((!seeds.empty() && seeds.size() != size)) { 
+        throw std::invalid_argument("Seeds must have length m or 0"); 
+    }
     if (!T_.empty()) {
-        T_[0] = static_cast<int>(m);
+        T_[0] = static_cast<int>(sketch_size);
     }
 
-    for (std::size_t i = 0; i < m_; ++i) {
+    for (std::size_t i = 0; i < size; ++i) {
         R_[i] = r_min;
     }
     
@@ -33,10 +34,10 @@ QSketchDyn::QSketchDyn(std::size_t m, const std::vector<std::uint32_t>& seeds, s
 }
 
 QSketchDyn::QSketchDyn(
-    std::size_t m, std::uint8_t amount_bits, std::uint32_t g_seed,
+    std::size_t sketch_size, std::uint8_t amount_bits, std::uint32_t g_seed,
     const std::vector<std::uint32_t>& seeds, const std::vector<int>& registers,
     const std::vector<int>& t_histogram, double cardinality)
-    : m_(m),
+    : size(sketch_size),
       amount_bits_(amount_bits),
       r_min(-(1 << (amount_bits - 1))),
       r_max((1 << (amount_bits - 1)) - 1),
@@ -45,18 +46,23 @@ QSketchDyn::QSketchDyn(
       k_idx_(1 << amount_bits),
       cardinality_(cardinality),
       q_r_(0.0),
-      R_(amount_bits, m),
+      R_(amount_bits, sketch_size),
       T_(t_histogram)
 {
+    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
+    if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
+    if ((!seeds.empty() && seeds.size() != size)) { 
+        throw std::invalid_argument("Seeds must have length m or 0"); 
+    }
     std::iota(k_idx_.begin(), k_idx_.end(), 0);
-    for (std::size_t i = 0; i < m_; ++i) {
+    for (std::size_t i = 0; i < size; ++i) {
         R_[i] = registers[i];
     }
 }
 
 void QSketchDyn::add(const std::string& elem, double weight) {
     const uint64_t g_hash = murmur64(elem, g_seed_, hash_answer);
-    const size_t j = g_hash % m_;
+    const size_t j = g_hash % size;
 
     const uint64_t u_hash = murmur64(elem, seeds_[j], hash_answer);
     const double u = to_unit_interval(u_hash);
@@ -92,7 +98,7 @@ void QSketchDyn::add(const std::string& elem, double weight) {
         }
     }
 
-    this->q_r_ = 1.0 - (q_val_sum / (double)m_);
+    this->q_r_ = 1.0 - (q_val_sum / (double)size);
     cardinality_ += weight / this->q_r_;
 }
 
@@ -109,7 +115,7 @@ double QSketchDyn::estimate() const {
     return cardinality_;
 }
 
-std::size_t QSketchDyn::get_m() const { return m_; }
+std::size_t QSketchDyn::get_m() const { return size; }
 std::uint8_t QSketchDyn::get_amount_bits() const { return amount_bits_; }
 std::uint32_t QSketchDyn::get_g_seed() const { return g_seed_; }
 std::vector<std::uint32_t> QSketchDyn::get_seeds() const { return seeds_.toVector(); }
@@ -121,7 +127,7 @@ double QSketchDyn::get_cardinality() const { return cardinality_; }
 
 size_t QSketchDyn::memory_usage_total() const {
     size_t total = 0;
-    total += sizeof(m_);
+    total += sizeof(size);
     total += sizeof(amount_bits_);
     total += sizeof(r_min);
     total += sizeof(r_max);

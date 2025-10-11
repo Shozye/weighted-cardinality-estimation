@@ -15,7 +15,11 @@ BaseQSketch::BaseQSketch(std::size_t sketch_size, const std::vector<std::uint32_
       r_min(-(1 << (amount_bits - 1)) + 1),
       M_(amount_bits, sketch_size)
 {
-    if (seeds.size() != size) { throw std::invalid_argument("Seeds vector must have length m"); }
+    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
+    if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
+    if ((!seeds.empty() && seeds.size() != size)) { 
+        throw std::invalid_argument("Seeds must have length m or 0"); 
+    }
     for (std::size_t i = 0; i < size; ++i) {
         M_[i] = r_min;
     }
@@ -79,6 +83,11 @@ BaseQSketch::BaseQSketch(
     r_min(-(1 << (amount_bits - 1)) + 1),
     M_(amount_bits, sketch_size)
 {
+    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
+    if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
+    if ((!seeds.empty() && seeds.size() != size)) { 
+        throw std::invalid_argument("Seeds must have length m or 0"); 
+    }
     for (std::size_t i = 0; i < size; ++i) {
         M_[i] = registers[i];
     }

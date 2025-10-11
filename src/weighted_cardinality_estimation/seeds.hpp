@@ -12,4 +12,6 @@ public:
     std::vector<std::uint32_t> toVector() const;
 private:
     compact::vector<uint32_t> seeds_;
+    static bool is_sequential_from_one(const std::vector<std::uint32_t>& vec);
+    static compact::vector<uint32_t> create_seeds_vector(const std::vector<std::uint32_t>& seeds);
 };

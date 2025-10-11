@@ -16,7 +16,10 @@ FastExpSketch::FastExpSketch(std::size_t sketch_size, const std::vector<std::uin
       rng_seed(0),
       max(std::numeric_limits<double>::infinity())
 {
-    if (seeds.size() != this->size) { throw std::invalid_argument("Seeds vector must have length m"); }
+    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
+    if ((!seeds.empty() && seeds.size() != size)) { 
+        throw std::invalid_argument("Seeds must have length m or 0"); 
+    }
     std::iota(permInit.begin(), permInit.end(), 1);
 }
 

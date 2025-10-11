@@ -9,7 +9,10 @@ ExpSketch::ExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& 
     : size(sketch_size), seeds_(seeds),
       M_(sketch_size, std::numeric_limits<double>::infinity())
 {
-    if (seeds.size() != size) { throw std::invalid_argument("Seeds vector must have length m"); }
+    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
+    if ((!seeds.empty() && seeds.size() != size)) { 
+        throw std::invalid_argument("Seeds must have length m or 0"); 
+    }
 }
 
 void ExpSketch::add(const std::string& elem, double weight)
@@ -70,6 +73,10 @@ double ExpSketch::jaccard_struct(const ExpSketch& other) const
 ExpSketch::ExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, const std::vector<double>& registers)
     : size(sketch_size), seeds_(seeds), M_(registers)
 {
+    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
+    if ((!seeds.empty() && seeds.size() != size)) { 
+        throw std::invalid_argument("Seeds must have length m or 0"); 
+    }
 }
 
 std::size_t ExpSketch::get_sketch_size() const {

@@ -4,13 +4,23 @@ import pytest
 from weighted_cardinality_estimation import BaseQSketch, FastExpSketch, ExpSketch, FastQSketch, QSketchDyn
 
 
-SKETCH_CONSTRUCTORS = [
+SKETCH_CONSTRUCTORS_WITH_SEEDS = [
     pytest.param(ExpSketch, id="ExpSketch"),
     pytest.param(FastExpSketch, id="FastExpSketch"),
     pytest.param(lambda m, seeds: BaseQSketch(m, seeds, 8), id="BaseQSketch"),
     pytest.param(lambda m, seeds: FastQSketch(m, seeds, amount_bits=8), id="FastQSketch"),
     pytest.param(lambda m, seeds: QSketchDyn(m, seeds, amount_bits=8, g_seed=42), id="QSketchDyn"),
 ]
+
+SKETCH_CONSTRUCTORS_WITH_NO_SEEDS = [
+    pytest.param(lambda m, seeds: ExpSketch(m, []), id="ExpSketch"),
+    pytest.param(lambda m, seeds: FastExpSketch(m, []), id="FastExpSketch"),
+    pytest.param(lambda m, seeds: BaseQSketch(m, [], 8), id="BaseQSketch"),
+    pytest.param(lambda m, seeds: FastQSketch(m, [], amount_bits=8), id="FastQSketch"),
+    pytest.param(lambda m, seeds: QSketchDyn(m, [], amount_bits=8, g_seed=42), id="QSketchDyn"),
+]
+
+SKETCH_CONSTRUCTORS = SKETCH_CONSTRUCTORS_WITH_NO_SEEDS + SKETCH_CONSTRUCTORS_WITH_SEEDS
 
 @pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
 def test_unitary(sketch_cls):
@@ -22,7 +32,7 @@ def test_unitary(sketch_cls):
     estimate = sketch.estimate()
     assert estimate > 0
 
-@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS_WITH_SEEDS)
 def test_estimate_adding_duplicate_does_not_change_estimation(sketch_cls):
     M=5
     seeds = [random.randint(1,10000000) for _ in range(M)]
@@ -34,10 +44,18 @@ def test_estimate_adding_duplicate_does_not_change_estimation(sketch_cls):
 
     assert estimate == sketch.estimate()
 
-@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS_WITH_SEEDS)
 def test_no_seeds_is_the_same_as_range_seeds(sketch_cls):
-    M=5
-    seeds = [1,2,3,4,5]
+    M=3
+    seeds = [1,2,3]
+    sketch1 = sketch_cls(M, seeds)
+    sketch1.add("I am just a simple element.", weight=1)
+
+    sketch2 = sketch_cls(M, [])
+    sketch2.add("I am just a simple element.", weight=1)
+
+    assert sketch1.estimate() == sketch2.estimate()
+    assert sketch1.__getstate__() == sketch2.__getstate__()
 
 
 @pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
