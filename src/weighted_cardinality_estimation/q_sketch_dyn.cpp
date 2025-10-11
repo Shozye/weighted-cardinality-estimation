@@ -19,7 +19,7 @@ QSketchDyn::QSketchDyn(std::size_t m, const std::vector<std::uint32_t>& seeds, s
 {
     if (m == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
-    if (seeds_.size() != m) { throw std::invalid_argument("Seeds vector must have length m"); }
+    if (seeds.size() != m) { throw std::invalid_argument("Seeds vector must have length m"); }
 
     if (!T_.empty()) {
         T_[0] = static_cast<int>(m);
@@ -112,7 +112,7 @@ double QSketchDyn::estimate() const {
 std::size_t QSketchDyn::get_m() const { return m_; }
 std::uint8_t QSketchDyn::get_amount_bits() const { return amount_bits_; }
 std::uint32_t QSketchDyn::get_g_seed() const { return g_seed_; }
-const std::vector<std::uint32_t>& QSketchDyn::get_seeds() const { return seeds_; }
+std::vector<std::uint32_t> QSketchDyn::get_seeds() const { return seeds_.toVector(); }
 std::vector<int> QSketchDyn::get_registers() const {
     return std::vector<int>(R_.begin(), R_.end());
 }
@@ -128,7 +128,7 @@ size_t QSketchDyn::memory_usage_total() const {
     total += sizeof(g_seed_);
     total += sizeof(cardinality_);
     total += sizeof(q_r_);
-    total += seeds_.capacity() * sizeof(uint32_t);
+    total += seeds_.bytes();
     total += k_idx_.capacity() * sizeof(int);
     total += R_.bytes();
     total += T_.capacity() * sizeof(int);

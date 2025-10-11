@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdint>
 #include "compact_vector.hpp"
+#include "seeds.hpp"
 
 class QSketchDyn {
 public:
@@ -23,7 +24,7 @@ public:
     std::size_t get_m() const;
     std::uint8_t get_amount_bits() const;
     std::uint32_t get_g_seed() const;
-    const std::vector<std::uint32_t>& get_seeds() const;
+    std::vector<std::uint32_t> get_seeds() const;
     std::vector<int> get_registers() const;
     const std::vector<int>& get_t_histogram() const;
     double get_cardinality() const;
@@ -37,7 +38,7 @@ private:
     std::uint8_t amount_bits_;
     std::int32_t r_min;
     std::int32_t r_max;
-    std::vector<std::uint32_t> seeds_;
+    Seeds seeds_;
     std::uint32_t g_seed_;
     std::vector<int> k_idx_;
 
