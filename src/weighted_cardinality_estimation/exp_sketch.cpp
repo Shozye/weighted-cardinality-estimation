@@ -17,11 +17,10 @@ ExpSketch::ExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& 
 
 void ExpSketch::add(const std::string& elem, double weight)
 { 
-    auto inv_weight = 1.0 / weight;
     for (std::size_t i = 0; i < size; ++i) {
         std::uint64_t h = murmur64(elem, seeds_[i], hash_answer);
         double u = to_unit_interval(h);   
-        double g = -std::log(u) * inv_weight;
+        double g = -std::log(u) / weight;
         M_[i] = std::min(g, M_[i]);
     }
 } 

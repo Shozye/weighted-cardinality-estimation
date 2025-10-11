@@ -95,11 +95,10 @@ void FastQSketch::add(const std::string& elem, double weight){
     bool touched_min = false; 
 
     fisher_yates.initialize(murmur64(elem, 1, hash_answer));
-    auto inv_weight = 1.0 / weight;
     for (size_t k = 0; k < this->size; ++k){
         std::uint64_t hashed = murmur64(elem, seeds_[k], hash_answer); 
         double unit_interval_hash = to_unit_interval(hashed); 
-        double exponential_variable = -std::log(unit_interval_hash) * inv_weight; 
+        double exponential_variable = -std::log(unit_interval_hash) / weight; 
         S += exponential_variable/(double)(this->size-k); 
 
         if ( S >= this->min_value_to_change_sketch ) { break; } 
