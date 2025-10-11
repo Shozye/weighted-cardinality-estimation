@@ -16,7 +16,7 @@ FastExpSketch::FastExpSketch(std::size_t sketch_size, const std::vector<std::uin
       rng_seed(0),
       max(std::numeric_limits<double>::infinity())
 {
-    if (seeds_.size() != this->size) { throw std::invalid_argument("Seeds vector must have length m"); }
+    if (seeds.size() != this->size) { throw std::invalid_argument("Seeds vector must have length m"); }
     std::iota(permInit.begin(), permInit.end(), 1);
 }
 
@@ -61,7 +61,7 @@ size_t FastExpSketch::memory_usage_total() const {
     total_size += sizeof(this->size);
     total_size += sizeof(rng_seed);
     total_size += sizeof(max);
-    total_size += seeds_.capacity() * sizeof(uint32_t);
+    total_size += seeds_.bytes();
     total_size += M_.capacity() * sizeof(double);
     total_size += permInit.capacity() * sizeof(uint32_t);
     total_size += permWork.capacity() * sizeof(uint32_t);
@@ -130,5 +130,5 @@ FastExpSketch::FastExpSketch(
     }
 }
 std::size_t FastExpSketch::get_sketch_size() const { return this->size; }
-const std::vector<std::uint32_t>& FastExpSketch::get_seeds() const { return seeds_; }
+std::vector<std::uint32_t> FastExpSketch::get_seeds() const { return seeds_.toVector(); }
 const std::vector<double>& FastExpSketch::get_registers() const { return M_; }

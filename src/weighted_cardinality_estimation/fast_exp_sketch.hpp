@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include "seeds.hpp"
 
 class FastExpSketch {
 public:
@@ -14,7 +15,7 @@ public:
     FastExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, const std::vector<double>& registers);
 
     std::size_t get_sketch_size() const;
-    const std::vector<std::uint32_t>& get_seeds() const;
+    std::vector<std::uint32_t> get_seeds() const;
     const std::vector<double>& get_registers() const;
 
     [[nodiscard]] size_t memory_usage_total() const;
@@ -24,7 +25,7 @@ public:
 private:
     uint32_t rand(uint32_t min, uint32_t max);
     std::size_t size; 
-    std::vector<std::uint32_t> seeds_;
+    Seeds seeds_;
     std::vector<double> M_;
     std::vector<uint32_t> permInit;
     std::vector<uint32_t> permWork;
