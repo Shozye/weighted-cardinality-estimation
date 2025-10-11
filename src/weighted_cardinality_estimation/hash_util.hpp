@@ -8,10 +8,10 @@
 
 inline std::uint64_t murmur64(
     const std::string& key, 
-    std::uint32_t seed, 
-    std::uint64_t* hash_answer
+    std::uint32_t seed
 )
 {
+    std::uint64_t hash_answer[2];
     MurmurHash3_x64_128(key.data(),
                         static_cast<int>(key.size()),
                         seed,

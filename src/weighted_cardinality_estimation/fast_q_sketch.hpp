@@ -47,5 +47,4 @@ private:
     compact::vector<int> M_; // sketch structure with elements between < r_min ... r_max >
     int min_sketch_value; 
     double min_value_to_change_sketch; // that's 2**{-min_sketch_value}
-    uint64_t hash_answer[2];
 };

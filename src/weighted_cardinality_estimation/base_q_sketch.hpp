@@ -34,8 +34,7 @@ private:
     std::int32_t r_max; // maximum possible value in sketch due to amount of bits per register
     std::int32_t r_min; // minimum possible value in sketch due to amount of bits per register
     compact::vector<int> M_; // sketch structure with elements between < r_min ... r_max >
-    std::uint64_t hash_answer[2];
-
+    
     double initialValue() const;
     double ffunc(double w) const;
     double dffunc(double w) const;

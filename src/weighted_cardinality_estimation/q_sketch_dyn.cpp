@@ -61,10 +61,10 @@ QSketchDyn::QSketchDyn(
 }
 
 void QSketchDyn::add(const std::string& elem, double weight) {
-    const uint64_t g_hash = murmur64(elem, g_seed_, hash_answer);
+    const uint64_t g_hash = murmur64(elem, g_seed_);
     const size_t j = g_hash % size;
 
-    const uint64_t u_hash = murmur64(elem, seeds_[j], hash_answer);
+    const uint64_t u_hash = murmur64(elem, seeds_[j]);
     const double u = to_unit_interval(u_hash);
     if (u == 0.0) { return; }
     const double r = -std::log(u) / weight;

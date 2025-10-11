@@ -24,5 +24,4 @@ private:
     std::size_t size;
     Seeds seeds_;
     std::vector<double> M_;
-    std::uint64_t hash_answer[2];
 };

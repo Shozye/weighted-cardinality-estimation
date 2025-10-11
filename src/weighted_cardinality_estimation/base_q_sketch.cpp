@@ -28,7 +28,7 @@ BaseQSketch::BaseQSketch(std::size_t sketch_size, const std::vector<std::uint32_
 void BaseQSketch::add(const std::string& elem, double weight)
 { 
     for (std::size_t i = 0; i < size; ++i) {
-        std::uint64_t h = murmur64(elem, seeds_[i], hash_answer);
+        std::uint64_t h = murmur64(elem, seeds_[i]);
         double u = to_unit_interval(h);   
         double g = -std::log(u) / weight;
         int q = static_cast<int>(std::floor(-std::log2(g)));

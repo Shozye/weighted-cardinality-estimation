@@ -27,11 +27,11 @@ void FastExpSketch::add(const std::string& elem, double weight)
     double S = 0;
     bool updateMax = false; 
 
-    fisher_yates.initialize(murmur64(elem, 1, hash_answer)); 
+    fisher_yates.initialize(murmur64(elem, 1)); 
     
 
     for (size_t k = 0; k < this->size; ++k){
-        std::uint64_t hashed = murmur64(elem, seeds_[k], hash_answer); 
+        std::uint64_t hashed = murmur64(elem, seeds_[k]); 
         double U = to_unit_interval(hashed); 
         double E = -std::log(U) / weight; 
 

@@ -28,5 +28,4 @@ private:
     std::vector<double> M_;
     FisherYates fisher_yates;
     double max;    
-    std::uint64_t hash_answer[2];
 };

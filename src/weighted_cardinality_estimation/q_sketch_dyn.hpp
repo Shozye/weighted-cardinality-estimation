@@ -46,7 +46,5 @@ private:
     double q_r_;
     compact::vector<int> R_;
     std::vector<int> T_; // here are values between 0 and m
-
-    uint64_t hash_answer[2];
 };
 
