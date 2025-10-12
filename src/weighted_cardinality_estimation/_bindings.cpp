@@ -7,6 +7,7 @@
 #include "fastgm_exp_sketch.hpp"
 #include "q_sketch_dyn.hpp"
 #include "q_sketch.hpp"
+#include "fast_log_exp_sketch.hpp"
 
 
 namespace py = pybind11;
@@ -221,4 +222,38 @@ PYBIND11_MODULE(_core, m) {
             );
         }
     ));
+
+    py::class_<FastLogExpSketch>(m, "FastLogExpSketch")
+        .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t, float>(),
+            py::arg("m"), py::arg("seeds"), py::arg("amount_bits"), py::arg("logarithm_base"))
+        .def("add", &FastLogExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
+        .def("add_many", &FastLogExpSketch::add_many, py::arg("elems"), py::arg("weights"))
+        .def("estimate", &FastLogExpSketch::estimate)
+        .def("memory_usage_total", &FastLogExpSketch::memory_usage_total)
+        .def("memory_usage_write", &FastLogExpSketch::memory_usage_write)
+        .def("memory_usage_estimate", &FastLogExpSketch::memory_usage_estimate)
+        .def(py::pickle(
+        [](const FastLogExpSketch &p) {
+            return py::make_tuple(
+                p.get_sketch_size(),
+                p.get_seeds(),
+                p.get_amount_bits(),
+                p.get_registers(),
+                p.get_logarithm_base()
+            );
+        },
+        [](const py::tuple& t) {
+            if (t.size() != 5) {
+                throw std::runtime_error("Invalid state for FastLogExpSketch pickle!");
+            }
+            return FastLogExpSketch(
+                t[0].cast<std::size_t>(),
+                t[1].cast<std::vector<std::uint32_t>>(),
+                t[2].cast<std::uint8_t>(),
+                t[4].cast<float>(),
+                t[3].cast<std::vector<int>>()
+            );
+        }
+    ));;
+
 }

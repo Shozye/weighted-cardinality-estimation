@@ -6,6 +6,7 @@ from ._core import BaseQSketch # type: ignore
 from ._core import FastQSketch # type: ignore
 from ._core import QSketchDyn # type: ignore
 from ._core import QSketch # type: ignore
+from ._core import FastLogExpSketch # type: ignore
 
 __all__ = [
     "ExpSketch", 
@@ -15,6 +16,7 @@ __all__ = [
     "FastQSketch", 
     "QSketchDyn", 
     "QSketch",
+    "FastLogExpSketch",
     "__version__"
 ]
 __version__ = _md.version(__name__)

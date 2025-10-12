@@ -1,0 +1,57 @@
+#pragma once
+#include "compact_vector.hpp"
+#include "seeds.hpp"
+#include <vector>
+#include <string>
+#include <cstdint>
+#include "fisher_yates.hpp"
+
+class FastLogExpSketch {
+public:
+    FastLogExpSketch(
+        std::size_t sketch_size, 
+        const std::vector<std::uint32_t>& seeds, 
+        std::uint8_t amount_bits,
+        float logarithm_base
+    );
+    void add(const std::string& elem, double weight = 1.0);
+    void add_many(const std::vector<std::string>& elems,
+                         const std::vector<double>& weights);
+    [[nodiscard]] double estimate();
+
+    FastLogExpSketch(
+        std::size_t sketch_size, 
+        const std::vector<std::uint32_t>& seeds, 
+        std::uint8_t amount_bits, 
+        float logarithm_base,
+        const std::vector<int>& registers
+    );
+
+    std::size_t get_sketch_size() const;
+    std::vector<std::uint32_t> get_seeds() const;
+    std::uint8_t get_amount_bits() const;
+    std::vector<int> get_registers() const;
+    float get_logarithm_base() const;
+
+    [[nodiscard]] size_t memory_usage_total() const;
+    [[nodiscard]] size_t memory_usage_write() const;
+    [[nodiscard]] size_t memory_usage_estimate() const;
+private:
+    double initialValue() const;
+    double ffunc_divided_by_dffunc(double w) const;
+    double Newton(double c0) const;
+
+    void update_treshold();
+
+    std::size_t size; // amount of registers used in sketch. Sketch uses linear memory to m and increases accuracy based on m
+    Seeds seeds_;
+    FisherYates fisher_yates;
+    std::uint8_t amount_bits_;
+    float logarithm_base;
+    std::int32_t r_max; // maximum possible value in sketch due to amount of bits per register
+    std::int32_t r_min; // minimum possible value in sketch due to amount of bits per register
+
+    compact::vector<int> M_; // sketch structure with elements between < r_min ... r_max >
+    int min_sketch_value; 
+    double min_value_to_change_sketch; // that's 2**{-min_sketch_value}
+};
