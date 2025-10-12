@@ -1,3 +1,4 @@
+#include <compact_vector.hpp>
 #include <vector>
 #include <iostream>
 #include <cstdint>
@@ -28,4 +29,28 @@ std::uint32_t argmax(std::vector<double> vec){
         }
     }
     return argmax;
+}
+
+std::uint32_t argmin(std::vector<int> vec){
+    int min = vec[0];
+    uint32_t argmin = 0;
+    for(uint32_t j = 1; j < vec.size(); j++){
+        if (vec[j] < min){
+            argmin = j;
+            min = vec[j];
+        }
+    }
+    return argmin;
+}
+
+std::uint32_t argmin(compact::vector<int> vec){
+    int min = vec[0];
+    uint32_t argmin = 0;
+    for(uint32_t j = 1; j < vec.size(); j++){
+        if (vec[j] < min){
+            argmin = j;
+            min = vec[j];
+        }
+    }
+    return argmin;
 }

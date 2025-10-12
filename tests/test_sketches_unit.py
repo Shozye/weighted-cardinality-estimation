@@ -1,6 +1,7 @@
 import copy
 import random
 import pytest
+from tests.test_sketches_functional import QSketch
 from weighted_cardinality_estimation import BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, FastQSketch, QSketchDyn
 
 
@@ -11,6 +12,7 @@ SKETCH_CONSTRUCTORS_WITH_SEEDS = [
     pytest.param(lambda m, seeds: BaseQSketch(m, seeds, 8), id="BaseQSketch"),
     pytest.param(lambda m, seeds: FastQSketch(m, seeds, amount_bits=8), id="FastQSketch"),
     pytest.param(lambda m, seeds: QSketchDyn(m, seeds, amount_bits=8, g_seed=42), id="QSketchDyn"),
+    pytest.param(lambda m, seeds: QSketch(m, seeds, amount_bits=8), id="QSketch"),
 ]
 
 SKETCH_CONSTRUCTORS_WITH_NO_SEEDS = [
@@ -20,6 +22,7 @@ SKETCH_CONSTRUCTORS_WITH_NO_SEEDS = [
     pytest.param(lambda m, seeds: BaseQSketch(m, [], 8), id="BaseQSketch"),
     pytest.param(lambda m, seeds: FastQSketch(m, [], amount_bits=8), id="FastQSketch"),
     pytest.param(lambda m, seeds: QSketchDyn(m, [], amount_bits=8, g_seed=42), id="QSketchDyn"),
+    pytest.param(lambda m, seeds: QSketch(m, [], amount_bits=8), id="QSketch"),
 ]
 
 SKETCH_CONSTRUCTORS = SKETCH_CONSTRUCTORS_WITH_NO_SEEDS + SKETCH_CONSTRUCTORS_WITH_SEEDS
