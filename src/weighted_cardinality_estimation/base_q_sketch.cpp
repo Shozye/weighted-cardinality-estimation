@@ -4,8 +4,7 @@
 #include <stdexcept>
 #include "hash_util.hpp"
 #include "compact_vector.hpp"
-
-#define NEWTON_MAX_ITERATIONS 5
+#include "utils.hpp"
 
 BaseQSketch::BaseQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, uint8_t amount_bits)
     : size(sketch_size), 
@@ -108,46 +107,32 @@ std::uint8_t BaseQSketch::get_amount_bits() const {
     return amount_bits_;
 }
 
-
 double BaseQSketch::initialValue() const {
-    double c0 = 0.0;
     double tmp_sum = 0.0;
- 
-    for(size_t i=0; i<this->size; i++) { 
-        tmp_sum += std::ldexp(1.0, -M_[i]);
+    for(int r: M_) { 
+        tmp_sum += std::ldexp(1.0, -r);
     }
-
-    c0 = (double)(this->size-1) / tmp_sum;
-    return c0;
+    return (double)(this->size-1) / tmp_sum;
 }
 
-double BaseQSketch::ffunc(double w) const {
-    double res = 0;
-    for (size_t i = 0; i < size; ++i) {
-        double x = std::ldexp(1.0, -M_[i] - 1);
+double BaseQSketch::ffunc_divided_by_dffunc(double w) const {
+    double ffunc = 0;
+    double dffunc = 0;
+    for (int r: M_) {
+        double x = std::ldexp(1.0, -r - 1);
         double ex = std::exp(w * x);
-        res += x * (2.0 - ex) / (ex - 1.0);
+        ffunc += x * (2.0 - ex) / (ex - 1.0);
+        dffunc += -x * x * ex * pow(ex - 1, -2);
     }
-    return res;
-}
-
-double BaseQSketch::dffunc(double w) const {
-    double res = 0;
-    for (size_t i = 0; i < size; ++i) {
-        double x = std::ldexp(1.0, -M_[i] - 1);
-        double ex = std::exp(w * x);
-        res += -x * x * ex * pow(ex - 1, -2);
-    }
-    return res;
+    return ffunc / dffunc;
 }
 
 double BaseQSketch::Newton(double c0) const {
-    double err = 1e-5;
-    double c1 = c0 - (ffunc(c0) / dffunc(c0));
+    double c1 = c0 - ffunc_divided_by_dffunc(c0);
     int it = 0;
-    while (std::abs(c1 - c0) > err) {
+    while (std::abs(c1 - c0) > NEWTON_MAX_ERROR) {
         c0 = c1;
-        c1 = c0 - ffunc(c0) / dffunc(c0);
+        c1 = c0 - ffunc_divided_by_dffunc(c0);
         it += 1;
         if (it > NEWTON_MAX_ITERATIONS){ break; }
     }

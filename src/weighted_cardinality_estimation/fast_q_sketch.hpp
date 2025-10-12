@@ -30,10 +30,9 @@ public:
     [[nodiscard]] size_t memory_usage_write() const;
     [[nodiscard]] size_t memory_usage_estimate() const;
 private:
-    double initialValue();
-    double ffunc(double w);
-    double dffunc(double w);
-    double Newton(double c0);
+    double initialValue() const;
+    double ffunc_divided_by_dffunc(double w) const;
+    double Newton(double c0) const;
 
     void update_treshold();
 

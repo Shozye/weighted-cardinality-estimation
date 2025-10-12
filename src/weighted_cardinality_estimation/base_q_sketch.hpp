@@ -36,7 +36,6 @@ private:
     compact::vector<int> M_; // sketch structure with elements between < r_min ... r_max >
     
     double initialValue() const;
-    double ffunc(double w) const;
-    double dffunc(double w) const;
+    double ffunc_divided_by_dffunc(double w) const;
     double Newton(double c0) const;
 };
