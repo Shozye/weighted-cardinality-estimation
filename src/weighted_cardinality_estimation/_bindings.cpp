@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include "base_log_exp_sketch.hpp"
 #include "base_q_sketch.hpp"
 #include "exp_sketch.hpp"
 #include "fast_exp_sketch.hpp"
@@ -247,6 +248,39 @@ PYBIND11_MODULE(_core, m) {
                 throw std::runtime_error("Invalid state for FastLogExpSketch pickle!");
             }
             return FastLogExpSketch(
+                t[0].cast<std::size_t>(),
+                t[1].cast<std::vector<std::uint32_t>>(),
+                t[2].cast<std::uint8_t>(),
+                t[4].cast<float>(),
+                t[3].cast<std::vector<int>>()
+            );
+        }
+    ));;
+
+    py::class_<BaseLogExpSketch>(m, "BaseLogExpSketch")
+        .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t, float>(),
+            py::arg("m"), py::arg("seeds"), py::arg("amount_bits"), py::arg("logarithm_base"))
+        .def("add", &BaseLogExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
+        .def("add_many", &BaseLogExpSketch::add_many, py::arg("elems"), py::arg("weights"))
+        .def("estimate", &BaseLogExpSketch::estimate)
+        .def("memory_usage_total", &BaseLogExpSketch::memory_usage_total)
+        .def("memory_usage_write", &BaseLogExpSketch::memory_usage_write)
+        .def("memory_usage_estimate", &BaseLogExpSketch::memory_usage_estimate)
+        .def(py::pickle(
+        [](const BaseLogExpSketch &p) {
+            return py::make_tuple(
+                p.get_sketch_size(),
+                p.get_seeds(),
+                p.get_amount_bits(),
+                p.get_registers(),
+                p.get_logarithm_base()
+            );
+        },
+        [](const py::tuple& t) {
+            if (t.size() != 5) {
+                throw std::runtime_error("Invalid state for BaseLogExpSketch pickle!");
+            }
+            return BaseLogExpSketch(
                 t[0].cast<std::size_t>(),
                 t[1].cast<std::vector<std::uint32_t>>(),
                 t[2].cast<std::uint8_t>(),
