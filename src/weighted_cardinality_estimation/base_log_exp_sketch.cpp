@@ -25,9 +25,7 @@ BaseLogExpSketch::BaseLogExpSketch(
     if ((!seeds.empty() && seeds.size() != size)) { 
         throw std::invalid_argument("Seeds must have length m or 0"); 
     }
-    for (std::size_t i = 0; i < size; ++i) {
-        M_[i] = r_min;
-    }
+    std::fill(M_.begin(), M_.end(), r_min);
 }
 
 BaseLogExpSketch::BaseLogExpSketch(
