@@ -9,6 +9,7 @@
 #include "q_sketch_dyn.hpp"
 #include "q_sketch.hpp"
 #include "fast_log_exp_sketch.hpp"
+#include "base_shifted_log_exp_sketch.hpp"
 
 
 namespace py = pybind11;
@@ -289,5 +290,38 @@ PYBIND11_MODULE(_core, m) {
             );
         }
     ));;
-
+    py::class_<BaseShiftedLogExpSketch>(m, "BaseShiftedLogExpSketch")
+        .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t, float>(),
+            py::arg("m"), py::arg("seeds"), py::arg("amount_bits"), py::arg("logarithm_base"))
+        .def("add", &BaseShiftedLogExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
+        .def("add_many", &BaseShiftedLogExpSketch::add_many, py::arg("elems"), py::arg("weights"))
+        .def("estimate", &BaseShiftedLogExpSketch::estimate)
+        .def("memory_usage_total", &BaseShiftedLogExpSketch::memory_usage_total)
+        .def("memory_usage_write", &BaseShiftedLogExpSketch::memory_usage_write)
+        .def("memory_usage_estimate", &BaseShiftedLogExpSketch::memory_usage_estimate)
+        .def(py::pickle(
+        [](const BaseShiftedLogExpSketch &p) {
+            return py::make_tuple(
+                p.get_sketch_size(),
+                p.get_seeds(),
+                p.get_amount_bits(),
+                p.get_logarithm_base(),
+                p.get_registers(),
+                p.get_offset()
+            );
+        },
+        [](const py::tuple& t) {
+            if (t.size() != 6) {
+                throw std::runtime_error("Invalid state for BaseShiftedLogExpSketch pickle!");
+            }
+            return BaseShiftedLogExpSketch(
+                t[0].cast<std::size_t>(),
+                t[1].cast<std::vector<std::uint32_t>>(),
+                t[2].cast<std::uint8_t>(),
+                t[3].cast<float>(),
+                t[4].cast<std::vector<uint32_t>>(),
+                t[5].cast<int>()
+            );
+        }
+    ));;
 }

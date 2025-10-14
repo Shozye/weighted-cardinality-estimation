@@ -2,7 +2,7 @@ import copy
 import random
 import pytest
 from tests.test_sketches_functional import QSketch
-from weighted_cardinality_estimation import BaseLogExpSketch, BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, BaseLogExpSketch, FastLogExpSketch, FastQSketch, QSketchDyn
+from weighted_cardinality_estimation import BaseLogExpSketch, BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, BaseLogExpSketch, FastLogExpSketch, FastQSketch, QSketchDyn, BaseShiftedLogExpSketch
 
 
 SKETCH_CONSTRUCTORS_WITH_SEEDS = [
@@ -15,6 +15,7 @@ SKETCH_CONSTRUCTORS_WITH_SEEDS = [
     pytest.param(lambda m, seeds: QSketch(m, seeds, amount_bits=8), id="QSketch"),
     pytest.param(lambda m, seeds: BaseLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), id="BaseLogExpSketch"),
     pytest.param(lambda m, seeds: FastLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), id="FastLogExpSketch"),
+    pytest.param(lambda m, seeds: BaseShiftedLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), id="BaseShiftedLogExpSketch"),
 ]
 
 SKETCH_CONSTRUCTORS_WITH_NO_SEEDS = [
@@ -27,6 +28,7 @@ SKETCH_CONSTRUCTORS_WITH_NO_SEEDS = [
     pytest.param(lambda m, seeds: QSketch(m, [], amount_bits=8), id="QSketch"),
     pytest.param(lambda m, seeds: BaseLogExpSketch(m, [], amount_bits=8, logarithm_base=2), id="BaseLogExpSketch"),
     pytest.param(lambda m, seeds: FastLogExpSketch(m, [], amount_bits=8, logarithm_base=2), id="FastLogExpSketch"),
+    pytest.param(lambda m, seeds: BaseShiftedLogExpSketch(m, [], amount_bits=8, logarithm_base=2), id="BaseShiftedLogExpSketch"),
 ]
 
 SKETCH_CONSTRUCTORS = SKETCH_CONSTRUCTORS_WITH_NO_SEEDS + SKETCH_CONSTRUCTORS_WITH_SEEDS
