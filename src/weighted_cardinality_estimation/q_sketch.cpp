@@ -31,7 +31,7 @@ QSketch::QSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seed
       j_star(argmin(registers))
 {
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
-    if (M_.size() != sketch_size) { throw std::invalid_argument("Invalid state: registers vector size mismatch"); }
+    if (registers.size() != sketch_size) { throw std::invalid_argument("Invalid state: registers vector size mismatch"); }
     for (std::size_t i = 0; i < size; ++i) {
         M_[i] = registers[i];
     }

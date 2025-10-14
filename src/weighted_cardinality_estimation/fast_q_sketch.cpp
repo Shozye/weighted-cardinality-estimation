@@ -37,7 +37,7 @@ FastQSketch::FastQSketch(
       M_(amount_bits, sketch_size)
 {
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
-    if (M_.size() != sketch_size) { throw std::invalid_argument("Invalid state: registers vector size mismatch"); }
+    if (registers.size() != sketch_size) { throw std::invalid_argument("Invalid state: registers vector size mismatch"); }
     for (std::size_t i = 0; i < size; ++i) {
         M_[i] = registers[i];
     }
