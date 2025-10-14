@@ -5,8 +5,9 @@
 #include <string>
 #include <cstdint>
 #include "fisher_yates.hpp"
+#include "sketch.hpp"
 
-class FastLogExpSketch {
+class FastLogExpSketch : public Sketch {
 public:
     FastLogExpSketch(
         std::size_t sketch_size, 
@@ -14,11 +15,6 @@ public:
         std::uint8_t amount_bits,
         float logarithm_base
     );
-    void add(const std::string& elem, double weight = 1.0);
-    void add_many(const std::vector<std::string>& elems,
-                         const std::vector<double>& weights);
-    [[nodiscard]] double estimate();
-
     FastLogExpSketch(
         std::size_t sketch_size, 
         const std::vector<std::uint32_t>& seeds, 
@@ -26,9 +22,9 @@ public:
         float logarithm_base,
         const std::vector<int>& registers
     );
+    void add(const std::string& elem, double weight = 1.0);
+    [[nodiscard]] double estimate() const;
 
-    std::size_t get_sketch_size() const;
-    std::vector<std::uint32_t> get_seeds() const;
     std::uint8_t get_amount_bits() const;
     std::vector<int> get_registers() const;
     float get_logarithm_base() const;
@@ -43,8 +39,6 @@ private:
 
     void update_treshold();
 
-    std::size_t size; // amount of registers used in sketch. Sketch uses linear memory to m and increases accuracy based on m
-    Seeds seeds_;
     FisherYates fisher_yates;
     std::uint8_t amount_bits_;
     float logarithm_base;

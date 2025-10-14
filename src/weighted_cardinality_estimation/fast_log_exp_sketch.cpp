@@ -12,8 +12,7 @@ FastLogExpSketch::FastLogExpSketch(
     uint8_t amount_bits,
     float logarithm_base
 )
-    : size(sketch_size), 
-      seeds_(seeds),
+    : Sketch(sketch_size, seeds),
       fisher_yates(size),
       amount_bits_(amount_bits),
       logarithm_base(logarithm_base),
@@ -21,11 +20,8 @@ FastLogExpSketch::FastLogExpSketch(
       r_min(-(1 << (amount_bits - 1)) + 1),
       M_(amount_bits, sketch_size)
 {
-    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
-    if ((!seeds.empty() && seeds.size() != size)) { 
-        throw std::invalid_argument("Seeds must have length m or 0"); 
-    }
+
     std::fill(M_.begin(), M_.end(), r_min);
     update_treshold();
 }
@@ -37,8 +33,7 @@ FastLogExpSketch::FastLogExpSketch(
     float logarithm_base,
     const std::vector<int>& registers
 )
-    : size(sketch_size),
-      seeds_(seeds),
+    : Sketch(sketch_size, seeds),
       fisher_yates(size),
       amount_bits_(amount_bits),
       logarithm_base(logarithm_base),
@@ -46,11 +41,7 @@ FastLogExpSketch::FastLogExpSketch(
       r_min(-(1 << (amount_bits - 1)) + 1),
       M_(amount_bits, sketch_size)
 {
-    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
-    if ((!seeds.empty() && seeds.size() != size)) { 
-        throw std::invalid_argument("Seeds must have length m or 0"); 
-    }
     if (M_.size() != sketch_size) { throw std::invalid_argument("Invalid state: registers vector size mismatch"); }
     for (std::size_t i = 0; i < size; ++i) {
         M_[i] = registers[i];
@@ -89,8 +80,6 @@ size_t FastLogExpSketch::memory_usage_estimate() const {
     return estimate_size;
 }
 
-std::size_t FastLogExpSketch::get_sketch_size() const { return size; }
-std::vector<std::uint32_t> FastLogExpSketch::get_seeds() const { return seeds_.toVector(); }
 std::uint8_t FastLogExpSketch::get_amount_bits() const { return amount_bits_; }
 float FastLogExpSketch::get_logarithm_base() const { return logarithm_base; }
 std::vector<int> FastLogExpSketch::get_registers() const {
@@ -132,18 +121,6 @@ void FastLogExpSketch::add(const std::string& elem, double weight){
     }
 } 
 
-void FastLogExpSketch::add_many(
-    const std::vector<std::string>& elems,
-    const std::vector<double>& weights
-) {
-    if (elems.size() != weights.size()){
-        throw std::invalid_argument("add_many: elems and weights size mismatch");
-    }
-    for (std::size_t i = 0; i < elems.size(); ++i) {
-        this->add(elems[i], weights[i]);
-    }
-}
-
 double FastLogExpSketch::initialValue() const {
     double tmp_sum = 0.0;
     for(int r: M_) { 
@@ -176,6 +153,6 @@ double FastLogExpSketch::Newton(double c0) const {
     return c1;
 }
 
-double FastLogExpSketch::estimate() {
+double FastLogExpSketch::estimate() const {
     return Newton(initialValue());
 }

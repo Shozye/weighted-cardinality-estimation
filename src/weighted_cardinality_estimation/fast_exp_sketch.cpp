@@ -7,19 +7,25 @@
 #include "hash_util.hpp"
 #include <cstring>
 
-FastExpSketch::FastExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds)
-    : size(sketch_size), 
-      seeds_(seeds),
+FastExpSketch::FastExpSketch(
+    std::size_t sketch_size, 
+    const std::vector<std::uint32_t>& seeds
+):    Sketch(sketch_size, seeds),
       M_(sketch_size, std::numeric_limits<double>::infinity()),
       fisher_yates(sketch_size),
       max(std::numeric_limits<double>::infinity())
 {
-    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
-    if ((!seeds.empty() && seeds.size() != size)) { 
-        throw std::invalid_argument("Seeds must have length m or 0"); 
-    }
 }
-
+FastExpSketch::FastExpSketch(
+    std::size_t sketch_size,
+    const std::vector<std::uint32_t>& seeds,
+    const std::vector<double>& registers)
+:   Sketch(sketch_size, seeds),
+    M_(registers),
+    fisher_yates(sketch_size)
+{
+    max = *std::max_element(M_.begin(), M_.end());
+}
 
 
 void FastExpSketch::add(const std::string& elem, double weight)
@@ -73,16 +79,6 @@ size_t FastExpSketch::memory_usage_estimate() const {
 }
 
 
-void FastExpSketch::add_many(const std::vector<std::string>& elems,
-                                  const std::vector<double>& weights) {
-    if (elems.size() != weights.size()){
-        throw std::invalid_argument("add_many: elems and weights size mismatch");
-    }
-    for (std::size_t i = 0; i < elems.size(); ++i) {
-        this->add(elems[i], weights[i]);
-    }
-}
-
 double FastExpSketch::estimate() const
 {
     double total = 0.0;
@@ -100,18 +96,4 @@ double FastExpSketch::jaccard_struct(const FastExpSketch& other) const
     return static_cast<double>(equal) / static_cast<double>(this->size);
 }
 
-FastExpSketch::FastExpSketch(
-    std::size_t sketch_size,
-    const std::vector<std::uint32_t>& seeds,
-    const std::vector<double>& registers)
-:   size(sketch_size),
-    seeds_(seeds),
-    M_(registers),
-    fisher_yates(sketch_size)
-{
-    if (size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
-    max = *std::max_element(M_.begin(), M_.end());
-}
-std::size_t FastExpSketch::get_sketch_size() const { return this->size; }
-std::vector<std::uint32_t> FastExpSketch::get_seeds() const { return seeds_.toVector(); }
 const std::vector<double>& FastExpSketch::get_registers() const { return M_; }

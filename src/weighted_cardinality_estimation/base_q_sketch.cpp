@@ -6,21 +6,36 @@
 #include "compact_vector.hpp"
 #include "utils.hpp"
 
-BaseQSketch::BaseQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, uint8_t amount_bits)
-    : size(sketch_size), 
-      seeds_(seeds),
+BaseQSketch::BaseQSketch(
+    std::size_t sketch_size, 
+    const std::vector<std::uint32_t>& seeds, 
+    uint8_t amount_bits
+): Sketch(sketch_size, seeds),
       amount_bits_(amount_bits),
       r_max((1 << (amount_bits - 1)) - 1),
       r_min(-(1 << (amount_bits - 1)) + 1),
       M_(amount_bits, sketch_size)
 {
-    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
-    if ((!seeds.empty() && seeds.size() != size)) { 
-        throw std::invalid_argument("Seeds must have length m or 0"); 
-    }
     for (std::size_t i = 0; i < size; ++i) {
         M_[i] = r_min;
+    }
+}
+
+BaseQSketch::BaseQSketch(
+    std::size_t sketch_size, 
+    const std::vector<std::uint32_t>& seeds, 
+    std::uint8_t amount_bits, 
+    const std::vector<int>& registers
+):  Sketch(sketch_size, seeds),
+    amount_bits_(amount_bits),
+    r_max((1 << (amount_bits - 1)) - 1),
+    r_min(-(1 << (amount_bits - 1)) + 1),
+    M_(amount_bits, sketch_size)
+{
+    if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
+    for (std::size_t i = 0; i < size; ++i) {
+        M_[i] = registers[i];
     }
 }
 
@@ -55,48 +70,6 @@ size_t BaseQSketch::memory_usage_write() const {
 
 size_t BaseQSketch::memory_usage_estimate() const {
     return M_.bytes();
-}
-
-void BaseQSketch::add_many(const std::vector<std::string>& elems,
-                                  const std::vector<double>& weights) {
-    if (elems.size() != weights.size()){
-        throw std::invalid_argument("add_many: elems and weights size mismatch");
-    }
-    for (std::size_t i = 0; i < elems.size(); ++i) {
-        this->add(elems[i], weights[i]);
-    }
-}
-
-
-BaseQSketch::BaseQSketch(
-    std::size_t sketch_size, 
-    const std::vector<std::uint32_t>& seeds, 
-    std::uint8_t amount_bits, 
-    const std::vector<int>& registers
-)
-    : size(sketch_size), 
-    seeds_(seeds), 
-    amount_bits_(amount_bits),
-    r_max((1 << (amount_bits - 1)) - 1),
-    r_min(-(1 << (amount_bits - 1)) + 1),
-    M_(amount_bits, sketch_size)
-{
-    if (sketch_size == 0) { throw std::invalid_argument("Sketch size 'm' must be positive."); }
-    if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
-    if ((!seeds.empty() && seeds.size() != size)) { 
-        throw std::invalid_argument("Seeds must have length m or 0"); 
-    }
-    for (std::size_t i = 0; i < size; ++i) {
-        M_[i] = registers[i];
-    }
-}
-
-std::size_t BaseQSketch::get_sketch_size() const {
-    return size;
-}
-
-std::vector<std::uint32_t> BaseQSketch::get_seeds() const {
-    return seeds_.toVector();
 }
 
 std::vector<int> BaseQSketch::get_registers() const {

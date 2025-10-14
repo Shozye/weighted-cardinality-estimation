@@ -20,7 +20,6 @@ public:
     [[nodiscard]] double estimate() const;
     [[nodiscard]] double jaccard_struct(const ExpSketch& other) const;
 
-
     const std::vector<double>& get_registers() const;
     [[nodiscard]] size_t memory_usage_total() const;
     [[nodiscard]] size_t memory_usage_write() const;

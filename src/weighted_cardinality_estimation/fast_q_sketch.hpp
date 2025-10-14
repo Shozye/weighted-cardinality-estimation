@@ -1,28 +1,26 @@
 #pragma once
 #include "compact_vector.hpp"
-#include "seeds.hpp"
 #include <vector>
 #include <string>
 #include <cstdint>
 #include "fisher_yates.hpp"
+#include "sketch.hpp"
 
-class FastQSketch {
+class FastQSketch : public Sketch {
 public:
-    FastQSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits);
-    void add(const std::string& elem, double weight = 1.0);
-    void add_many(const std::vector<std::string>& elems,
-                         const std::vector<double>& weights);
-    [[nodiscard]] double estimate();
-
+    FastQSketch(std::size_t sketch_size, 
+        const std::vector<std::uint32_t>& seeds, 
+        std::uint8_t amount_bits
+    );
     FastQSketch(
         std::size_t sketch_size, 
         const std::vector<std::uint32_t>& seeds, 
         std::uint8_t amount_bits, 
-        const std::vector<int>& registers)
-        ;
+        const std::vector<int>& registers
+    );
+    void add(const std::string& elem, double weight = 1.0);
+    [[nodiscard]] double estimate() const;
 
-    std::size_t get_sketch_size() const;
-    std::vector<std::uint32_t> get_seeds() const;
     std::uint8_t get_amount_bits() const;
     std::vector<int> get_registers() const;
 
@@ -36,8 +34,6 @@ private:
 
     void update_treshold();
 
-    std::size_t size; // amount of registers used in sketch. Sketch uses linear memory to m and increases accuracy based on m
-    Seeds seeds_;
     FisherYates fisher_yates;
     std::uint8_t amount_bits_;
     std::int32_t r_max; // maximum possible value in sketch due to amount of bits per register

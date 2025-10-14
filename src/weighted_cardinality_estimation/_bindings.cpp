@@ -139,7 +139,7 @@ PYBIND11_MODULE(_core, m) {
     .def(py::pickle(
         [](const QSketchDyn &p) {
             return py::make_tuple(
-                p.get_m(),
+                p.get_sketch_size(),
                 p.get_amount_bits(),
                 p.get_g_seed(),
                 p.get_seeds(),

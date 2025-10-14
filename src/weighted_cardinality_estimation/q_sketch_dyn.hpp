@@ -3,15 +3,16 @@
 #include <string>
 #include <cstdint>
 #include "compact_vector.hpp"
-#include "seeds.hpp"
+#include "sketch.hpp"
 
-class QSketchDyn {
+class QSketchDyn : public Sketch {
 public:
-    QSketchDyn(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits, std::uint32_t g_seed);
-    void add(const std::string& elem, double weight = 1.0);
-    void add_many(const std::vector<std::string>& elems, const std::vector<double>& weights);
-    [[nodiscard]] double estimate() const;
-
+    QSketchDyn(
+        std::size_t sketch_size, 
+        const std::vector<std::uint32_t>& seeds, 
+        std::uint8_t amount_bits, 
+        std::uint32_t g_seed
+    );
     QSketchDyn(
         std::size_t sketch_size,
         std::uint8_t amount_bits,
@@ -21,10 +22,11 @@ public:
         const std::vector<int>& t_histogram,
         double cardinality
     );
-    std::size_t get_m() const;
+
+    void add(const std::string& elem, double weight = 1.0);
+    [[nodiscard]] double estimate() const;
     std::uint8_t get_amount_bits() const;
     std::uint32_t get_g_seed() const;
-    std::vector<std::uint32_t> get_seeds() const;
     std::vector<int> get_registers() const;
     const std::vector<int>& get_t_histogram() const;
     double get_cardinality() const;
@@ -34,11 +36,9 @@ public:
     [[nodiscard]] size_t memory_usage_estimate() const;
 
 private:
-    std::size_t size;
     std::uint8_t amount_bits_;
     std::int32_t r_min;
     std::int32_t r_max;
-    Seeds seeds_;
     std::uint32_t g_seed_;
     std::vector<int> k_idx_;
 

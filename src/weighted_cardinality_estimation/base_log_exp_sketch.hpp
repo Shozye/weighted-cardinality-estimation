@@ -1,11 +1,11 @@
 #pragma once
 #include "compact_vector.hpp"
-#include "seeds.hpp"
+#include "sketch.hpp"
 #include <vector>
 #include <string>
 #include <cstdint>
 
-class BaseLogExpSketch {
+class BaseLogExpSketch : public Sketch {
 public:
     BaseLogExpSketch(
         std::size_t sketch_size, 
@@ -13,11 +13,6 @@ public:
         std::uint8_t amount_bits,
         float logarithm_base
     );
-    void add(const std::string& elem, double weight = 1.0);
-    void add_many(const std::vector<std::string>& elems,
-                         const std::vector<double>& weights);
-    [[nodiscard]] double estimate();
-
     BaseLogExpSketch(
         std::size_t sketch_size, 
         const std::vector<std::uint32_t>& seeds, 
@@ -25,9 +20,9 @@ public:
         float logarithm_base,
         const std::vector<int>& registers
     );
+    void add(const std::string& elem, double weight = 1.0);
+    [[nodiscard]] double estimate() const ;
 
-    std::size_t get_sketch_size() const;
-    std::vector<std::uint32_t> get_seeds() const;
     std::uint8_t get_amount_bits() const;
     std::vector<int> get_registers() const;
     float get_logarithm_base() const;
@@ -40,8 +35,6 @@ private:
     double ffunc_divided_by_dffunc(double w) const;
     double Newton(double c0) const;
 
-    std::size_t size; // amount of registers used in sketch. Sketch uses linear memory to m and increases accuracy based on m
-    Seeds seeds_;
     std::uint8_t amount_bits_;
     float logarithm_base;
     std::int32_t r_max; // maximum possible value in sketch due to amount of bits per register

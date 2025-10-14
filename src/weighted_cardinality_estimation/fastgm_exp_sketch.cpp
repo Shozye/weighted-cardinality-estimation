@@ -5,10 +5,11 @@
 #include <cstdint>
 #include"utils.hpp"
 
-FastGMExpSketch::FastGMExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds):   
-    size(sketch_size),
+FastGMExpSketch::FastGMExpSketch(
+    std::size_t sketch_size, 
+    const std::vector<std::uint32_t>& seeds
+):  Sketch(sketch_size, seeds),
     M_(std::vector<double>(sketch_size, -1)),
-    seeds_(seeds),
     fisher_yates(FisherYates(sketch_size)),
     j_star(1),
     k_star(sketch_size),
@@ -20,10 +21,8 @@ FastGMExpSketch::FastGMExpSketch(
     std::size_t sketch_size, 
     const std::vector<std::uint32_t>& seeds, 
     const std::vector<double>& registers
-):   
-    size(sketch_size),
+):  Sketch(sketch_size, seeds),
     M_(registers),
-    seeds_(seeds),
     fisher_yates(FisherYates(sketch_size)),
     j_star(argmax(M_))
     {
@@ -34,7 +33,7 @@ FastGMExpSketch::FastGMExpSketch(
             }
         }
         flagFastPrune = k_star == 0;
-    } // TODO:
+    }
 
 void FastGMExpSketch::add(const std::string& elem, double weight)
 { 
@@ -115,25 +114,7 @@ double FastGMExpSketch::jaccard_struct(const FastGMExpSketch& other) const {
     return static_cast<double>(equal) / static_cast<double>(size);
 }
 
-std::size_t FastGMExpSketch::get_sketch_size() const {
-    return size;
-}
-
-std::vector<std::uint32_t> FastGMExpSketch::get_seeds() const {
-    return seeds_.toVector();
-}
-
 
 const std::vector<double>& FastGMExpSketch::get_registers() const {
     return M_;
-}
-
-void FastGMExpSketch::add_many(const std::vector<std::string>& elems,
-                                  const std::vector<double>& weights) {
-    if (elems.size() != weights.size()){
-        throw std::invalid_argument("add_many: elems and weights size mismatch");
-    }
-    for (std::size_t i = 0; i < elems.size(); ++i) {
-        this->add(elems[i], weights[i]);
-    }
 }
