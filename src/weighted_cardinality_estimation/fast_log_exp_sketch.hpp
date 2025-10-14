@@ -1,6 +1,5 @@
 #pragma once
 #include "compact_vector.hpp"
-#include "seeds.hpp"
 #include <vector>
 #include <string>
 #include <cstdint>
