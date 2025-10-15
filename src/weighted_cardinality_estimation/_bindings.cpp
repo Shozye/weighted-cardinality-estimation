@@ -14,17 +14,21 @@
 
 namespace py = pybind11;
 
+template <typename SketchType>
+void bind_common_sketch_methods(py::class_<SketchType>& cls) {
+    cls.def("add", &SketchType::add, py::arg("x"), py::arg("weight") = 1.0)
+       .def("add_many", &SketchType::add_many, py::arg("elems"), py::arg("weights"))
+       .def("estimate", &SketchType::estimate)
+       .def("memory_usage_total", &SketchType::memory_usage_total)
+       .def("memory_usage_write", &SketchType::memory_usage_write)
+       .def("memory_usage_estimate", &SketchType::memory_usage_estimate);
+}
+
 PYBIND11_MODULE(_core, m) {
-    py::class_<ExpSketch>(m, "ExpSketch")
+    auto exp_sketch = py::class_<ExpSketch>(m, "ExpSketch")
         .def(py::init<std::size_t, const std::vector<std::uint32_t>&>(),
              py::arg("m"), py::arg("seeds"))
-        .def("add", &ExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
-        .def("estimate", &ExpSketch::estimate)
-        .def("add_many", &ExpSketch::add_many, py::arg("elems"), py::arg("weights"))
         .def("jaccard_struct", &ExpSketch::jaccard_struct)
-        .def("memory_usage_total", &ExpSketch::memory_usage_total)
-        .def("memory_usage_write", &ExpSketch::memory_usage_write)
-        .def("memory_usage_estimate", &ExpSketch::memory_usage_estimate)
         .def(py::pickle(
             [](const ExpSketch &p) {return py::make_tuple(p.get_sketch_size(), p.get_seeds(), p.get_registers());},
             [](const py::tuple& t) {
@@ -38,16 +42,11 @@ PYBIND11_MODULE(_core, m) {
                 );
             }
         ));
+    bind_common_sketch_methods(exp_sketch);
  
-    py::class_<FastExpSketch>(m, "FastExpSketch")
+    auto fast_exp_sketch = py::class_<FastExpSketch>(m, "FastExpSketch")
         .def(py::init<std::size_t, const std::vector<std::uint32_t>&>())
-        .def("add", &FastExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
-        .def("estimate", &FastExpSketch::estimate)
-        .def("add_many", &FastExpSketch::add_many, py::arg("elems"), py::arg("weights"))
         .def("jaccard_struct", &FastExpSketch::jaccard_struct)
-        .def("memory_usage_total", &FastExpSketch::memory_usage_total)
-        .def("memory_usage_write", &FastExpSketch::memory_usage_write)
-        .def("memory_usage_estimate", &FastExpSketch::memory_usage_estimate)
         .def(py::pickle(
     [](const FastExpSketch &p) {
         return py::make_tuple(
@@ -66,17 +65,12 @@ PYBIND11_MODULE(_core, m) {
             t[2].cast<std::vector<double>>()
         );
     }
-    ));;
+    ));
+    bind_common_sketch_methods(fast_exp_sketch);
 
-    py::class_<FastGMExpSketch>(m, "FastGMExpSketch")
+    auto fastgm_exp_sketch = py::class_<FastGMExpSketch>(m, "FastGMExpSketch")
         .def(py::init<std::size_t, const std::vector<std::uint32_t>&>())
-        .def("add", &FastGMExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
-        .def("estimate", &FastGMExpSketch::estimate)
-        .def("add_many", &FastGMExpSketch::add_many, py::arg("elems"), py::arg("weights"))
         .def("jaccard_struct", &FastGMExpSketch::jaccard_struct)
-        .def("memory_usage_total", &FastGMExpSketch::memory_usage_total)
-        .def("memory_usage_write", &FastGMExpSketch::memory_usage_write)
-        .def("memory_usage_estimate", &FastGMExpSketch::memory_usage_estimate)
         .def(py::pickle(
     [](const FastGMExpSketch &p) {
         return py::make_tuple(
@@ -95,17 +89,12 @@ PYBIND11_MODULE(_core, m) {
             t[2].cast<std::vector<double>>()
         );
     }
-    ));;
+    ));
+    bind_common_sketch_methods(fastgm_exp_sketch);
 
-    py::class_<FastQSketch>(m, "FastQSketch")
+    auto fast_q_sketch = py::class_<FastQSketch>(m, "FastQSketch")
         .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t>(),
             py::arg("m"), py::arg("seeds"), py::arg("amount_bits"))
-        .def("add", &FastQSketch::add, py::arg("x"), py::arg("weight") = 1.0)
-        .def("add_many", &FastQSketch::add_many, py::arg("elems"), py::arg("weights"))
-        .def("estimate", &FastQSketch::estimate)
-        .def("memory_usage_total", &FastQSketch::memory_usage_total)
-        .def("memory_usage_write", &FastQSketch::memory_usage_write)
-        .def("memory_usage_estimate", &FastQSketch::memory_usage_estimate)
         .def(py::pickle(
         [](const FastQSketch &p) {
             return py::make_tuple(
@@ -127,16 +116,11 @@ PYBIND11_MODULE(_core, m) {
             );
         }
     ));;
+    bind_common_sketch_methods(fast_q_sketch);
 
-    py::class_<QSketchDyn>(m, "QSketchDyn")
+    auto qsketchdyn = py::class_<QSketchDyn>(m, "QSketchDyn")
     .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t, std::uint32_t>(),
             py::arg("m"), py::arg("seeds"), py::arg("amount_bits"), py::arg("g_seed") = 42)
-    .def("add", &QSketchDyn::add, py::arg("elem"), py::arg("weight") = 1.0)
-    .def("add_many", &QSketchDyn::add_many, py::arg("elems"), py::arg("weights"))
-    .def("estimate", &QSketchDyn::estimate)
-    .def("memory_usage_total", &QSketchDyn::memory_usage_total)
-    .def("memory_usage_write", &QSketchDyn::memory_usage_write)
-    .def("memory_usage_estimate", &QSketchDyn::memory_usage_estimate)
     .def(py::pickle(
         [](const QSketchDyn &p) {
             return py::make_tuple(
@@ -162,16 +146,11 @@ PYBIND11_MODULE(_core, m) {
             );
         }
     ));
+    bind_common_sketch_methods(qsketchdyn);
 
-    py::class_<BaseQSketch>(m, "BaseQSketch")
+    auto baseqsketch = py::class_<BaseQSketch>(m, "BaseQSketch")
         .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t>(),
             py::arg("m"), py::arg("seeds"), py::arg("amount_bits"))
-        .def("add", &BaseQSketch::add, py::arg("x"), py::arg("weight") = 1.0)
-        .def("add_many", &BaseQSketch::add_many, py::arg("elems"), py::arg("weights"))
-        .def("estimate", &BaseQSketch::estimate)
-        .def("memory_usage_total", &BaseQSketch::memory_usage_total)
-        .def("memory_usage_write", &BaseQSketch::memory_usage_write)
-        .def("memory_usage_estimate", &BaseQSketch::memory_usage_estimate)
         .def(py::pickle(
         [](const BaseQSketch &p) {
             return py::make_tuple(
@@ -193,16 +172,11 @@ PYBIND11_MODULE(_core, m) {
             );
         }
     ));
+    bind_common_sketch_methods(baseqsketch);
 
-    py::class_<QSketch>(m, "QSketch")
+    auto qsketch = py::class_<QSketch>(m, "QSketch")
         .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t>(),
             py::arg("m"), py::arg("seeds"), py::arg("amount_bits"))
-        .def("add", &QSketch::add, py::arg("x"), py::arg("weight") = 1.0)
-        .def("add_many", &QSketch::add_many, py::arg("elems"), py::arg("weights"))
-        .def("estimate", &QSketch::estimate)
-        .def("memory_usage_total", &QSketch::memory_usage_total)
-        .def("memory_usage_write", &QSketch::memory_usage_write)
-        .def("memory_usage_estimate", &QSketch::memory_usage_estimate)
         .def(py::pickle(
         [](const QSketch &p) {
             return py::make_tuple(
@@ -224,16 +198,11 @@ PYBIND11_MODULE(_core, m) {
             );
         }
     ));
+    bind_common_sketch_methods(qsketch);
 
-    py::class_<FastLogExpSketch>(m, "FastLogExpSketch")
+    auto fastlogexpsketch = py::class_<FastLogExpSketch>(m, "FastLogExpSketch")
         .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t, float>(),
             py::arg("m"), py::arg("seeds"), py::arg("amount_bits"), py::arg("logarithm_base"))
-        .def("add", &FastLogExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
-        .def("add_many", &FastLogExpSketch::add_many, py::arg("elems"), py::arg("weights"))
-        .def("estimate", &FastLogExpSketch::estimate)
-        .def("memory_usage_total", &FastLogExpSketch::memory_usage_total)
-        .def("memory_usage_write", &FastLogExpSketch::memory_usage_write)
-        .def("memory_usage_estimate", &FastLogExpSketch::memory_usage_estimate)
         .def(py::pickle(
         [](const FastLogExpSketch &p) {
             return py::make_tuple(
@@ -257,16 +226,11 @@ PYBIND11_MODULE(_core, m) {
             );
         }
     ));;
+    bind_common_sketch_methods(fastlogexpsketch);
 
-    py::class_<BaseLogExpSketch>(m, "BaseLogExpSketch")
+    auto baselogexpsketch = py::class_<BaseLogExpSketch>(m, "BaseLogExpSketch")
         .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t, float>(),
             py::arg("m"), py::arg("seeds"), py::arg("amount_bits"), py::arg("logarithm_base"))
-        .def("add", &BaseLogExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
-        .def("add_many", &BaseLogExpSketch::add_many, py::arg("elems"), py::arg("weights"))
-        .def("estimate", &BaseLogExpSketch::estimate)
-        .def("memory_usage_total", &BaseLogExpSketch::memory_usage_total)
-        .def("memory_usage_write", &BaseLogExpSketch::memory_usage_write)
-        .def("memory_usage_estimate", &BaseLogExpSketch::memory_usage_estimate)
         .def(py::pickle(
         [](const BaseLogExpSketch &p) {
             return py::make_tuple(
@@ -289,16 +253,12 @@ PYBIND11_MODULE(_core, m) {
                 t[3].cast<std::vector<int>>()
             );
         }
-    ));;
-    py::class_<BaseShiftedLogExpSketch>(m, "BaseShiftedLogExpSketch")
+    ));
+    bind_common_sketch_methods(baselogexpsketch);
+
+    auto baseshiftedlogexpsketch = py::class_<BaseShiftedLogExpSketch>(m, "BaseShiftedLogExpSketch")
         .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t, float>(),
             py::arg("m"), py::arg("seeds"), py::arg("amount_bits"), py::arg("logarithm_base"))
-        .def("add", &BaseShiftedLogExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
-        .def("add_many", &BaseShiftedLogExpSketch::add_many, py::arg("elems"), py::arg("weights"))
-        .def("estimate", &BaseShiftedLogExpSketch::estimate)
-        .def("memory_usage_total", &BaseShiftedLogExpSketch::memory_usage_total)
-        .def("memory_usage_write", &BaseShiftedLogExpSketch::memory_usage_write)
-        .def("memory_usage_estimate", &BaseShiftedLogExpSketch::memory_usage_estimate)
         .def(py::pickle(
         [](const BaseShiftedLogExpSketch &p) {
             return py::make_tuple(
@@ -323,17 +283,12 @@ PYBIND11_MODULE(_core, m) {
                 t[5].cast<int>()
             );
         }
-    ));;
+    ));
+    bind_common_sketch_methods(baseshiftedlogexpsketch);
 
-    py::class_<FastShiftedLogExpSketch>(m, "FastShiftedLogExpSketch")
+    auto fastshiftedlogexpsketch = py::class_<FastShiftedLogExpSketch>(m, "FastShiftedLogExpSketch")
         .def(py::init<std::size_t, const std::vector<std::uint32_t>&, std::uint8_t, float>(),
             py::arg("m"), py::arg("seeds"), py::arg("amount_bits"), py::arg("logarithm_base"))
-        .def("add", &FastShiftedLogExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
-        .def("add_many", &FastShiftedLogExpSketch::add_many, py::arg("elems"), py::arg("weights"))
-        .def("estimate", &FastShiftedLogExpSketch::estimate)
-        .def("memory_usage_total", &FastShiftedLogExpSketch::memory_usage_total)
-        .def("memory_usage_write", &FastShiftedLogExpSketch::memory_usage_write)
-        .def("memory_usage_estimate", &FastShiftedLogExpSketch::memory_usage_estimate)
         .def(py::pickle(
         [](const FastShiftedLogExpSketch &p) {
             return py::make_tuple(
@@ -358,5 +313,6 @@ PYBIND11_MODULE(_core, m) {
                 t[5].cast<int>()
             );
         }
-    ));;
+    ));
+    bind_common_sketch_methods(fastshiftedlogexpsketch);
 }
