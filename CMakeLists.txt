@@ -32,6 +32,7 @@ pybind11_add_module(_core
     src/weighted_cardinality_estimation/q_sketch_dyn.cpp
     src/weighted_cardinality_estimation/utils.cpp
     src/weighted_cardinality_estimation/seeds.cpp
+    src/weighted_cardinality_estimation/shifted_log_exp_sketch_structure.cpp
     src/weighted_cardinality_estimation/fisher_yates.cpp
     src/weighted_cardinality_estimation/q_sketch.cpp
     src/weighted_cardinality_estimation/base_log_exp_sketch.cpp

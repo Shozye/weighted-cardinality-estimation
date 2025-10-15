@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include"shifted_log_exp_sketch_structure.hpp"
 
 class BaseShiftedLogExpSketch : public Sketch {
 public:
@@ -26,23 +27,16 @@ public:
     [[nodiscard]] double estimate() const ;
 
     std::uint8_t get_amount_bits() const;
-    std::vector<uint32_t> get_registers() const;
     float get_logarithm_base() const;
+    std::vector<uint32_t> get_registers() const;
     std::int32_t get_offset() const;
 
     [[nodiscard]] size_t memory_usage_total() const;
     [[nodiscard]] size_t memory_usage_write() const;
     [[nodiscard]] size_t memory_usage_estimate() const;
 private:
-    double initialValue() const;
-    double ffunc_divided_by_dffunc(double w) const;
-    double Newton(double c0) const;
-
     std::uint8_t amount_bits_;
     float logarithm_base;
 
-    std::uint32_t r_max; // maximum possible value of register (0 to 2**amount_bits-1)
-    std::int32_t offset; // this is a relative value for all registers. real_value = value + offset
-
-    compact::vector<uint32_t> M_; // sketch structure with elements between < r_min ... r_max >
+    ShiftedLogExpSketchStructure structure;
 };
