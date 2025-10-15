@@ -1,6 +1,7 @@
 #pragma once
+#include <compact_vector.hpp>
 #include <cstdint>
-#include <vector>
+
 class FisherYates {
 public:
     FisherYates(std::uint32_t sketch_size);
@@ -13,6 +14,6 @@ public:
 private:
     uint64_t rng_seed = 0; 
     uint32_t rand(uint32_t min, uint32_t max);
-    std::vector<uint32_t> permInit; // static structure, only used to fast copy to permWork
-    std::vector<uint32_t> permWork; // used at the beginning of every update
+    compact::vector<uint32_t> permInit; // static structure, only used to fast copy to permWork
+    compact::vector<uint32_t> permWork; // used at the beginning of every update
 };
