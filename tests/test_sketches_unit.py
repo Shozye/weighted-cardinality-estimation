@@ -2,7 +2,7 @@ import copy
 import random
 import pytest
 from tests.test_sketches_functional import QSketch
-from weighted_cardinality_estimation import BaseLogExpSketch, BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, BaseLogExpSketch, FastLogExpSketch, FastQSketch, QSketchDyn, BaseShiftedLogExpSketch
+from weighted_cardinality_estimation import BaseLogExpSketch, BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, BaseLogExpSketch, FastLogExpSketch, FastQSketch, QSketchDyn, BaseShiftedLogExpSketch, FastShiftedLogExpSketch
 
 
 SKETCH_CONSTRUCTORS_WITH_SEEDS = [
@@ -16,6 +16,7 @@ SKETCH_CONSTRUCTORS_WITH_SEEDS = [
     pytest.param(lambda m, seeds: BaseLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), id="BaseLogExpSketch"),
     pytest.param(lambda m, seeds: FastLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), id="FastLogExpSketch"),
     pytest.param(lambda m, seeds: BaseShiftedLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), id="BaseShiftedLogExpSketch"),
+    pytest.param(lambda m, seeds: FastShiftedLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), id="FastShiftedLogExpSketch"),
 ]
 
 SKETCH_CONSTRUCTORS_WITH_NO_SEEDS = [
@@ -29,6 +30,7 @@ SKETCH_CONSTRUCTORS_WITH_NO_SEEDS = [
     pytest.param(lambda m, seeds: BaseLogExpSketch(m, [], amount_bits=8, logarithm_base=2), id="BaseLogExpSketch"),
     pytest.param(lambda m, seeds: FastLogExpSketch(m, [], amount_bits=8, logarithm_base=2), id="FastLogExpSketch"),
     pytest.param(lambda m, seeds: BaseShiftedLogExpSketch(m, [], amount_bits=8, logarithm_base=2), id="BaseShiftedLogExpSketch"),
+    pytest.param(lambda m, seeds: FastShiftedLogExpSketch(m, [], amount_bits=8, logarithm_base=2), id="FastShiftedLogExpSketch"),
 ]
 
 SKETCH_CONSTRUCTORS = SKETCH_CONSTRUCTORS_WITH_NO_SEEDS + SKETCH_CONSTRUCTORS_WITH_SEEDS
@@ -41,7 +43,7 @@ def test_unitary(sketch_cls):
     sketch.add("I am just a simple element.", weight=1)
 
     estimate = sketch.estimate()
-    assert estimate > 0
+    assert estimate > 0.001
 
 @pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS_WITH_SEEDS)
 def test_estimate_adding_duplicate_does_not_change_estimation(sketch_cls):

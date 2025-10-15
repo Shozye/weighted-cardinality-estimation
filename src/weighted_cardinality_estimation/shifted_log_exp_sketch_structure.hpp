@@ -21,6 +21,7 @@ public:
     [[nodiscard]] double estimate(float logarithm_base) const;
     std::int32_t get_offset() const;
     std::vector<uint32_t> get_registers() const;
+    std::uint32_t min() const;
 
     [[nodiscard]] size_t memory_usage_total() const;
     [[nodiscard]] size_t memory_usage_write() const;

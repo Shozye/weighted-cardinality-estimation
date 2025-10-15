@@ -1,7 +1,7 @@
 import random
 import pytest
 from tests.utils import assert_error
-from weighted_cardinality_estimation import BaseLogExpSketch, BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, FastLogExpSketch, FastQSketch, QSketch, QSketchDyn, BaseShiftedLogExpSketch
+from weighted_cardinality_estimation import BaseLogExpSketch, BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, FastLogExpSketch, FastQSketch, QSketch, QSketchDyn, BaseShiftedLogExpSketch, FastShiftedLogExpSketch
 
 M_SIZE = 400
 AMOUNT_ELEMENTS = 1000
@@ -20,6 +20,7 @@ SKETCH_PARAMS = [
     pytest.param(lambda m, seeds: BaseLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), 0.1, id="BaseLogExpSketch"),
     pytest.param(lambda m, seeds: FastLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), 0.1, id="FastLogExpSketch"),
     pytest.param(lambda m, seeds: BaseShiftedLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), 0.1, id="BaseShiftedLogExpSketch"),
+    pytest.param(lambda m, seeds: FastShiftedLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), 0.1, id="FastShiftedLogExpSketch"),
 ]
 
 @pytest.mark.parametrize("sketch_cls, allowed_error", SKETCH_PARAMS)

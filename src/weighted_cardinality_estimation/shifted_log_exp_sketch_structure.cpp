@@ -1,6 +1,7 @@
 #include "shifted_log_exp_sketch_structure.hpp"
 #include "utils.hpp"
 #include <cmath>
+#include <stdexcept>
 
 ShiftedLogExpSketchStructure::ShiftedLogExpSketchStructure(
     std::uint8_t amount_bits,
@@ -110,10 +111,15 @@ void ShiftedLogExpSketchStructure::set(uint32_t index, uint32_t value){
         if (value > r_max) {
             // handling overflow here :) 
             std::uint32_t increase_offset = value - r_max; // this is safe.
-            this->decrease_structure_by(value);
+            this->decrease_structure_by(increase_offset);
             offset += (int)increase_offset; // theoretically it's not safe but who cares :)
             M_[index] = r_max;
-        } else {
+        } 
+        else {
             M_[index] = value;
         }
     }
+
+std::uint32_t ShiftedLogExpSketchStructure::min() const {
+    return *std::min_element(M_.begin(), M_.end());
+}
