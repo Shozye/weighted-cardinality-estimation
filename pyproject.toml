@@ -18,9 +18,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-bench = [
-    "numpy",
-    "pytest-benchmark",
+asv = [
     "asv"
 ]
 test = [

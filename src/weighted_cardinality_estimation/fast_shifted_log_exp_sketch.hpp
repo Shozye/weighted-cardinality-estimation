@@ -9,7 +9,7 @@
 
 class FastShiftedLogExpSketch : public Sketch {
 public:
-    FastShiftedLogExpSketch(
+    FastShiftedLogExpSketch( 
         std::size_t sketch_size, 
         const std::vector<std::uint32_t>& seeds, 
         std::uint8_t amount_bits,

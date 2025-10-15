@@ -25,5 +25,5 @@ __all__ = [
     "FastShiftedLogExpSketch",
     "__version__"
 ]
-# __version__ = _md.version(__name__)
-__version__ = "0.0.0-debug"
+__version__ = _md.version(__name__)
+# __version__ = "0.0.0-debug" # I USE IT IN DEBUG MODE

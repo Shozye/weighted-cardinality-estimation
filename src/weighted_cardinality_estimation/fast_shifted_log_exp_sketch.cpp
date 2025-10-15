@@ -1,12 +1,10 @@
 #include <cmath>
 #include <cstdint>
-#include <iostream>
 #include <stdexcept>
 #include "fisher_yates.hpp"
 #include "hash_util.hpp"
 #include<cstring>
 #include"fast_shifted_log_exp_sketch.hpp"
-#include "utils.hpp"
 
 FastShiftedLogExpSketch::FastShiftedLogExpSketch(
     std::size_t sketch_size, 
@@ -24,7 +22,7 @@ FastShiftedLogExpSketch::FastShiftedLogExpSketch(
     update_threshold();
 }
 
-FastShiftedLogExpSketch::FastShiftedLogExpSketch(
+FastShiftedLogExpSketch::FastShiftedLogExpSketch( 
     std::size_t sketch_size, 
     const std::vector<std::uint32_t>& seeds, 
     std::uint8_t amount_bits, 

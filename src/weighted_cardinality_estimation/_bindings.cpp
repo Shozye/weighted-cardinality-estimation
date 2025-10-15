@@ -31,7 +31,7 @@ PYBIND11_MODULE(_core, m) {
                 if (t.size() != 3) {
                     throw std::runtime_error("Invalid state for ExpSketch pickle!");
                 }
-                return ExpSketch(
+                return ExpSketch( 
                     t[0].cast<std::size_t>(),
                     t[1].cast<std::vector<std::uint32_t>>(),
                     t[2].cast<std::vector<double>>()
