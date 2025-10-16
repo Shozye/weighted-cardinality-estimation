@@ -141,7 +141,7 @@ PYBIND11_MODULE(_core, m) {
                 t[2].cast<std::uint32_t>(),
                 t[3].cast<std::vector<std::uint32_t>>(),
                 t[4].cast<std::vector<int>>(),
-                t[5].cast<std::vector<int>>(),
+                t[5].cast<std::vector<std::uint32_t>>(),
                 t[6].cast<double>()
             );
         }

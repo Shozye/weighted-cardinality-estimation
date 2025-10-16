@@ -48,13 +48,13 @@ BaseLogExpSketch::BaseLogExpSketch(
 size_t BaseLogExpSketch::memory_usage_total() const {
     size_t total_size = 0;
     total_size += sizeof(size); // 8
-    total_size += seeds_.bytes(); // m * ceil(log_2 (m))
+    total_size += seeds_.bytes(); // m * ceil(log_2 m)/8
     total_size += M_.bytes(); // mb/8
     total_size += sizeof(amount_bits_); // 1
     total_size += sizeof(r_max); // 4
     total_size += sizeof(r_min); // 4
     total_size += sizeof(logarithm_base); // 4
-    return total_size; // m * ceil(log_2 (m)) + mb/8 + 21
+    return total_size; // m * ceil(log_2 m)/8 + mb/8 + 21
 }
 
 size_t BaseLogExpSketch::memory_usage_write() const {

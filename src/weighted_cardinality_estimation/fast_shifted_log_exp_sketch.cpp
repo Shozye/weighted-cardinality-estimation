@@ -44,21 +44,21 @@ FastShiftedLogExpSketch::FastShiftedLogExpSketch(
 size_t FastShiftedLogExpSketch::memory_usage_total() const {
     size_t total_size = 0;
     total_size += sizeof(this->size); // 8
-    total_size += seeds_.bytes(); // m * ceil(log_2 (m))
-    total_size += fisher_yates.bytes_total(); // 2m ceil(log_2 m) + 8
+    total_size += seeds_.bytes(); // m * ceil(log_2 m)/8
+    total_size += fisher_yates.bytes_total(); // 2m ceil(log_2 m)/8 + 8
     total_size += structure.memory_usage_total(); // mb/8 + 8
     total_size += sizeof(amount_bits_); // 1
     total_size += sizeof(logarithm_base); // 4
     total_size += sizeof(min_sketch_value); // 4
     total_size += sizeof(min_value_to_change_sketch); // 8
-    return total_size; // 3m ceil(log_2 m) + mb/8 + 29
+    return total_size; // 3m ceil(log_2 m)/8 + mb/8 + 29
 }
 
 size_t FastShiftedLogExpSketch::memory_usage_write() const {
     size_t write_size = 0;
     write_size += structure.memory_usage_write(); // mb/8
-    write_size += fisher_yates.bytes_write(); // m ceil(log_2 m) + 8
-    return write_size; // m ceil(log_2 m) + mb/8 + 8
+    write_size += fisher_yates.bytes_write(); // m ceil(log_2 m)/8 + 8
+    return write_size; // m ceil(log_2 m)/8 + mb/8 + 8
 }
 
 size_t FastShiftedLogExpSketch::memory_usage_estimate() const {

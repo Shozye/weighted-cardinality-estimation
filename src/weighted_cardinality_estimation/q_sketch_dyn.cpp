@@ -12,12 +12,13 @@ QSketchDyn::QSketchDyn(std::size_t sketch_size, const std::vector<std::uint32_t>
       cardinality_(0.0),
       q_r_(0.0),
       R_(amount_bits, sketch_size),
-      T_(1 << amount_bits, 0)
+      T_(std::ceil(std::log2(sketch_size)), 1 << amount_bits)
 {
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
-    if (!T_.empty()) {
-        T_[0] = static_cast<int>(sketch_size);
+    for(size_t i = 0; i < T_.size(); i++ ){
+        T_[i] = 0;
     }
+    T_[0] = sketch_size;
     for (std::size_t i = 0; i < size; ++i) {
         R_[i] = r_min;
     }
@@ -26,7 +27,7 @@ QSketchDyn::QSketchDyn(std::size_t sketch_size, const std::vector<std::uint32_t>
 QSketchDyn::QSketchDyn(
     std::size_t sketch_size, std::uint8_t amount_bits, std::uint32_t g_seed,
     const std::vector<std::uint32_t>& seeds, const std::vector<int>& registers,
-    const std::vector<int>& t_histogram, double cardinality)
+    const std::vector<std::uint32_t>& t_histogram, double cardinality)
     : Sketch(sketch_size, seeds),
       amount_bits_(amount_bits),
       r_min(-(1 << (amount_bits - 1))),
@@ -35,15 +36,19 @@ QSketchDyn::QSketchDyn(
       cardinality_(cardinality),
       q_r_(0.0),
       R_(amount_bits, sketch_size),
-      T_(t_histogram)
+      T_(std::ceil(std::log2(sketch_size)), 1 << amount_bits)
 {
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
+    for(std::size_t i = 0; i < t_histogram.size(); ++i){
+        T_[i] = t_histogram[i];
+    }
     for (std::size_t i = 0; i < size; ++i) {
         R_[i] = registers[i];
     }
 }
 
 void QSketchDyn::add(const std::string& elem, double weight) {
+    // std::cout << " ?" << '\n';
     const uint64_t g_hash = murmur64(elem, g_seed_);
     const size_t j = g_hash % size;
 
@@ -64,10 +69,10 @@ void QSketchDyn::add(const std::string& elem, double weight) {
     const size_t new_t_idx = std::max(0, new_r_val - r_min);
     
     if (old_t_idx < T_.size() && T_[old_t_idx] > 0) {
-        T_[old_t_idx]--;
+        T_[old_t_idx] = T_[old_t_idx] - 1;
     }
     if (new_t_idx < T_.size()) {
-        T_[new_t_idx]++;
+        T_[new_t_idx] = T_[new_t_idx] + 1;
     }
     R_[j] = new_r_val;
 
@@ -94,33 +99,35 @@ std::uint32_t QSketchDyn::get_g_seed() const { return g_seed_; }
 std::vector<int> QSketchDyn::get_registers() const {
     return std::vector<int>(R_.begin(), R_.end());
 }
-const std::vector<int>& QSketchDyn::get_t_histogram() const { return T_; }
+std::vector<std::uint32_t> QSketchDyn::get_t_histogram() const { 
+    return std::vector<std::uint32_t>(T_.begin(), T_.end()); 
+}
 double QSketchDyn::get_cardinality() const { return cardinality_; }
 
 size_t QSketchDyn::memory_usage_total() const {
     size_t total_size = 0;
     total_size += sizeof(this->size); // 8
-    total_size += seeds_.bytes(); // m * ceil(log_2 (m))
+    total_size += seeds_.bytes(); // m * ceil(log_2 m)/8
     total_size += R_.bytes(); // mb/8
-    total_size += T_.capacity() * sizeof(int); // 2**b * 4
+    total_size += T_.bytes(); // 2**b * ceil(log_2 m)/8
     total_size += sizeof(amount_bits_); // 1
     total_size += sizeof(r_min); // 4 
     total_size += sizeof(r_max); // 4
     total_size += sizeof(g_seed_); // 4
     total_size += sizeof(cardinality_); // 8
     total_size += sizeof(q_r_); // 8
-    return total_size; // 4 * 2**b + m * ceil(log_2 (m)) + mb/8 + 37 
+    return total_size; // 2**b * ceil(log_2 m)/8 + m*ceil(log_2 (m))/8 + mb/8 + 37 
 }
 
 size_t QSketchDyn::memory_usage_write() const {
     size_t write_size = 0;
     write_size += R_.bytes(); // mb/8
-    write_size += T_.capacity() * sizeof(int); // 2**b * 4
+    write_size += T_.bytes(); // 2**b * ceil(log_2 m)/8
     write_size += sizeof(cardinality_); // 8
     write_size += sizeof(q_r_); // 8
-    return write_size; // 2**b * 4 + mb/8 + 16
+    return write_size; // 2**b * ceil(log_2 m)/8 + mb/8 + 16
 }
 
 size_t QSketchDyn::memory_usage_estimate() const {
-    return R_.bytes() + (T_.capacity() * sizeof(int));
+    return R_.bytes() + T_.bytes();
 }

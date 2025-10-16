@@ -41,9 +41,9 @@ size_t BaseShiftedLogExpSketch::memory_usage_total() const {
     total_size += sizeof(size); // <long> 8
     total_size += sizeof(amount_bits_); // <byte> 1
     total_size += sizeof(logarithm_base); // <int> 4
-    total_size += seeds_.bytes(); // m * ceil(log_2 (m))
+    total_size += seeds_.bytes(); // m * ceil(log_2 m)/8
     total_size += structure.memory_usage_total(); // mb/8 + 8
-    return total_size; // m*ceil(log_2 m) + mb/8 + 21
+    return total_size; // m*ceil(log_2 m)/8 + mb/8 + 21
 }
 
 size_t BaseShiftedLogExpSketch::memory_usage_write() const {

@@ -19,7 +19,7 @@ public:
         std::uint32_t g_seed,
         const std::vector<std::uint32_t>& seeds,
         const std::vector<int>& registers,
-        const std::vector<int>& t_histogram,
+        const std::vector<std::uint32_t>& t_histogram,
         double cardinality
     );
 
@@ -28,7 +28,7 @@ public:
     std::uint8_t get_amount_bits() const;
     std::uint32_t get_g_seed() const;
     std::vector<int> get_registers() const;
-    const std::vector<int>& get_t_histogram() const;
+    std::vector<std::uint32_t> get_t_histogram() const;
     double get_cardinality() const;
 
     [[nodiscard]] size_t memory_usage_total() const;
@@ -44,6 +44,6 @@ private:
     double cardinality_;
     double q_r_;
     compact::vector<int> R_;
-    std::vector<int> T_; // here are values between 0 and m
+    compact::vector<std::uint32_t> T_; // here are values between 0 and m
 };
 
