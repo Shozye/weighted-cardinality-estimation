@@ -43,7 +43,7 @@ void FastExpSketch::add(const std::string& elem, double weight)
         S += E/(double)(this->size-k); 
         if ( S >= this->max ) { break; }
 
-        auto j = fisher_yates.get_fisher_yates_element(k);
+        std::uint32_t j = fisher_yates.get_fisher_yates_element(k);
 
         if (this->M_[j] == this->max ) { updateMax = true; }
         this->M_[j] = std::min(this->M_[j], S);

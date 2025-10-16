@@ -48,7 +48,7 @@ size_t QSketch::memory_usage_total() const {
     total_size += sizeof(r_max); // 4
     total_size += sizeof(r_min); // 4
     total_size += sizeof(j_star); // 4
-    return total_size; // 2m ceil(log_2 m)/8 + 4m + mb/8 + 29
+    return total_size; // 2m ceil(log_2 m)/8 + 4m + Smb/8 + 29
 }
 
 size_t QSketch::memory_usage_write() const {
