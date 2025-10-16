@@ -30,15 +30,15 @@ uint32_t FisherYates::rand(uint32_t min, uint32_t max){
 
 std::uint32_t FisherYates::bytes_total() const {
     size_t total_size = 0;
-    total_size += sizeof(rng_seed);
-    total_size += permInit.bytes();
-    total_size += permWork.bytes();
-    return total_size;
+    total_size += sizeof(rng_seed); // 8
+    total_size += permInit.bytes(); // m * ceil(log_2 m)
+    total_size += permWork.bytes(); // m * ceil(log_2 m)
+    return total_size; // 2m ceil(log_2 m) + 8
 }
 
 std::uint32_t FisherYates::bytes_write() const {
     size_t total_size = 0;
-    total_size += sizeof(rng_seed);
-    total_size += permWork.bytes();
-    return total_size;
+    total_size += sizeof(rng_seed); // 8
+    total_size += permWork.bytes(); // m * ceil(log_2 m)
+    return total_size; // m ceil(log_2 m) + 8
 }

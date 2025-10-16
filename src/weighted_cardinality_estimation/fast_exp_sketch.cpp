@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
-#include <iostream>
 #include <limits>
 #include "hash_util.hpp"
 #include <cstring>
@@ -57,25 +56,25 @@ void FastExpSketch::add(const std::string& elem, double weight)
 
 size_t FastExpSketch::memory_usage_total() const {
     size_t total_size = 0;
-    total_size += sizeof(this->size);
-    total_size += fisher_yates.bytes_total();
-    total_size += sizeof(max);
-    total_size += seeds_.bytes();
-    total_size += M_.capacity() * sizeof(double);
-    return total_size;
+    total_size += sizeof(this->size); // 8
+    total_size += seeds_.bytes(); // m * ceil(log_2 (m))
+    total_size += fisher_yates.bytes_total(); // 2m ceil(log_2 m) + 8
+    total_size += M_.capacity() * sizeof(double); // 8m
+    total_size += sizeof(max); // 8
+    return total_size; // 3m ceil(log_2 m) + 8m + 24
 }
 
 size_t FastExpSketch::memory_usage_write() const {
     size_t write_size = 0;
-    write_size += sizeof(max);
-    write_size += fisher_yates.bytes_write();
-    write_size += M_.capacity() * sizeof(double);
-    return write_size;
+    write_size += fisher_yates.bytes_write(); // m ceil(log_2 m) + 8
+    write_size += M_.capacity() * sizeof(double); // 8m
+    write_size += sizeof(max); // 8
+    return write_size; // m ceil(log_2 m) + 8m + 16
 }
 
 size_t FastExpSketch::memory_usage_estimate() const {
-    size_t estimate_size = M_.capacity() * sizeof(double);
-    return estimate_size;
+    size_t estimate_size = M_.capacity() * sizeof(double); // 8m
+    return estimate_size; // 8m
 }
 
 

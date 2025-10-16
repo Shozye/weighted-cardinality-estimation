@@ -33,7 +33,7 @@ std::uint32_t Seeds::get(uint32_t index) const {
 }
 
 std::uint32_t Seeds::bytes() const {
-    return this->seeds_.bytes();
+    return this->seeds_.bytes(); // m * ceil(log_2 (m))
 }
 
 std::uint32_t Seeds::operator[](uint32_t index) const {

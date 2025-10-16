@@ -40,7 +40,6 @@ private:
     std::int32_t r_min;
     std::int32_t r_max;
     std::uint32_t g_seed_;
-    std::vector<int> k_idx_;
 
     double cardinality_;
     double q_r_;

@@ -38,24 +38,24 @@ BaseShiftedLogExpSketch::BaseShiftedLogExpSketch(
 
 size_t BaseShiftedLogExpSketch::memory_usage_total() const {
     size_t total_size = 0;
-    total_size += sizeof(size);
-    total_size += sizeof(amount_bits_);
-    total_size += sizeof(logarithm_base);
-    total_size += seeds_.bytes();
-    total_size += structure.memory_usage_total();
-    return total_size;
+    total_size += sizeof(size); // <long> 8
+    total_size += sizeof(amount_bits_); // <byte> 1
+    total_size += sizeof(logarithm_base); // <int> 4
+    total_size += seeds_.bytes(); // m * ceil(log_2 (m))
+    total_size += structure.memory_usage_total(); // mb/8 + 8
+    return total_size; // m*ceil(log_2 m) + mb/8 + 21
 }
 
 size_t BaseShiftedLogExpSketch::memory_usage_write() const {
     size_t write_size = 0;
-    write_size += structure.memory_usage_write();
-    return write_size;
+    write_size += structure.memory_usage_write(); // mb/8
+    return write_size; // mb/8
 }
 
 size_t BaseShiftedLogExpSketch::memory_usage_estimate() const {
-    size_t estimate_size = structure.memory_usage_estimate();
-    estimate_size += sizeof(logarithm_base);
-    return estimate_size;
+    size_t estimate_size = structure.memory_usage_estimate(); // mb/8 + 4
+    estimate_size += sizeof(logarithm_base); // 4
+    return estimate_size; // mb/8 + 8
 }
 
 std::uint8_t BaseShiftedLogExpSketch::get_amount_bits() const { return amount_bits_; }

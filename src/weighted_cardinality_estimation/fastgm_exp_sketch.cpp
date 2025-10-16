@@ -74,29 +74,29 @@ void FastGMExpSketch::add(const std::string& elem, double weight)
 
 size_t FastGMExpSketch::memory_usage_total() const {
     size_t total_size = 0;
-    total_size += sizeof(size);
-    total_size += sizeof(k_star);
-    total_size += sizeof(j_star);
-    total_size += M_.capacity() * sizeof(double);
-    total_size += seeds_.bytes();
-    total_size += fisher_yates.bytes_total();
-    total_size += sizeof(flagFastPrune);
+    total_size += sizeof(this->size); // 8
+    total_size += seeds_.bytes(); // m * ceil(log_2 (m))
+    total_size += fisher_yates.bytes_total(); // 2m ceil(log_2 m) + 8
+    total_size += M_.capacity() * sizeof(double); // 8m
+    total_size += sizeof(k_star); // 4
+    total_size += sizeof(j_star); // 4
+    total_size += sizeof(flagFastPrune); // 1
     return total_size; 
 }
 
 size_t FastGMExpSketch::memory_usage_write() const {
     size_t total_size = 0;
-    total_size += sizeof(k_star);
-    total_size += sizeof(j_star);
-    total_size += M_.capacity() * sizeof(double);
-    total_size += fisher_yates.bytes_write();
-    total_size += sizeof(flagFastPrune);
+    total_size += fisher_yates.bytes_write(); // m ceil(log_2 m) + 8
+    total_size += M_.capacity() * sizeof(double); // 8m
+    total_size += sizeof(k_star); // 4
+    total_size += sizeof(j_star); // 4
+    total_size += sizeof(flagFastPrune); // 1
     return total_size; 
 }
 
 size_t FastGMExpSketch::memory_usage_estimate() const {
-    size_t estimate_size = M_.capacity() * sizeof(double);
-    return estimate_size; 
+    size_t estimate_size = M_.capacity() * sizeof(double); // 8m
+    return estimate_size; // 8m
 }
 
 double FastGMExpSketch::estimate() const {

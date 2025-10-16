@@ -1,7 +1,6 @@
 #include "q_sketch_dyn.hpp"
 #include <stdexcept>
 #include <cmath>
-#include <numeric> 
 #include "hash_util.hpp"
 
 QSketchDyn::QSketchDyn(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, std::uint8_t amount_bits, std::uint32_t g_seed)
@@ -10,7 +9,6 @@ QSketchDyn::QSketchDyn(std::size_t sketch_size, const std::vector<std::uint32_t>
       r_min(-(1 << (amount_bits - 1))),
       r_max((1 << (amount_bits - 1)) - 1),
       g_seed_(g_seed),
-      k_idx_(1 << amount_bits),
       cardinality_(0.0),
       q_r_(0.0),
       R_(amount_bits, sketch_size),
@@ -23,7 +21,6 @@ QSketchDyn::QSketchDyn(std::size_t sketch_size, const std::vector<std::uint32_t>
     for (std::size_t i = 0; i < size; ++i) {
         R_[i] = r_min;
     }
-    std::iota(k_idx_.begin(), k_idx_.end(), 0);
 }
 
 QSketchDyn::QSketchDyn(
@@ -35,14 +32,12 @@ QSketchDyn::QSketchDyn(
       r_min(-(1 << (amount_bits - 1))),
       r_max((1 << (amount_bits - 1)) - 1),
       g_seed_(g_seed),
-      k_idx_(1 << amount_bits),
       cardinality_(cardinality),
       q_r_(0.0),
       R_(amount_bits, sketch_size),
       T_(t_histogram)
 {
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
-    std::iota(k_idx_.begin(), k_idx_.end(), 0);
     for (std::size_t i = 0; i < size; ++i) {
         R_[i] = registers[i];
     }
@@ -79,7 +74,7 @@ void QSketchDyn::add(const std::string& elem, double weight) {
     double q_val_sum = 0.0;
     for (size_t k = 0; k < T_.size(); ++k) {
         if (T_[k] > 0) {
-            double exponent = -(static_cast<double>(k_idx_[k]) + r_min + 1.0);
+            double exponent = -((double)k + r_min + 1.0);
             double exp2_val = std::ldexp(1.0, static_cast<int>(exponent));
             double rate = std::exp(-weight * exp2_val);
             q_val_sum += static_cast<double>(T_[k]) * rate;
@@ -103,28 +98,27 @@ const std::vector<int>& QSketchDyn::get_t_histogram() const { return T_; }
 double QSketchDyn::get_cardinality() const { return cardinality_; }
 
 size_t QSketchDyn::memory_usage_total() const {
-    size_t total = 0;
-    total += sizeof(size);
-    total += sizeof(amount_bits_);
-    total += sizeof(r_min);
-    total += sizeof(r_max);
-    total += sizeof(g_seed_);
-    total += sizeof(cardinality_);
-    total += sizeof(q_r_);
-    total += seeds_.bytes();
-    total += k_idx_.capacity() * sizeof(int);
-    total += R_.bytes();
-    total += T_.capacity() * sizeof(int);
-    return total;
+    size_t total_size = 0;
+    total_size += sizeof(this->size); // 8
+    total_size += seeds_.bytes(); // m * ceil(log_2 (m))
+    total_size += R_.bytes(); // mb/8
+    total_size += T_.capacity() * sizeof(int); // 2**b * 4
+    total_size += sizeof(amount_bits_); // 1
+    total_size += sizeof(r_min); // 4 
+    total_size += sizeof(r_max); // 4
+    total_size += sizeof(g_seed_); // 4
+    total_size += sizeof(cardinality_); // 8
+    total_size += sizeof(q_r_); // 8
+    return total_size; // 4 * 2**b + m * ceil(log_2 (m)) + mb/8 + 37 
 }
 
 size_t QSketchDyn::memory_usage_write() const {
     size_t write_size = 0;
-    write_size += sizeof(cardinality_);
-    write_size += sizeof(q_r_);
-    write_size += R_.bytes();
-    write_size += T_.capacity() * sizeof(int);
-    return write_size;
+    write_size += R_.bytes(); // mb/8
+    write_size += T_.capacity() * sizeof(int); // 2**b * 4
+    write_size += sizeof(cardinality_); // 8
+    write_size += sizeof(q_r_); // 8
+    return write_size; // 2**b * 4 + mb/8 + 16
 }
 
 size_t QSketchDyn::memory_usage_estimate() const {

@@ -47,30 +47,30 @@ FastQSketch::FastQSketch(
 
 size_t FastQSketch::memory_usage_total() const {
     size_t total_size = 0;
-    total_size += sizeof(size);
-    total_size += sizeof(amount_bits_);
-    total_size += sizeof(r_max);
-    total_size += sizeof(r_min);
-    total_size += sizeof(min_sketch_value);
-    total_size += sizeof(min_value_to_change_sketch);
-    total_size += seeds_.bytes();
-    total_size += M_.bytes();
-    total_size += fisher_yates.bytes_total();
-    return total_size;
+    total_size += sizeof(this->size); // 8
+    total_size += seeds_.bytes(); // m * ceil(log_2 (m))
+    total_size += fisher_yates.bytes_total(); // 2m ceil(log_2 m) + 8
+    total_size += M_.bytes(); // mb/8
+    total_size += sizeof(amount_bits_); // 1
+    total_size += sizeof(r_max); // 4
+    total_size += sizeof(r_min); // 4
+    total_size += sizeof(min_sketch_value); // 4
+    total_size += sizeof(min_value_to_change_sketch); // 8
+    return total_size; // 3m ceil(log_2 m) + mb/8 + 37
 }
 
 size_t FastQSketch::memory_usage_write() const {
     size_t write_size = 0;
-    write_size += sizeof(min_sketch_value);
-    write_size += sizeof(min_value_to_change_sketch);
-    write_size += M_.bytes();
-    write_size += fisher_yates.bytes_write();
-    return write_size;
+    write_size += M_.bytes(); // mb/8
+    write_size += fisher_yates.bytes_write(); // m ceil(log_2 m) + 8
+    write_size += sizeof(min_sketch_value); // 4
+    write_size += sizeof(min_value_to_change_sketch); // 8
+    return write_size; // m ceil(log_2 m) + mb/8 + 20
 }
 
 size_t FastQSketch::memory_usage_estimate() const {
-    size_t estimate_size = M_.bytes();
-    return estimate_size;
+    size_t estimate_size = M_.bytes(); // mb/8
+    return estimate_size; // mb/8
 }
 
 std::uint8_t FastQSketch::get_amount_bits() const { return amount_bits_; }

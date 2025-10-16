@@ -55,21 +55,21 @@ void BaseQSketch::add(const std::string& elem, double weight)
 
 size_t BaseQSketch::memory_usage_total() const {
     size_t total_size = 0;
-    total_size += sizeof(size);
-    total_size += seeds_.bytes();
-    total_size += M_.bytes();
-    total_size += sizeof(r_min);
-    total_size += sizeof(r_max);
-    total_size += sizeof(amount_bits_);
-    return total_size;
+    total_size += sizeof(size); // 8
+    total_size += seeds_.bytes(); // m * ceil(log_2 (m))
+    total_size += M_.bytes(); // mb / 8
+    total_size += sizeof(r_min); // 4
+    total_size += sizeof(r_max); // 4
+    total_size += sizeof(amount_bits_); // 1
+    return total_size; // m * ceil(log_2 (m)) + mb / 8 + 17
 }
 
 size_t BaseQSketch::memory_usage_write() const {
-    return M_.bytes();
+    return M_.bytes(); // mb / 8
 }
 
 size_t BaseQSketch::memory_usage_estimate() const {
-    return M_.bytes();
+    return M_.bytes(); // mb / 8
 }
 
 std::vector<int> BaseQSketch::get_registers() const {

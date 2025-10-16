@@ -25,19 +25,20 @@ void ExpSketch::add(const std::string& elem, double weight)
 
 size_t ExpSketch::memory_usage_total() const {
     size_t total_size = 0;
-    total_size += sizeof(size);
-    total_size += seeds_.bytes();
-    total_size += M_.capacity() * sizeof(double);
-    return total_size;
+    total_size += sizeof(size); // <int>
+    total_size += seeds_.bytes(); // m * ceil(log_2 (m))
+    total_size += M_.capacity() * sizeof(double); // <double> * m
+    return total_size; // 8m + m ceil(log_2 m) + 4
 }
 
 size_t ExpSketch::memory_usage_write() const {
-    return M_.capacity() * sizeof(double);
+    size_t total_size =  M_.capacity() * sizeof(double); // <double> * m
+    return total_size; // 8m
 }
 
 size_t ExpSketch::memory_usage_estimate() const {
-    size_t estimate_size = M_.capacity() * sizeof(double);
-    return estimate_size;
+    size_t estimate_size = M_.capacity() * sizeof(double); // <double> * m
+    return estimate_size; // 8m
 }
 
 double ExpSketch::estimate() const

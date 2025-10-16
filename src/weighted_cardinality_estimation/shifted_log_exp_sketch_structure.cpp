@@ -75,22 +75,22 @@ double ShiftedLogExpSketchStructure::estimate(float logarithm_base) const {
 
 size_t ShiftedLogExpSketchStructure::memory_usage_total() const {
     size_t total_size = 0;
-    total_size += sizeof(r_max);
-    total_size += sizeof(offset);
-    total_size += M_.bytes();
-    return total_size;
+    total_size += sizeof(r_max); // 4
+    total_size += sizeof(offset); // 4
+    total_size += M_.bytes(); // mb/8 
+    return total_size; // mb/8 + 8
 }
 
 size_t ShiftedLogExpSketchStructure::memory_usage_write() const {
     size_t write_size = 0;
-    write_size += M_.bytes();
-    return write_size;
+    write_size += M_.bytes(); // mb/8
+    return write_size; // mb/8
 }
 
 size_t ShiftedLogExpSketchStructure::memory_usage_estimate() const {
-    size_t estimate_size = M_.bytes();
-    estimate_size += sizeof(offset);
-    return estimate_size;
+    size_t estimate_size = M_.bytes(); // mb/8
+    estimate_size += sizeof(offset); // <int> 4
+    return estimate_size; // mb/8 + 4
 }
 
 std::uint32_t ShiftedLogExpSketchStructure::operator[](std::uint32_t index) const{
