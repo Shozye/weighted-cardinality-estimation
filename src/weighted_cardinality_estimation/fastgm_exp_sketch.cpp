@@ -44,7 +44,7 @@ void FastGMExpSketch::add(const std::string& elem, double weight)
     for(uint32_t l = 1; l < size; ++l){
         std::uint64_t hashed = murmur64(elem, seeds_[l-1]); 
         double U = to_unit_interval(hashed); 
-        b = b - (1/weight)*(std::log(U)/(double)(size-l+1));
+        b = b - ((1/weight)*(std::log(U)/(double)(size-l+1)));
         uint32_t c = fisher_yates.get_fisher_yates_element(l-1);
 
         if (!flagFastPrune){

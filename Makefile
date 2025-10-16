@@ -1,5 +1,5 @@
 
-VENV_PYTHON = ./venv/bin/python
+VENV_PYTHON = ../venv/bin/python
 PACKAGE_NAME = weighted_cardinality_estimation
 SRC_DIR = src
 BUILD_DIR = .build
@@ -11,7 +11,7 @@ clean:
 
 # need to do testing for this
 build_fast:
-	@$(VENV_PYTHON) -m pip install . \
+	pip install . \
 		--no-deps \
 		--no-build-isolation \
 		-Cbuild-dir=$(BUILD_DIR) \

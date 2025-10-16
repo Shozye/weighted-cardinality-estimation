@@ -19,7 +19,8 @@ classifiers = [
 
 [project.optional-dependencies]
 asv = [
-    "asv"
+    "asv",
+    "numpy"
 ]
 test = [
   "pytest"

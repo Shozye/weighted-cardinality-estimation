@@ -4,8 +4,8 @@
 
 FisherYates::FisherYates(std::uint32_t sketch_size):
       rng_engine(std::random_device{}()),
-      permInit(static_cast<std::uint32_t>(std::ceil(std::log2(sketch_size))), sketch_size),
-      permWork(static_cast<std::uint32_t>(std::ceil(std::log2(sketch_size))), sketch_size) {
+      permInit(static_cast<std::uint32_t>(std::ceil(std::log2(sketch_size+1))), sketch_size),
+      permWork(static_cast<std::uint32_t>(std::ceil(std::log2(sketch_size+1))), sketch_size) {
     std::iota(permInit.begin(), permInit.end(), 1);
 }
 

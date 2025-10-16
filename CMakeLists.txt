@@ -3,7 +3,17 @@ project(weighted_cardinality_estimation LANGUAGES CXX)
 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-warnings-as-errors=*")
+# Only enable clang-tidy for Debug builds, where it's expected to be installed.
+# cibuildwheel performs Release builds, so this block will be skipped.
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    find_program(CLANG_TIDY_EXE clang-tidy)
+    if(CLANG_TIDY_EXE)
+        message(STATUS "Enabling clang-tidy for Debug build.")
+        set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE};-warnings-as-errors=*")
+    else()
+        message(WARNING "clang-tidy not found, CXX linter disabled.")
+    endif()
+endif()
 
 set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 CONFIG REQUIRED)
@@ -11,6 +21,8 @@ find_package(pybind11 CONFIG REQUIRED)
 add_library(murmurhash3 OBJECT
     lib/murmurhash3/MurmurHash3.cpp
 )
+
+set_target_properties(murmurhash3 PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 set_target_properties(murmurhash3 PROPERTIES CXX_CLANG_TIDY "")
 
