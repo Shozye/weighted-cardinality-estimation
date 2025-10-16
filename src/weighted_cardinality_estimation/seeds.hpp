@@ -11,7 +11,7 @@ public:
     std::uint32_t operator[](uint32_t index) const;
     std::vector<std::uint32_t> toVector() const;
 private:
-    compact::vector<uint32_t> seeds_;
+    std::vector<uint32_t> seeds_;
     static bool is_sequential_from_one(const std::vector<std::uint32_t>& vec);
-    static compact::vector<uint32_t> create_seeds_vector(const std::vector<std::uint32_t>& seeds);
+    static std::vector<uint32_t> create_seeds_vector(const std::vector<std::uint32_t>& seeds);
 };

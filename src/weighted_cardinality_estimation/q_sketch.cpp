@@ -41,14 +41,14 @@ QSketch::QSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seed
 size_t QSketch::memory_usage_total() const {
     size_t total_size = 0;
     total_size += sizeof(this->size); // 8
-    total_size += seeds_.bytes(); // m * ceil(log_2 m)/8
+    total_size += seeds_.bytes(); // m * 4
     total_size += fisher_yates.bytes_total(); // 2m ceil(log_2 m)/8 + 8
     total_size += M_.bytes(); // mb/8
     total_size += sizeof(amount_bits_); // 1
     total_size += sizeof(r_max); // 4
     total_size += sizeof(r_min); // 4
     total_size += sizeof(j_star); // 4
-    return total_size; // 3m ceil(log_2 m)/8 + mb/8 + 29
+    return total_size; // 2m ceil(log_2 m)/8 + 4m + mb/8 + 29
 }
 
 size_t QSketch::memory_usage_write() const {

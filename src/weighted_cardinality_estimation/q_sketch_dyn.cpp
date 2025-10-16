@@ -107,7 +107,7 @@ double QSketchDyn::get_cardinality() const { return cardinality_; }
 size_t QSketchDyn::memory_usage_total() const {
     size_t total_size = 0;
     total_size += sizeof(this->size); // 8
-    total_size += seeds_.bytes(); // m * ceil(log_2 m)/8
+    total_size += seeds_.bytes(); // m * 4
     total_size += R_.bytes(); // mb/8
     total_size += T_.bytes(); // 2**b * ceil(log_2 m)/8
     total_size += sizeof(amount_bits_); // 1
@@ -116,7 +116,7 @@ size_t QSketchDyn::memory_usage_total() const {
     total_size += sizeof(g_seed_); // 4
     total_size += sizeof(cardinality_); // 8
     total_size += sizeof(q_r_); // 8
-    return total_size; // 2**b * ceil(log_2 m)/8 + m*ceil(log_2 (m))/8 + mb/8 + 37 
+    return total_size; // 2**b * ceil(log_2 m)/8 + m * 4 + mb/8 + 37 
 }
 
 size_t QSketchDyn::memory_usage_write() const {
@@ -129,5 +129,5 @@ size_t QSketchDyn::memory_usage_write() const {
 }
 
 size_t QSketchDyn::memory_usage_estimate() const {
-    return R_.bytes() + T_.bytes();
+    return R_.bytes() + T_.bytes(); // 2**b * ceil(log_2 m)/8 + mb/8
 }

@@ -7,21 +7,16 @@ Seeds::Seeds(const std::vector<std::uint32_t>& seeds)
 }
 
 Seeds::Seeds()
-: seeds_(1, 0) 
+: seeds_(0) 
 {
 
 }
 
-compact::vector<uint32_t> Seeds::create_seeds_vector(const std::vector<std::uint32_t>& seeds){
+std::vector<uint32_t> Seeds::create_seeds_vector(const std::vector<std::uint32_t>& seeds){
     if(!is_sequential_from_one(seeds)){
-        const auto amount_bits = static_cast<std::uint32_t>(std::ceil(std::log2(seeds.size())));
-        compact::vector<uint32_t> seeds_(amount_bits, seeds.size());
-        for(size_t i = 0; i < seeds.size(); i++){
-            seeds_[i] = seeds[i];
-        }
-        return seeds_;
+        return std::vector<uint32_t>(seeds);
     }
-    return compact::vector<uint32_t> (1, 0);
+    return std::vector<uint32_t> (0);
    
 }
 
@@ -33,7 +28,7 @@ std::uint32_t Seeds::get(uint32_t index) const {
 }
 
 std::uint32_t Seeds::bytes() const {
-    return this->seeds_.bytes(); // m * ceil(log_2 (m))
+    return this->seeds_.capacity() * sizeof(std::uint32_t); // m * 4
 }
 
 std::uint32_t Seeds::operator[](uint32_t index) const {

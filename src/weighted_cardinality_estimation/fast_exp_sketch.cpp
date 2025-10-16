@@ -57,11 +57,11 @@ void FastExpSketch::add(const std::string& elem, double weight)
 size_t FastExpSketch::memory_usage_total() const {
     size_t total_size = 0;
     total_size += sizeof(this->size); // 8
-    total_size += seeds_.bytes(); // m * ceil(log_2 m)/8
+    total_size += seeds_.bytes(); // m * 4
     total_size += fisher_yates.bytes_total(); // 2m ceil(log_2 m)/8 + 8
     total_size += M_.capacity() * sizeof(double); // 8m
     total_size += sizeof(max); // 8
-    return total_size; // 3m ceil(log_2 m)/8 + 8m + 24
+    return total_size; // 2m ceil(log_2 m)/8 + 12m + 24
 }
 
 size_t FastExpSketch::memory_usage_write() const {
