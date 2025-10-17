@@ -2,6 +2,7 @@
 #include "hash_util.hpp"
 #include <numeric>
 #include<cmath>
+#include<random>
 
 FisherYates::FisherYates(std::uint32_t sketch_size):
       rng_engine(std::random_device{}()),

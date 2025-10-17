@@ -34,6 +34,10 @@ add_library(compact_vector INTERFACE)
 target_include_directories(compact_vector SYSTEM INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/compact_vector
 )
+add_library(pcg_random INTERFACE)
+target_include_directories(pcg_random SYSTEM INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/pcg_random
+)
 
 pybind11_add_module(_core
     src/weighted_cardinality_estimation/_bindings.cpp
@@ -59,6 +63,7 @@ install(TARGETS _core
         LIBRARY DESTINATION weighted_cardinality_estimation)
 
 target_link_libraries(_core PRIVATE compact_vector)
+target_link_libraries(_core PRIVATE pcg_random)
 
 target_include_directories(_core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/murmurhash3
