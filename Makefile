@@ -2,12 +2,12 @@
 VENV_PYTHON = ../venv/bin/python
 PACKAGE_NAME = weighted_cardinality_estimation
 SRC_DIR = src
-BUILD_DIR = .build
+BUILD_DIR = build
 
 .PHONY: all help build build_fast test
 
 clean:
-	rm -rf .build
+	rm -rf $(BUILD_DIR)
 
 # need to do testing for this
 build_fast:
@@ -20,11 +20,11 @@ build_fast:
 
 
 build:
-	python -m pip install . --no-deps --no-build-isolation -Cbuild-dir=.build -vvv
+	python -m pip install . --no-deps --no-build-isolation -Cbuild-dir=$(BUILD_DIR) -vvv
 
 # it will also install dependencies so good for first time
 build_with_deps:
-	python -m pip install . -Cbuild-dir=.build -vvv
+	python -m pip install . -Cbuild-dir=$(BUILD_DIR) -vvv
 
 test:
 	$(VENV_PYTHON) -m pytest tests/
