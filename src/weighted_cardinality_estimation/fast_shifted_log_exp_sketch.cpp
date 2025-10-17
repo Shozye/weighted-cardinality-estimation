@@ -75,7 +75,7 @@ std::vector<std::uint32_t> FastShiftedLogExpSketch::get_registers() const { retu
 void FastShiftedLogExpSketch::add(const std::string& elem, double weight){ 
     double S = 0;
     bool touched_min = false;
-    fisher_yates.initialize(murmur64(elem, 1)); 
+    fisher_yates.initialize(elem); 
 
     for (std::size_t k = 0; k < size; ++k) {
         std::uint64_t h = murmur64(elem, seeds_[k]);

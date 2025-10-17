@@ -1,15 +1,17 @@
 #include "fisher_yates.hpp"
+#include "hash_util.hpp"
 #include <numeric>
 #include<cmath>
 
 FisherYates::FisherYates(std::uint32_t sketch_size):
       rng_engine(std::random_device{}()),
-      permInit(static_cast<std::uint32_t>(std::ceil(std::log2(sketch_size+1))), sketch_size),
-      permWork(static_cast<std::uint32_t>(std::ceil(std::log2(sketch_size+1))), sketch_size) {
-    std::iota(permInit.begin(), permInit.end(), 1);
+      permInit(static_cast<std::uint32_t>(std::ceil(std::log2(sketch_size))), sketch_size),
+      permWork(static_cast<std::uint32_t>(std::ceil(std::log2(sketch_size))), sketch_size) {
+    std::iota(permInit.begin(), permInit.end(), 0);
 }
 
-void FisherYates::initialize(std::uint64_t rng_seed){
+void FisherYates::initialize(const std::string& elem){
+    std::uint64_t rng_seed = murmur64(elem, 1);
     this->rng_engine.seed(rng_seed);
     permWork = permInit;
 }
@@ -17,11 +19,12 @@ void FisherYates::initialize(std::uint64_t rng_seed){
 std::uint32_t FisherYates::get_fisher_yates_element(uint32_t index){
     std::uniform_int_distribution<uint32_t> dist(index, this->permInit.size() - 1);
     uint32_t r = dist(this->rng_engine);
+
     std::uint32_t swap = permWork[index];
     permWork[index] = permWork[r];
     permWork[r] = swap;
-    std::uint32_t j = permWork[index] - 1;
-    return j;
+
+    return permWork[index];
 }
 
 std::uint32_t FisherYates::bytes_total() const {

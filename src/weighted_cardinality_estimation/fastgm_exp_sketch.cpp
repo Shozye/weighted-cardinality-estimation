@@ -39,7 +39,7 @@ void FastGMExpSketch::add(const std::string& elem, double weight)
 { 
     // TODO: Get to know why in original paper there is s_vec
     double b = 0;
-    fisher_yates.initialize(murmur64(elem, 1)); 
+    fisher_yates.initialize(elem); 
 
     for(uint32_t l = 1; l < size; ++l){
         std::uint64_t hashed = murmur64(elem, seeds_[l-1]); 

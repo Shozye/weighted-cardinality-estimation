@@ -45,6 +45,13 @@ def test_unitary(sketch_cls):
     estimate = sketch.estimate()
     assert estimate > 0.001
 
+@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+def test_add_doesnt_segfault_for_powers_of_two(sketch_cls):
+    M=4 # this is what we are testing here
+    seeds = [random.randint(1,10000000) for _ in range(M)]
+    sketch = sketch_cls(M, seeds)
+    sketch.add("I am just a simple element.", weight=1) 
+
 @pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS_WITH_SEEDS)
 def test_estimate_adding_duplicate_does_not_change_estimation(sketch_cls):
     M=5

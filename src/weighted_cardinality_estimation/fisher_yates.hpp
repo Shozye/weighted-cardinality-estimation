@@ -7,7 +7,7 @@ class FisherYates {
 public:
     FisherYates(std::uint32_t sketch_size);
 
-    void initialize(std::uint64_t rng_seed); // this function will set new rng_seed and permWork = permInit
+    void initialize(const std::string& elem); // this function will set new rng_seed and permWork = permInit
     uint32_t get_fisher_yates_element(uint32_t index);
 
     std::uint32_t bytes_write() const ;

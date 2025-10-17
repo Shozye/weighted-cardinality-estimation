@@ -5,7 +5,7 @@ BUILD_DIR = build
 .PHONY: all help build build_fast test
 
 # Runs with fast compile with -O3 optimisation flag
-build_release:
+build_fast:
 	pip install . \
 		--no-deps \
 		--no-build-isolation \
