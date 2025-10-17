@@ -1,4 +1,5 @@
 import pickle
+import zlib
 from .common import IMPLS, get_seeds
 
 
@@ -14,7 +15,8 @@ class MemorySuite:
 
     def track_serialization_size(self, impl_name):
         serialized_object = pickle.dumps(self.instance)
-        return len(serialized_object)
+        compressed_object = zlib.compress(serialized_object)
+        return len(compressed_object)
     track_serialization_size.unit = 'bytes' # type: ignore
     track_serialization_size.benchmark_name = f"memory.track_memory_serialization_sketch_size_{SKETCH_SIZE}" # type: ignore
     track_serialization_size.pretty_name = f"Serialization size of sketch with size {SKETCH_SIZE}"  # type: ignore
