@@ -1,42 +1,21 @@
 import copy
 import random
 import pytest
-from tests.test_sketches_functional import QSketch
-from weighted_cardinality_estimation import BaseLogExpSketch, BaseLogExpSketchJacc, BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, BaseLogExpSketch, FastLogExpSketch, FastQSketch, QSketchDyn, BaseShiftedLogExpSketch, FastShiftedLogExpSketch
-
+from tests.utils import _SKETCH_CONSTRUCTORS
 
 SKETCH_CONSTRUCTORS_WITH_SEEDS = [
-    pytest.param(ExpSketch, id="ExpSketch"),
-    pytest.param(FastExpSketch, id="FastExpSketch"),
-    pytest.param(lambda m, seeds: FastGMExpSketch(m, seeds), id="FastGMExpSketch"),
-    pytest.param(lambda m, seeds: BaseQSketch(m, seeds, 8), id="BaseQSketch"),
-    pytest.param(lambda m, seeds: FastQSketch(m, seeds, amount_bits=8), id="FastQSketch"),
-    pytest.param(lambda m, seeds: QSketchDyn(m, seeds, amount_bits=8, g_seed=42), id="QSketchDyn"),
-    pytest.param(lambda m, seeds: QSketch(m, seeds, amount_bits=8), id="QSketch"),
-    pytest.param(lambda m, seeds: BaseLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), id="BaseLogExpSketch"),
-    pytest.param(lambda m, seeds: BaseLogExpSketchJacc(m, seeds, amount_bits=8, logarithm_base=2, amount_bits_jaccard=8), id="BaseLogExpSketchJacc"),
-    pytest.param(lambda m, seeds: FastLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), id="FastLogExpSketch"),
-    pytest.param(lambda m, seeds: BaseShiftedLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), id="BaseShiftedLogExpSketch"),
-    pytest.param(lambda m, seeds: FastShiftedLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), id="FastShiftedLogExpSketch"),
+    pytest.param(lambda m, seeds: sketch_constructor(m, seeds), id=sketch_name)
+    for sketch_name, sketch_constructor in _SKETCH_CONSTRUCTORS.items()
 ]
 
 SKETCH_CONSTRUCTORS_WITH_NO_SEEDS = [
-    pytest.param(lambda m, seeds: ExpSketch(m, []), id="ExpSketch"),
-    pytest.param(lambda m, seeds: FastExpSketch(m, []), id="FastExpSketch"),
-    pytest.param(lambda m, seeds: FastGMExpSketch(m, []), id="FastGMExpSketch"),
-    pytest.param(lambda m, seeds: BaseQSketch(m, [], 8), id="BaseQSketch"),
-    pytest.param(lambda m, seeds: FastQSketch(m, [], amount_bits=8), id="FastQSketch"),
-    pytest.param(lambda m, seeds: QSketchDyn(m, [], amount_bits=8, g_seed=42), id="QSketchDyn"),
-    pytest.param(lambda m, seeds: QSketch(m, [], amount_bits=8), id="QSketch"),
-    pytest.param(lambda m, seeds: BaseLogExpSketch(m, [], amount_bits=8, logarithm_base=2), id="BaseLogExpSketch"),
-    pytest.param(lambda m, seeds: FastLogExpSketch(m, [], amount_bits=8, logarithm_base=2), id="FastLogExpSketch"),
-    pytest.param(lambda m, seeds: BaseShiftedLogExpSketch(m, [], amount_bits=8, logarithm_base=2), id="BaseShiftedLogExpSketch"),
-    pytest.param(lambda m, seeds: FastShiftedLogExpSketch(m, [], amount_bits=8, logarithm_base=2), id="FastShiftedLogExpSketch"),
+    pytest.param(lambda m, seeds: sketch_constructor(m, []), id=sketch_name)
+    for sketch_name, sketch_constructor in _SKETCH_CONSTRUCTORS.items()
 ]
 
-SKETCH_CONSTRUCTORS = SKETCH_CONSTRUCTORS_WITH_NO_SEEDS + SKETCH_CONSTRUCTORS_WITH_SEEDS
+ALL_SKETCH_CONSTRUCTORS = SKETCH_CONSTRUCTORS_WITH_NO_SEEDS + SKETCH_CONSTRUCTORS_WITH_SEEDS
 
-@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+@pytest.mark.parametrize("sketch_cls", ALL_SKETCH_CONSTRUCTORS)
 def test_unitary(sketch_cls):
     M=5
     seeds = [random.randint(1,10000000) for _ in range(M)]
@@ -46,7 +25,7 @@ def test_unitary(sketch_cls):
     estimate = sketch.estimate()
     assert estimate > 0.001
 
-@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+@pytest.mark.parametrize("sketch_cls", ALL_SKETCH_CONSTRUCTORS)
 def test_add_doesnt_segfault_for_powers_of_two(sketch_cls):
     M=4 # this is what we are testing here
     seeds = [random.randint(1,10000000) for _ in range(M)]
@@ -79,7 +58,7 @@ def test_no_seeds_is_the_same_as_range_seeds(sketch_cls):
     assert sketch1.__getstate__() == sketch2.__getstate__()
 
 
-@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+@pytest.mark.parametrize("sketch_cls", ALL_SKETCH_CONSTRUCTORS)
 def test_copy_produces_same_estimate(sketch_cls):
     # here i just want to make some basic contract that it holds to ANY standard lol
     m = 5
@@ -94,7 +73,7 @@ def test_copy_produces_same_estimate(sketch_cls):
     assert original_estimate == copied_estimate
     assert original_sketch is not copied_sketch
 
-@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+@pytest.mark.parametrize("sketch_cls", ALL_SKETCH_CONSTRUCTORS)
 def test_copy_has_identical_internal_state(sketch_cls):
     m = 5
     seeds = [1, 2, 3, 4, 5]
@@ -109,7 +88,7 @@ def test_copy_has_identical_internal_state(sketch_cls):
 
     assert original_state == copied_state
 
-@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+@pytest.mark.parametrize("sketch_cls", ALL_SKETCH_CONSTRUCTORS)
 def test_copy_different_memory_objects(sketch_cls):
     m = 5
     seeds = [1, 2, 3, 4, 5]
@@ -122,7 +101,7 @@ def test_copy_different_memory_objects(sketch_cls):
     copied_sketch.add("new element", weight=1)
     assert original_estimate == original_sketch.estimate()
 
-@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+@pytest.mark.parametrize("sketch_cls", ALL_SKETCH_CONSTRUCTORS)
 def test_copy_independently_the_same_structures(sketch_cls):
     m = 5
     seeds = [1, 2, 3, 4, 5]
@@ -136,7 +115,7 @@ def test_copy_independently_the_same_structures(sketch_cls):
 
     assert original_sketch.estimate() == copied_sketch.estimate()
 
-@pytest.mark.parametrize("sketch_cls", SKETCH_CONSTRUCTORS)
+@pytest.mark.parametrize("sketch_cls", ALL_SKETCH_CONSTRUCTORS)
 def test_memory_usage_sanity_check(sketch_cls):
     m = 5
     seeds = [1, 2, 3, 4, 5]

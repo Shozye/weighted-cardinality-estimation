@@ -39,24 +39,13 @@ target_include_directories(pcg_random SYSTEM INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/pcg_random
 )
 
+file(GLOB WCE_SOURCES
+     CONFIGURE_DEPENDS
+     "src/weighted_cardinality_estimation/*.cpp"
+)
+
 pybind11_add_module(_core
-    src/weighted_cardinality_estimation/_bindings.cpp
-    src/weighted_cardinality_estimation/exp_sketch.cpp
-    src/weighted_cardinality_estimation/fast_exp_sketch.cpp
-    src/weighted_cardinality_estimation/fastgm_exp_sketch.cpp
-    src/weighted_cardinality_estimation/base_q_sketch.cpp
-    src/weighted_cardinality_estimation/fast_q_sketch.cpp
-    src/weighted_cardinality_estimation/q_sketch_dyn.cpp
-    src/weighted_cardinality_estimation/utils.cpp
-    src/weighted_cardinality_estimation/seeds.cpp
-    src/weighted_cardinality_estimation/shifted_log_exp_sketch_structure.cpp
-    src/weighted_cardinality_estimation/fisher_yates.cpp
-    src/weighted_cardinality_estimation/q_sketch.cpp
-    src/weighted_cardinality_estimation/base_log_exp_sketch.cpp
-    src/weighted_cardinality_estimation/base_log_exp_sketch_jacc.cpp
-    src/weighted_cardinality_estimation/fast_log_exp_sketch.cpp
-    src/weighted_cardinality_estimation/base_shifted_log_exp_sketch.cpp
-    src/weighted_cardinality_estimation/fast_shifted_log_exp_sketch.cpp
+    ${WCE_SOURCES}
     $<TARGET_OBJECTS:murmurhash3>
 )
 
