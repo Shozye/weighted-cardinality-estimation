@@ -1,7 +1,7 @@
 import random
 import pytest
 from tests.utils import assert_error
-from weighted_cardinality_estimation import BaseLogExpSketch, BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, FastLogExpSketch, FastQSketch, QSketch, QSketchDyn, BaseShiftedLogExpSketch, FastShiftedLogExpSketch
+from weighted_cardinality_estimation import BaseLogExpSketch, BaseLogExpSketchJacc, BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, FastLogExpSketch, FastQSketch, QSketch, QSketchDyn, BaseShiftedLogExpSketch, FastShiftedLogExpSketch
 
 M_SIZE = 400
 AMOUNT_ELEMENTS = 1000
@@ -18,6 +18,7 @@ SKETCH_PARAMS = [
     pytest.param(lambda m, seeds: QSketchDyn(m, seeds, amount_bits=8, g_seed=42), 0.1, id="QSketchDyn"),
     pytest.param(lambda m, seeds: QSketch(m, seeds, amount_bits=8), 0.1, id="QSketch"),
     pytest.param(lambda m, seeds: BaseLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), 0.1, id="BaseLogExpSketch"),
+    pytest.param(lambda m, seeds: BaseLogExpSketchJacc(m, seeds, amount_bits=8, logarithm_base=2, amount_bits_jaccard=8), 0.1, id="BaseLogExpSketchJacc"),
     pytest.param(lambda m, seeds: FastLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), 0.1, id="FastLogExpSketch"),
     pytest.param(lambda m, seeds: BaseShiftedLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), 0.1, id="BaseShiftedLogExpSketch"),
     pytest.param(lambda m, seeds: FastShiftedLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2), 0.1, id="FastShiftedLogExpSketch"),

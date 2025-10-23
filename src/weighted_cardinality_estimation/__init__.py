@@ -10,6 +10,7 @@ from ._core import BaseLogExpSketch # type: ignore
 from ._core import FastLogExpSketch # type: ignore
 from ._core import BaseShiftedLogExpSketch # type: ignore
 from ._core import FastShiftedLogExpSketch # type: ignore
+from ._core import BaseLogExpSketchJacc # type: ignore
 
 __all__ = [
     "ExpSketch", 
@@ -20,6 +21,7 @@ __all__ = [
     "QSketchDyn", 
     "QSketch",
     "BaseLogExpSketch",
+    "BaseLogExpSketchJacc",
     "FastLogExpSketch",
     "BaseShiftedLogExpSketch",
     "FastShiftedLogExpSketch",

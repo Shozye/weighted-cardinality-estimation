@@ -1,9 +1,9 @@
 import random
 from typing import Callable, Union
 
-from weighted_cardinality_estimation import BaseShiftedLogExpSketch, ExpSketch, FastExpSketch, BaseQSketch, FastGMExpSketch, FastQSketch, FastShiftedLogExpSketch, QSketch, QSketchDyn, BaseLogExpSketch, FastLogExpSketch
+from weighted_cardinality_estimation import BaseLogExpSketchJacc, BaseShiftedLogExpSketch, ExpSketch, FastExpSketch, BaseQSketch, FastGMExpSketch, FastQSketch, FastShiftedLogExpSketch, QSketch, QSketchDyn, BaseLogExpSketch, FastLogExpSketch
 
-SketchType = Union[ExpSketch, FastExpSketch, FastGMExpSketch, BaseQSketch, FastQSketch, QSketchDyn, QSketch, BaseLogExpSketch, FastLogExpSketch, BaseShiftedLogExpSketch, FastShiftedLogExpSketch]
+SketchType = Union[ExpSketch, FastExpSketch, FastGMExpSketch, BaseQSketch, FastQSketch, QSketchDyn, QSketch, BaseLogExpSketch, FastLogExpSketch, BaseShiftedLogExpSketch, FastShiftedLogExpSketch, BaseLogExpSketchJacc]
 IMPLS: dict[str, Callable[..., SketchType]] = {
     "ExpSketch": lambda m, seeds: ExpSketch(m, seeds),
     "FastExpSketch": lambda m, seeds: FastExpSketch(m, seeds),
@@ -13,6 +13,7 @@ IMPLS: dict[str, Callable[..., SketchType]] = {
     "QSketchDyn(b=8)": lambda m, seeds: QSketchDyn(m, seeds, amount_bits=8, g_seed=42),
     "QSketch(b=8)": lambda m, seeds: QSketch(m, seeds, amount_bits=8),
     "BaseLogExpSketch(b=8, k=2)": lambda m, seeds: BaseLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2),
+    "BaseLogExpSketchJacc(b=8, k=2, b2=8)": lambda m, seeds: BaseLogExpSketchJacc(m, seeds, amount_bits=8, logarithm_base=2, amount_bits_jaccard=8),
     "FastLogExpSketch(b=8, k=2)": lambda m, seeds: FastLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2),
     "BaseShiftedLogExpSketch(b=8, k=2)": lambda m, seeds: BaseShiftedLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2),
     "FastShiftedLogExpSketch(b=8, k=2)": lambda m, seeds: FastShiftedLogExpSketch(m, seeds, amount_bits=8, logarithm_base=2),
