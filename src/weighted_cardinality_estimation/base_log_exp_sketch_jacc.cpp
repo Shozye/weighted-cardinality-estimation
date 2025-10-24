@@ -19,7 +19,8 @@ BaseLogExpSketchJacc::BaseLogExpSketchJacc(
       r_max((1 << (amount_bits - 1)) - 1),
       r_min(-(1 << (amount_bits - 1)) + 1),
       amount_bits_jaccard(amount_bits_jaccard),
-      M_(amount_bits, sketch_size)
+      M_(amount_bits, sketch_size),
+      H_(amount_bits_jaccard, sketch_size)
 {
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
     std::fill(M_.begin(), M_.end(), r_min);
@@ -31,7 +32,8 @@ BaseLogExpSketchJacc::BaseLogExpSketchJacc(
     std::uint8_t amount_bits, 
     float logarithm_base,
     std::uint8_t amount_bits_jaccard,
-    const std::vector<int>& registers
+    const std::vector<int>& registers,
+    const std::vector<std::uint32_t>& h_registers
 )
     : Sketch(sketch_size, seeds),
       amount_bits_(amount_bits),
@@ -40,7 +42,7 @@ BaseLogExpSketchJacc::BaseLogExpSketchJacc(
       r_min(-(1 << (amount_bits - 1)) + 1),
       amount_bits_jaccard(amount_bits_jaccard),
       M_(amount_bits, sketch_size),
-      H_(sketch_size, -1)
+      H_(amount_bits_jaccard, sketch_size, h_registers)
 {
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
     if (registers.size() != sketch_size) { throw std::invalid_argument("Invalid state: registers vector size mismatch"); }
@@ -59,15 +61,15 @@ size_t BaseLogExpSketchJacc::memory_usage_total() const {
     size += sizeof(r_max); // 4
     size += sizeof(r_min); // 4
     size += sizeof(logarithm_base); // 4
-    size += H_.capacity() * sizeof(int);
-    return size; // m * 4 + mb/8 + 21
+    size += H_.memory_usage_total(); // mb/8 + 1
+    return size; 
 }
 
 size_t BaseLogExpSketchJacc::memory_usage_write() const {
     size_t size = 0;
     size += M_.bytes(); // mb/8
-    size += H_.capacity() * sizeof(int);
-    return size; // mb/8
+    size += H_.memory_usage_write(); // mb/8
+    return size; 
 }
 
 size_t BaseLogExpSketchJacc::memory_usage_estimate() const {
@@ -77,14 +79,7 @@ size_t BaseLogExpSketchJacc::memory_usage_estimate() const {
 }
 
 double BaseLogExpSketchJacc::jaccard_struct(const BaseLogExpSketchJacc& other) const {
-    if (other.size != size) { return 0.0; }
-    std::size_t equal = 0;
-    for (std::size_t i = 0; i < size; ++i) {
-        if (H_[i] == other.H_[i]) { ++equal; }
-    }
-    double probability_h1_equals_h2 = static_cast<double>(equal) / static_cast<double>(size);
-    double pow = std::pow(2, amount_bits_jaccard);
-    return (pow * probability_h1_equals_h2 - 1)/(pow - 1);
+    return this->H_.compute_jaccard(other.H_);
 }
 
 std::uint8_t BaseLogExpSketchJacc::get_amount_bits() const { return amount_bits_; }
@@ -92,8 +87,11 @@ float BaseLogExpSketchJacc::get_logarithm_base() const { return logarithm_base; 
 std::vector<int> BaseLogExpSketchJacc::get_registers() const {
     return std::vector<int>(M_.begin(), M_.end());
 }
+std::vector<std::uint32_t> BaseLogExpSketchJacc::get_h_registers() const {
+    return H_.get_h_registers();
+}
 std::uint8_t BaseLogExpSketchJacc::get_amount_bits_jaccard() const {
-    return this->amount_bits_jaccard;
+    return amount_bits_jaccard;
 }
 
 void BaseLogExpSketchJacc::add(const std::string& elem, double weight){ 

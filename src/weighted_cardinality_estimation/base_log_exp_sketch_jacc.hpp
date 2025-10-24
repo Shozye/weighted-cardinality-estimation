@@ -1,5 +1,6 @@
 #pragma once
 #include "compact_vector.hpp"
+#include "h_fingerprint.hpp"
 #include "sketch.hpp"
 #include <vector>
 #include <string>
@@ -20,7 +21,8 @@ public:
         std::uint8_t amount_bits, 
         float logarithm_base,
         std::uint8_t amount_bits_jaccard,
-        const std::vector<int>& registers
+        const std::vector<int>& registers,
+        const std::vector<std::uint32_t>& h_registers
     );
     void add(const std::string& elem, double weight = 1.0);
     [[nodiscard]] double estimate() const ;
@@ -29,6 +31,7 @@ public:
     std::uint8_t get_amount_bits() const;
     std::vector<int> get_registers() const;
     float get_logarithm_base() const;
+    std::vector<std::uint32_t> get_h_registers() const;
     std::uint8_t get_amount_bits_jaccard() const;
 
     [[nodiscard]] size_t memory_usage_total() const;
@@ -46,5 +49,5 @@ private:
     std::uint8_t amount_bits_jaccard;
 
     compact::vector<int> M_; // sketch structure with elements between < r_min ... r_max >
-    std::vector<int> H_;
+    HFingerprint H_;
 };

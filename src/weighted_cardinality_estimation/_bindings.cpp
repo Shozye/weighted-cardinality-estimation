@@ -328,11 +328,12 @@ PYBIND11_MODULE(_core, m) {
                 p.get_amount_bits(),
                 p.get_logarithm_base(),
                 p.get_amount_bits_jaccard(),
-                p.get_registers()
+                p.get_registers(),
+                p.get_h_registers()
             );
         },
         [](const py::tuple& t) {
-            if (t.size() != 6) {
+            if (t.size() != 7) {
                 throw std::runtime_error("Invalid state for BaseLogExpSketchJacc pickle!");
             }
             return BaseLogExpSketchJacc(
@@ -341,7 +342,8 @@ PYBIND11_MODULE(_core, m) {
                 t[2].cast<std::uint8_t>(),
                 t[3].cast<float>(),
                 t[4].cast<std::uint8_t>(),
-                t[5].cast<std::vector<int>>()
+                t[5].cast<std::vector<int>>(),
+                t[6].cast<std::vector<std::uint32_t>>()
             );
         }
     )));
