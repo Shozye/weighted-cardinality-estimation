@@ -9,7 +9,7 @@ ELEMENTS_WEIGHT = 10.0
 AMOUNT_TEST_RUNS = 100
 
 SKETCH_PARAMS = [
-    pytest.param(lambda m, seeds: sketch_constructor(m, []), 0.1, id=sketch_name)
+    pytest.param(lambda m, seeds: sketch_constructor(m, seeds), 0.1, id=sketch_name)
     for sketch_name, sketch_constructor in _SKETCH_CONSTRUCTORS.items()
 ]
 
