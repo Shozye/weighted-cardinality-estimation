@@ -33,7 +33,7 @@ void bind_common_sketch_methods_and_jaccard(py::class_<SketchType>& cls) {
 }
 
 PYBIND11_MODULE(_core, m) {
-    bind_common_sketch_methods_and_jaccard(
+    
         py::class_<ExpSketch>(m, "ExpSketch")
             .def(py::init<std::size_t, const std::vector<std::uint32_t>&>(),
                 py::arg("m"), py::arg("seeds"))
@@ -51,7 +51,13 @@ PYBIND11_MODULE(_core, m) {
                 }
             )
         )
-    );
+       .def("add", &ExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
+       .def("add_many", &ExpSketch::add_many, py::arg("elems"), py::arg("weights"))
+       .def("estimate", &ExpSketch::estimate)
+       .def("memory_usage_total", &ExpSketch::memory_usage_total)
+       .def("memory_usage_write", &ExpSketch::memory_usage_write)
+       .def("memory_usage_estimate", &ExpSketch::memory_usage_estimate)
+       .def("jaccard_struct", &ExpSketch::jaccard_struct);
 
     bind_common_sketch_methods_and_jaccard(
     py::class_<FastExpSketch>(m, "FastExpSketch")

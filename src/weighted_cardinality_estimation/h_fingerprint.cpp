@@ -38,7 +38,11 @@ double HFingerprint::compute_jaccard(const HFingerprint& other) const {
     }
     double probability_h1_equals_h2 = static_cast<double>(equal) / static_cast<double>(H_.size());
     double g_max = std::pow(2, jaccard_bits) - 1;
-    return (g_max * probability_h1_equals_h2 - 1)/(g_max - 1);
+    double jacc = (g_max * probability_h1_equals_h2 - 1)/(g_max - 1);
+    if(jacc < 0){
+        return 0;
+    }
+    return jacc;
 }
 
 std::vector<std::uint32_t> HFingerprint::get_h_registers() const {
