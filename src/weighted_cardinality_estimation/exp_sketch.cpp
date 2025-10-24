@@ -1,7 +1,6 @@
 #include "exp_sketch.hpp"
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <limits>
 #include "hash_util.hpp"
 
@@ -9,7 +8,6 @@ ExpSketch::ExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& 
     : Sketch(sketch_size, seeds),
       M_(sketch_size, std::numeric_limits<double>::infinity())
 {
-    // std::cout << "I am in constructor of ExpSketch" << "\n";
 }
 
 ExpSketch::ExpSketch(std::size_t sketch_size, const std::vector<std::uint32_t>& seeds, const std::vector<double>& registers)
@@ -58,7 +56,6 @@ double ExpSketch::jaccard_struct(const ExpSketch& other) const
     for (std::size_t i = 0; i < size; ++i) {
         if (M_[i] == other.M_[i]) { ++equal; }
     }
-    // std::cout << "####################################3 lol=" << equal << " size=" << size << '\n';
     return static_cast<double>(equal) / static_cast<double>(size);
 }
 

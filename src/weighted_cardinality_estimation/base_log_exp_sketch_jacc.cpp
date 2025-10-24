@@ -24,7 +24,6 @@ BaseLogExpSketchJacc::BaseLogExpSketchJacc(
       H_(amount_bits_jaccard, sketch_size)
 {
     if (amount_bits == 0) { throw std::invalid_argument("Amount of bits 'b' must be positive."); }
-    // std::cout << "I am in constructor of BaseLogExpSketchJacc" << "\n";
     std::fill(M_.begin(), M_.end(), r_min);
 }
 

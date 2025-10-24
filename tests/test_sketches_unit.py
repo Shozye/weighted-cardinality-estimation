@@ -26,7 +26,6 @@ def test_unitary(sketch_cls):
 def test_unitary_different_jaccard(sketch_cls):
     M=5
     seeds = [random.randint(1,10000000) for _ in range(M)]
-    # print("HEEEEEEEEEEEEEEEEEEO", sketch_cls)
     seeds = [1,2,3,4,5]
     sketch_1 = sketch_cls(M, seeds)
     sketch_2 = sketch_cls(M, seeds)

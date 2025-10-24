@@ -48,7 +48,6 @@ QSketchDyn::QSketchDyn(
 }
 
 void QSketchDyn::add(const std::string& elem, double weight) {
-    // std::cout << " ?" << '\n';
     const uint64_t g_hash = murmur64(elem, g_seed_);
     const size_t j = g_hash % size;
 
