@@ -79,7 +79,7 @@ size_t BaseLogExpSketchJacc::memory_usage_estimate() const {
 }
 
 double BaseLogExpSketchJacc::jaccard_struct(const BaseLogExpSketchJacc& other) const {
-    return this->H_.compute_jaccard(other.H_);
+    return this->H_.compute_jaccard(other.H_, this->get_registers(), other.get_registers());
 }
 
 std::uint8_t BaseLogExpSketchJacc::get_amount_bits() const { return amount_bits_; }

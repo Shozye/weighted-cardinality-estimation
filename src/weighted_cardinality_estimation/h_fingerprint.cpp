@@ -34,11 +34,11 @@ void HFingerprint::set_elem(std::size_t index, const std::string& elem){
     this->H_[index] = h;
 }
 
-double HFingerprint::compute_jaccard(const HFingerprint& other) const {
+double HFingerprint::compute_jaccard(const HFingerprint& other, std::vector<int> v1, std::vector<int> v2) const {
     if (other.H_.size() != H_.size()) { return 0.0; }
     std::size_t equal = 0;
     for (std::size_t i = 0; i < H_.size(); ++i) {
-        if (this->H_[i] == other.H_[i] && this->H_[i] != 0) { 
+        if (this->H_[i] == other.H_[i] && this->H_[i] != 0 && v1[i] == v2[i]) { 
             ++equal; 
         }
     }

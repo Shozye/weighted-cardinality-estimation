@@ -14,7 +14,7 @@ public:
     );
 
     void set_elem(std::size_t index, const std::string& elem);
-    double compute_jaccard(const HFingerprint& other) const;
+    double compute_jaccard(const HFingerprint& other, std::vector<int> v1, std::vector<int> v2) const;
     std::vector<std::uint32_t> get_h_registers() const;
 
     [[nodiscard]] size_t memory_usage_total() const;
