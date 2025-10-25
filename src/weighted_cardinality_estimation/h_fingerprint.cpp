@@ -5,6 +5,9 @@
 
 HFingerprint::HFingerprint(std::uint8_t jaccard_bits, std::size_t sketch_size)
     : H_(jaccard_bits, sketch_size), jaccard_bits(jaccard_bits) {
+  if(jaccard_bits == 1){
+    throw std::invalid_argument("Invalid state: jaccard_bits should be > 1"); 
+  }
   std::fill(H_.begin(), H_.end(), 0);
 }
 
@@ -14,6 +17,9 @@ HFingerprint::HFingerprint(
     const std::vector<std::uint32_t>& registers   
 ) : H_(jaccard_bits, sketch_size),
     jaccard_bits(jaccard_bits){
+    if(jaccard_bits == 1){
+        throw std::invalid_argument("Invalid state: jaccard_bits should be > 1"); 
+    }
     if (registers.size() != sketch_size) { throw std::invalid_argument("Invalid state: registers vector size mismatch"); }
     for(size_t i = 0; i < H_.size(); i++){
         H_[i] = registers[i];

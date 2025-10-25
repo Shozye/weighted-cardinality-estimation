@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <stdexcept>
 #include "hash_util.hpp"
 #include<cstring>
