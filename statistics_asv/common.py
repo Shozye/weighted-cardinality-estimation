@@ -6,7 +6,7 @@ from weighted_cardinality_estimation import BaseLogExpSketchJacc, BaseShiftedLog
 SketchType = Union[ExpSketch, FastExpSketch, FastGMExpSketch, BaseQSketch, FastQSketch, QSketchDyn, QSketch, BaseLogExpSketch, FastLogExpSketch, BaseShiftedLogExpSketch, FastShiftedLogExpSketch, BaseLogExpSketchJacc, ExpSketchFloat]
 IMPLS: dict[str, Callable[..., SketchType]] = {
     "ExpSketch": lambda m, seeds: ExpSketch(m, seeds),
-    "ExpSketch": lambda m, seeds: ExpSketchFloat(m, seeds),
+    "ExpSketchFloat": lambda m, seeds: ExpSketchFloat(m, seeds),
     "FastExpSketch": lambda m, seeds: FastExpSketch(m, seeds),
     "FastGMExpSketch": lambda m, seeds: FastGMExpSketch(m, seeds),
     "BaseQSketch(b=8)": lambda m, seeds: BaseQSketch(m, seeds, amount_bits=8),
