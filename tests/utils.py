@@ -1,5 +1,6 @@
 from typing import Callable
-from weighted_cardinality_estimation import BaseLogExpSketch, BaseLogExpSketchJacc, BaseQSketch, FastExpSketch, ExpSketch, FastGMExpSketch, BaseLogExpSketch, FastLogExpSketch, FastQSketch, QSketchDyn, BaseShiftedLogExpSketch, FastShiftedLogExpSketch, QSketch
+
+from weighted_cardinality_estimation import BaseLogExpSketch, BaseLogExpSketchJacc, BaseQSketch, ExpSketchFloat, FastExpSketch, ExpSketch, FastGMExpSketch, BaseLogExpSketch, FastLogExpSketch, FastQSketch, QSketchDyn, BaseShiftedLogExpSketch, FastShiftedLogExpSketch, QSketch
 
 def assert_error(expected: float, actual: float, error: float, delta: float=0):
     min_range = (expected-delta) * (1-error)
@@ -8,6 +9,7 @@ def assert_error(expected: float, actual: float, error: float, delta: float=0):
 
 _SKETCH_CLS_JACC_SEEDS = {
     "ExpSketch": lambda m, seeds: ExpSketch(m, seeds),
+    "ExpSketchFloat": lambda m, seeds: ExpSketchFloat(m, seeds),
     "FastExpSketch": lambda m, seeds: FastExpSketch(m, seeds),
     "FastGMExpSketch": lambda m, seeds: FastGMExpSketch(m, seeds),
     "BaseLogExpSketchJacc": lambda m, seeds: BaseLogExpSketchJacc(m, seeds, amount_bits=8, logarithm_base=2, amount_bits_jaccard=8),

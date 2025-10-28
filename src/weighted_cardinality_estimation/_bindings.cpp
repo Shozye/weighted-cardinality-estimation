@@ -4,6 +4,7 @@
 #include "base_log_exp_sketch_jacc.hpp"
 #include "base_q_sketch.hpp"
 #include "exp_sketch.hpp"
+#include "exp_sketch_float.hpp"
 #include "fast_exp_sketch.hpp"
 #include "fast_q_sketch.hpp"
 #include "fastgm_exp_sketch.hpp"
@@ -34,7 +35,7 @@ void bind_common_sketch_methods_and_jaccard(py::class_<SketchType>& cls) {
 
 PYBIND11_MODULE(_core, m) {
     
-        py::class_<ExpSketch>(m, "ExpSketch")
+    bind_common_sketch_methods_and_jaccard(py::class_<ExpSketch>(m, "ExpSketch")
             .def(py::init<std::size_t, const std::vector<std::uint32_t>&>(),
                 py::arg("m"), py::arg("seeds"))
             .def(py::pickle(
@@ -51,13 +52,26 @@ PYBIND11_MODULE(_core, m) {
                 }
             )
         )
-       .def("add", &ExpSketch::add, py::arg("x"), py::arg("weight") = 1.0)
-       .def("add_many", &ExpSketch::add_many, py::arg("elems"), py::arg("weights"))
-       .def("estimate", &ExpSketch::estimate)
-       .def("memory_usage_total", &ExpSketch::memory_usage_total)
-       .def("memory_usage_write", &ExpSketch::memory_usage_write)
-       .def("memory_usage_estimate", &ExpSketch::memory_usage_estimate)
-       .def("jaccard_struct", &ExpSketch::jaccard_struct);
+    );
+
+    bind_common_sketch_methods_and_jaccard(py::class_<ExpSketchFloat>(m, "ExpSketchFloat")
+            .def(py::init<std::size_t, const std::vector<std::uint32_t>&>(),
+                py::arg("m"), py::arg("seeds"))
+            .def(py::pickle(
+                [](const ExpSketchFloat &p) {return py::make_tuple(p.get_sketch_size(), p.get_seeds(), p.get_registers());},
+                [](const py::tuple& t) {
+                    if (t.size() != 3) {
+                        throw std::runtime_error("Invalid state for ExpSketchFloat pickle!");
+                    }
+                    return ExpSketchFloat( 
+                        t[0].cast<std::size_t>(),
+                        t[1].cast<std::vector<std::uint32_t>>(),
+                        t[2].cast<std::vector<float>>()
+                    );
+                }
+            )
+        )
+    );
 
     bind_common_sketch_methods_and_jaccard(
     py::class_<FastExpSketch>(m, "FastExpSketch")

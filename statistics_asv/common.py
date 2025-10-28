@@ -1,11 +1,12 @@
 import random
 from typing import Callable, Union
 
-from weighted_cardinality_estimation import BaseLogExpSketchJacc, BaseShiftedLogExpSketch, ExpSketch, FastExpSketch, BaseQSketch, FastGMExpSketch, FastQSketch, FastShiftedLogExpSketch, QSketch, QSketchDyn, BaseLogExpSketch, FastLogExpSketch
+from weighted_cardinality_estimation import BaseLogExpSketchJacc, BaseShiftedLogExpSketch, ExpSketch, ExpSketchFloat, FastExpSketch, BaseQSketch, FastGMExpSketch, FastQSketch, FastShiftedLogExpSketch, QSketch, QSketchDyn, BaseLogExpSketch, FastLogExpSketch
 
-SketchType = Union[ExpSketch, FastExpSketch, FastGMExpSketch, BaseQSketch, FastQSketch, QSketchDyn, QSketch, BaseLogExpSketch, FastLogExpSketch, BaseShiftedLogExpSketch, FastShiftedLogExpSketch, BaseLogExpSketchJacc]
+SketchType = Union[ExpSketch, FastExpSketch, FastGMExpSketch, BaseQSketch, FastQSketch, QSketchDyn, QSketch, BaseLogExpSketch, FastLogExpSketch, BaseShiftedLogExpSketch, FastShiftedLogExpSketch, BaseLogExpSketchJacc, ExpSketchFloat]
 IMPLS: dict[str, Callable[..., SketchType]] = {
     "ExpSketch": lambda m, seeds: ExpSketch(m, seeds),
+    "ExpSketch": lambda m, seeds: ExpSketchFloat(m, seeds),
     "FastExpSketch": lambda m, seeds: FastExpSketch(m, seeds),
     "FastGMExpSketch": lambda m, seeds: FastGMExpSketch(m, seeds),
     "BaseQSketch(b=8)": lambda m, seeds: BaseQSketch(m, seeds, amount_bits=8),

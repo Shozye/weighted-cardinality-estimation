@@ -11,9 +11,11 @@ from ._core import FastLogExpSketch # type: ignore
 from ._core import BaseShiftedLogExpSketch # type: ignore
 from ._core import FastShiftedLogExpSketch # type: ignore
 from ._core import BaseLogExpSketchJacc # type: ignore
+from ._core import ExpSketchFloat # type: ignore
 
 __all__ = [
     "ExpSketch", 
+    "ExpSketchFloat",
     "FastExpSketch", 
     "FastGMExpSketch",
     "BaseQSketch", 
