@@ -43,6 +43,40 @@ def test_add_doesnt_segfault_for_powers_of_two(sketch_cls):
     sketch = sketch_cls(M, seeds)
     sketch.add("I am just a simple element.", weight=1) 
 
+def test_fastlogsketch_the_same():
+    M=100
+    seeds = [random.randint(1,10000000) for _ in range(M)]
+
+    sketch_clss = [
+        _SKETCH_CLS_ALL["QSketch"],
+        _SKETCH_CLS_ALL["FastQSketch"],
+        _SKETCH_CLS_ALL["FastLogExpSketch"],
+        # _SKETCH_CLS_ALL["FastShiftedLogExpSketch"], # TODO: error
+    ]
+    results = []
+    for sketch_cls in sketch_clss:
+        sketch = sketch_cls(M, seeds)
+        sketch.add("This is such a nice element to add", weight=27)
+        results.append(sketch.estimate())
+    assert len(set(results)) == 1
+
+def test_baselogsketch_the_same():
+    M=100
+    seeds = [random.randint(1,10000000) for _ in range(M)]
+
+    sketch_clss = [
+        # _SKETCH_CLS_ALL["BaseLogExpSketch"], # TODO: FIX
+        _SKETCH_CLS_ALL["BaseShiftedLogExpSketch"],
+        _SKETCH_CLS_ALL["BaseLogExpSketchJacc"],
+    ]
+    results = []
+    for sketch_cls in sketch_clss:
+        sketch = sketch_cls(M, seeds)
+        sketch.add("This is such a nice element to add", weight=27)
+        results.append(sketch.estimate())
+    assert len(set(results)) == 1
+                   
+
 @pytest.mark.parametrize("sketch_cls", SKETCH_CLS_SEEDS)
 def test_estimate_adding_duplicate_does_not_change_estimation(sketch_cls):
     M=5

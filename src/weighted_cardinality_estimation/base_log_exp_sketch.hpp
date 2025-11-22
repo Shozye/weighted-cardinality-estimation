@@ -31,9 +31,13 @@ public:
     [[nodiscard]] size_t memory_usage_write() const;
     [[nodiscard]] size_t memory_usage_estimate() const;
 private:
-    double initialValue() const;
-    double ffunc_divided_by_dffunc(double w) const;
-    double Newton(double c0) const;
+
+    double ffunc_divided_by_dffunc(double lambda) const;
+    double newton(double c0) const;
+    double estimate_fast() const;
+
+    double derivative_of_log_probability(int r, double lambda) const;
+    double second_derivative_of_log_probability(int r, double lambda) const;
 
     std::uint8_t amount_bits_;
     float logarithm_base;
