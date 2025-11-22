@@ -176,7 +176,11 @@ double BaseLogExpSketch::estimate_fast() const {
     for(int r: M_) { 
         tmp_sum += std::pow(logarithm_base, -r);
     }
-    return (double)(this->size-1) / tmp_sum;
+
+    const double m = (double)this->size;
+    const double k = logarithm_base;
+
+    return (k-1)*m / (std::log(k)*tmp_sum);
 }
 
 
