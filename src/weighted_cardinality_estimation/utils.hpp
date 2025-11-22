@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #define NEWTON_MAX_ITERATIONS 5
-#define NEWTON_MAX_ERROR 1e-5
+#define NEWTON_MAX_ERROR 1e-10
 
 void print_vector(std::vector<int> vec);
 void print_vector(std::vector<std::uint32_t> vec);
